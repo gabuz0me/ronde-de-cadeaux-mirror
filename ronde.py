@@ -8,11 +8,12 @@ an e-mail
 """
 
 
+
+from yaml import safe_load
+import random
 from lib.graph_generation import graph_gen
 from lib.hamiltonian_path import hamilton
 from lib.mail_sender import send_mails
-from yaml import safe_load
-import random
 
 class ImpossibleToDrawError(Exception):
     """
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     nb_err = 0
     while not drawable:
         path = hamilton(graph, len(graph), random.choice(list(graph)), [])
-        if path == None:
+        if path is None:
             nb_err += 1
             print("Erreur")
         else:
