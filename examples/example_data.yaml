@@ -1,0 +1,65 @@
+#######################
+# Liste des personnes #
+#######################
+
+people:
+  - name: "Alice Foo"
+    email: "alice@foo.me"
+    blacklist: ["Foo_couple", "Foo_siblings"]
+  - name: "Bob Foo"
+    email: "bob@foo.me"
+    blacklist: ["Foo_couple", "Foo_siblings"]
+  - name: "Carol Foo"
+    email: "carol@foo.me"
+    blacklist: ["Foo_siblings"]
+  - name: "Dave Foo"
+    email: "dave@foo.me"
+    whitelist: ["cousins"]
+    blacklist: ["Foo_siblings"]
+  - name: "Eve Bar"
+    email: "eve@bar.me"
+    blacklist: ["Bar_couple", "Bar_siblings"]
+  - name: "Flora Bar"
+    email: "flora@bar.me"
+    blacklist: ["Bar_couple", "Bar_siblings"]
+  - name: "Gulliver Bar"
+    email: "gulliver@bar.me"
+    blacklist: ["Bar_siblings"]
+  - name: "Henry Bar"
+    email: "henry@bar.me"
+    whitelist: ["cousins"]
+    blacklist: ["Bar_siblings"]
+  - name: "Isobel Bar"
+    email: "isobel@bar.me"
+    whitelist: ["cousins"]
+    blacklist: ["Bar_siblings"]
+  - name: "Jack Baz"
+    email: "jack@baz.me"
+  - name: "Linda Qux"
+    email: "linda@qux.me"
+    blacklist: ["Qux_polycule"]
+  - name: "Mark Qux"
+    email: "mark@qux.me"
+    blacklist: ["Qux_polycule"]
+  - name: "Nick Qux"
+    email: "nick@qux.me"
+    blacklist: ["Qux_polycule"]
+
+
+##########################
+# Liste des sous-groupes #
+##########################
+
+clusters:
+  - name: "Foo_couple"
+    people: ["Alice Foo", "Bob Foo"]
+  - name: "Foo_siblings"
+    people: ["Carol Foo", "Dave Foo"]
+  - name: "Bar_couple"
+    people: ["Eve Bar", "Flora Bar"]
+  - name: "Bar_siblings"
+    people: ["Gulliver Bar", "Henry Bar", "Isobel Bar"]
+  - name: "Qux_polycule"
+    people: ["Linda Qux", "Mark Qux", "Nick Qux"]
+  - name: "cousins"
+    subclusters: ["Foo_siblings", "Bar_siblings"]

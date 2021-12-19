@@ -1,0 +1,11 @@
+#############################
+# Connexion au serveur mail #
+#############################
+
+hostname: "mailserver.org"
+smtp_port: 587
+imap_port: 143
+username: "username"
+password: "xxx"
+sender: "email_address"
+sent_folder: "Sent"
