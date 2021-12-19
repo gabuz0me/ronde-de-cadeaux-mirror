@@ -1,3 +1,13 @@
+"""
+
+@author: Bertille Dubosq De Pesquidoux, Adrian "Relex12" Bonnet
+
+The purpose of this script is to determine a cycle of people which should
+offer a present to the next one on the cycle and to inform them trough
+an e-mail
+"""
+
+
 from lib.graph_generation import graph_gen
 from lib.hamiltonian_path import hamilton
 from lib.mail_sender import send_mails
