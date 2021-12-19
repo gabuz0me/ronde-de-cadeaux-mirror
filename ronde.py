@@ -18,8 +18,6 @@ class ImpossibleToDrawError(Exception):
     """
     This error is raised when `nb_err` exceeds `LIMIT_ERR_MAX`.
     """
-    def __init__(self):
-        pass
 
 LIMIT_ERR_MAX = 10
 """
