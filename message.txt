@@ -11,5 +11,5 @@ La personne qui t’a été attribuée lors du tirage est <b>{3}</b>.<br><br>
 On se voit à [lieu] le [date] pour l’ouverture, gros bisous,<br>
 [Prénom]<br><br>
 
-<a href="https://framagit.org/bertille/ronde-de-cadeaux>Codé avec les 🦶 et avec le 🫀</a>
+<a href="https://framagit.org/bertille/ronde-de-cadeaux">Codé avec les 🦶 et avec le 🫀</a>
 """
