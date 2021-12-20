@@ -1,6 +1,6 @@
 """
 
-@author: Bertille Dubosq De Pesquidoux, Adrian "Relex12" Bonnet
+@author: Bertille Dubosc de Pesquidoux, Adrian "Relex12" Bonnet
 
 The purpose of this script is to determine a cycle of people which should
 offer a present to the next one on the cycle and to inform them trough
