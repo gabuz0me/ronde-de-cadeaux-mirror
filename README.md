@@ -49,6 +49,8 @@ OUI. Pour des idées de contributions, voir la section suivante.
 ## Défauts / pistes d'amélioration
 - C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…
 - La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
+- Pareil, niveau complexité, c'est sans doute pas OP, on pourrait trouver de meilleurs algorithmes (ou utiliser des libs faites pour manipuler des graphes).
+- Le formattage de string pour le message est sale.
 - Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
 - La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
 - Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes).
