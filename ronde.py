@@ -10,12 +10,24 @@ an e-mail
 """
 
 import argparse
+import json
 import random
 from textwrap import dedent
 from yaml import safe_load, scanner
-from lib.graph_generation import graph_gen
+from lib.graph_generation import generate_graph
 from lib.hamiltonian_path import hamilton
 from lib.mail_sender import send_mails
+
+
+def pretty_print(graph):
+    """Afficher joliment le graphe
+
+    (debug en vrai)"""
+    graph_values_as_list = {
+        key: list(value)
+        for (key, value) in graph.items()
+    }
+    print(json.dumps(graph_values_as_list, indent=2))
 
 
 def makeParser() -> argparse.ArgumentParser:
@@ -56,8 +68,6 @@ def makeParser() -> argparse.ArgumentParser:
     return parser
 
 
-# When too many errors occur during the drawing, it is considered impossible.
-LIMIT_ERR_MAX = 10
 DEFAULT_MAIL_TEMPLATE = 'message.txt'
 
 
@@ -68,10 +78,12 @@ def ronde_cadeaux(data: dict, mail_auth: dict, message: str) -> None:
     `mail_auth` : configuration mail
     `message` : mail type
     """
-    graph = graph_gen(data)
+
+    graph = generate_graph(data)
+    # pretty_print(graph)
 
     path = hamilton(graph, random.choice(list(graph)), [])
-    # print(path) # Au cas où...
+    # print(path)  # Au cas où...
     if not path:
         print("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
         exit()

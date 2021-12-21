@@ -53,7 +53,8 @@ OUI. Pour des idées de contributions, voir la section suivante.
 - [x] Le formatage de string pour le message est sale.
 - [ ] Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
 - [ ] La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
-- [ ] Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes).
+- [x] ~~Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes).~~  
+On peut maintenant :D
 - [ ] Au moment de construire le graphe, la liste blanche est d'abord évaluée, et ensuite les gens de la liste noire sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste blanche sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste blanche (resp. noire), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste blanche, la liste noire ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).

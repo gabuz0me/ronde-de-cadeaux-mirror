@@ -5,45 +5,45 @@
 people:
   - name: "Alice Foo"
     email: "alice@foo.me"
-    blacklist: ["Foo_couple", "Foo_siblings"]
+    blacklist_clusters: ["Foo_couple", "Foo_siblings"]
   - name: "Bob Foo"
     email: "bob@foo.me"
-    blacklist: ["Foo_couple", "Foo_siblings"]
+    blacklist_clusters: ["Foo_couple", "Foo_siblings"]
   - name: "Carol Foo"
     email: "carol@foo.me"
-    blacklist: ["Foo_siblings"]
+    blacklist_clusters: ["Foo_siblings"]
   - name: "Dave Foo"
     email: "dave@foo.me"
-    whitelist: ["cousins"]
-    blacklist: ["Foo_siblings"]
+    whitelist_clusters: ["cousins"]
+    blacklist_clusters: ["Foo_siblings"]
   - name: "Eve Bar"
     email: "eve@bar.me"
-    blacklist: ["Bar_couple", "Bar_siblings"]
+    blacklist_clusters: ["Bar_couple", "Bar_siblings"]
   - name: "Flora Bar"
     email: "flora@bar.me"
-    blacklist: ["Bar_couple", "Bar_siblings"]
+    blacklist_clusters: ["Bar_couple", "Bar_siblings"]
   - name: "Gulliver Bar"
     email: "gulliver@bar.me"
-    blacklist: ["Bar_siblings"]
+    blacklist_clusters: ["Bar_siblings"]
   - name: "Henry Bar"
     email: "henry@bar.me"
-    whitelist: ["cousins"]
-    blacklist: ["Bar_siblings"]
+    whitelist_clusters: ["cousins"]
+    blacklist_clusters: ["Bar_siblings"]
   - name: "Isobel Bar"
     email: "isobel@bar.me"
-    whitelist: ["cousins"]
-    blacklist: ["Bar_siblings"]
+    whitelist_clusters: ["cousins"]
+    blacklist_clusters: ["Bar_siblings"]
   - name: "Jack Baz"
     email: "jack@baz.me"
   - name: "Linda Qux"
     email: "linda@qux.me"
-    blacklist: ["Qux_polycule"]
+    blacklist_clusters: ["Qux_polycule"]
   - name: "Mark Qux"
     email: "mark@qux.me"
-    blacklist: ["Qux_polycule"]
+    blacklist_clusters: ["Qux_polycule"]
   - name: "Nick Qux"
     email: "nick@qux.me"
-    blacklist: ["Qux_polycule"]
+    blacklist_clusters: ["Qux_polycule"]
 
 
 ##########################
