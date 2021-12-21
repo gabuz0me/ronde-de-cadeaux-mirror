@@ -1,5 +1,5 @@
-from typing import Dict, List
 from random import sample
+from typing import Dict, List
 
 
 def shuffled(sucessors: set) -> list:
