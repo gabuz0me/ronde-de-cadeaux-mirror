@@ -28,7 +28,7 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 1. Créer un fichier `data.yaml` avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
 2. Idem pour `mail_auth.yaml`.
 3. Adapter `message.txt`, sachant que `{0}` sera remplacé par votre adresse mail, `{1}` par l'adresse de la personne qui reçoit le mail, `{2}` par son nom et `{3}` par le nom de la personne tirée.
-4. `python ronde.py`
+4. `python ronde.py -f data.yaml -a mail_auth.yaml -m message.txt`
 5. Croiser les doigts.
 
 
