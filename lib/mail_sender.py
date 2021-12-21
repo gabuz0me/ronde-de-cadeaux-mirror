@@ -1,7 +1,7 @@
-from typing import Dict, List
-import smtplib
 import imaplib
+import smtplib
 import time
+from typing import Dict, List
 
 
 def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):

@@ -9,10 +9,10 @@ offer a present to the next one on the cycle and to inform them trough
 an e-mail
 """
 
-from yaml import safe_load, scanner
-from textwrap import dedent
 import argparse
 import random
+from textwrap import dedent
+from yaml import safe_load, scanner
 from lib.graph_generation import graph_gen
 from lib.hamiltonian_path import hamilton
 from lib.mail_sender import send_mails
