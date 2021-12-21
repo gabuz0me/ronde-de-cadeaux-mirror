@@ -27,7 +27,7 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 ## Comment qu'on s'en sert ?
 1. Créer un fichier `data.yaml` avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
 2. Idem pour `mail_auth.yaml`.
-3. Adapter `message.txt`, sachant que `{0}` sera remplacé par votre adresse mail, `{1}` par l'adresse de la personne qui reçoit le mail, `{2}` par son nom et `{3}` par le nom de la personne tirée.
+3. Adapter `message.txt`, sachant que `{mail_from}` sera remplacé par votre adresse mail, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{name}` par son nom et `{giftee}` par le nom de la personne tirée.
 4. `python ronde.py -f data.yaml -a mail_auth.yaml -m message.txt`
 5. Croiser les doigts.
 
@@ -37,7 +37,7 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 
 Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de whitelist ou blacklist !
 
-> Ah en fait maintenat que j'y pense il y a deux personnes qui peuvent pas se blairer…
+> Ah en fait maintenant que j'y pense il y a deux personnes qui peuvent pas se blairer…
 
 C'est possible de juste les interdire mutuellement ! Si `data.yaml` ne contient pas de section `clusters` mais que certaines personnes ont un attribut `blacklist` (ou `whitelist`), alors il est interprété comme une liste de personnes à blacklister.
 
@@ -50,7 +50,7 @@ OUI. Pour des idées de contributions, voir la section suivante.
 - [ ] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…
 - [ ] La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
 - [ ] Pareil, niveau complexité, c'est sans doute pas OP, on pourrait trouver de meilleurs algorithmes (ou utiliser des libs faites pour manipuler des graphes).
-- [ ] Le formattage de string pour le message est sale.
+- [x] Le formatage de string pour le message est sale.
 - [ ] Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
 - [ ] La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
 - [ ] Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes).

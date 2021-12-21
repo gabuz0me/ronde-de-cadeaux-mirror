@@ -1,12 +1,12 @@
-"""From: Tirage au sort de Noël <{0}>
-To: {2} <{1}>
+"""From: Tirage au sort de Noël <{mail_from}>
+To: {name} <{mail_to}>
 MIME-Version: 1.0
 Content-type: text/html; charset=utf-8
-Subject: {2}, cette année tu feras un cadeau à…
+Subject: {name}, cette année tu feras un cadeau à…
 
-Bonjour {2} !<br><br>
+Bonjour {name} !<br><br>
 
-La personne qui t’a été attribuée lors du tirage est <b>{3}</b>.<br><br>
+La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>.<br><br>
 
 On se voit à [lieu] le [date] pour l’ouverture, gros bisous,<br>
 [Prénom]<br><br>
