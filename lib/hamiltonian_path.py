@@ -1,16 +1,36 @@
 from typing import Dict, List
+from random import sample
 
 
-def hamilton(graph: Dict, size: int, current_node: str, path: List = []) -> List:
-    if current_node not in set(path):
+def shuffled(sucessors: set) -> list:
+    """Renvoie une liste mélangée créée à partir d'un set"""
+    return sample(sucessors, len(sucessors))
+
+
+def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
+    """Algorithme récursif permettant de trouver un cycle hamiltonien dans un graphe donné"""
+
+    # print(f"{'   '*len(path)}→{current_node} [{len(path)}/{len(graph)}]")
+    if current_node not in path:
         path.append(current_node)
-        if len(path) == size: # si on a réussi à mettre tous les nœuds c'est gagné
-            return path
-        for next_node in graph.get(current_node, []):
-            res_path = [i for i in path] # régénération d'un chemin
-            candidate = hamilton(graph, size, next_node, res_path)
-            if candidate is not None:
-                return candidate
 
-    else:
-        return None
+        # Si on a réussi à mettre tous les nœuds
+        # C'est gagné si on a un cycle
+        if len(path) == len(graph):
+            if path[0] in graph[path[-1]]:
+                return path
+            else:
+                path.pop()
+                return None
+
+        # Sinon, itération principale
+        for next_node in shuffled(graph[current_node]):
+            # copied_path = [i for i in path]
+            candidate_path = hamilton(graph, next_node, path)
+            if candidate_path:
+                return candidate_path
+
+        path.pop()
+
+    # Si nœud déjà dans chemin ou si pas trouvé de chemin possibles
+    return None
