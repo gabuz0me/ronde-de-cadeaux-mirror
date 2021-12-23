@@ -25,10 +25,31 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 
 
 ## Comment qu'on s'en sert ?
-1. Créer un fichier `data.yaml` avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
-2. Idem pour `mail_auth.yaml`.
-3. Adapter `message.txt`, sachant que `{mail_from}` sera remplacé par votre adresse mail, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{name}` par son nom et `{giftee}` par le nom de la personne tirée.
-4. `python ronde.py -f data.yaml -a mail_auth.yaml -m message.txt`
+Voir déjà le message d'aide :
+```
+usage: ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] file
+
+Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en
+prenant en compte un système de contraintes complexes. Si un chemin
+hamiltonien est trouvé, un mail est envoyé à chacun⋅e des participant⋅e⋅s leur
+indiquant à qui offrir un présent.
+
+positional arguments:
+  file                  Fichier yaml des données d'entrer à parser
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s, --show            Afficher la ronde calculée (default: False)
+  -a AUTH, --auth AUTH  Fichier de configuration mail (default: None)
+  -m MESSAGE, --message MESSAGE
+                        Fichier mail type (default: message.txt)
+  -o OUTPUT, --output OUTPUT
+                        Fichier dans lequel exporter le tirage (default: None)
+```
+1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
+2. Si vous voulez envoyer des mails, créez un fichier yaml (voir `example/example_mail_auth.yaml` pour la structure) et passez le en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou que vous passiez en argument `--message` un fichier texte faisant office de patron pour le mail, sachant que `{mail_from}` sera remplacé par votre adresse mail, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{name}` par son nom et `{giftee}` par le nom de la personne tirée.
+3. Si vous voulez afficher la ronde calculée, passez `--show` en argument.
+4. Si vous voulez sauvegarder le tirage dans un fichier, passez le fichier en argument `--output`
 5. Croiser les doigts.
 
 
@@ -39,7 +60,7 @@ Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de whitelist
 
 > Ah en fait maintenant que j'y pense il y a deux personnes qui peuvent pas se blairer…
 
-C'est possible de juste les interdire mutuellement ! Si `data.yaml` ne contient pas de section `clusters` mais que certaines personnes ont un attribut `blacklist` (ou `whitelist`), alors il est interprété comme une liste de personnes à blacklister.
+C'est possible de juste les interdire mutuellement, soit en créant un cluster les contenant et l'ajouter à leurs `blacklist_clusters`, soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `blacklist`.
 
 > On peut contribuer ?
 
@@ -47,8 +68,9 @@ OUI. Pour des idées de contributions, voir la section suivante.
 
 
 ## Défauts / pistes d'amélioration
-- [ ] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…
-- [ ] La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
+- [x] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…  
+    → Zbim c'est déjà un peu plus propre :D
+- [x] La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
 - [ ] Pareil, niveau complexité, c'est sans doute pas OP, on pourrait trouver de meilleurs algorithmes (ou utiliser des libs faites pour manipuler des graphes).
 - [x] Le formatage de string pour le message est sale.
 - [ ] Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
@@ -58,5 +80,5 @@ On peut maintenant :D
 - [ ] Au moment de construire le graphe, la liste blanche est d'abord évaluée, et ensuite les gens de la liste noire sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste blanche sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste blanche (resp. noire), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste blanche, la liste noire ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
-- [ ] Pouvoir afficher de l'aide et passer des options pour contrôler plus finement le comportement.
+- [x] Pouvoir afficher de l'aide et passer des options pour contrôler plus finement le comportement.
 - [ ] Demander le mot de passe de la boîte mail au moment de l'exécution pour ne pas le laisser se balader dans la nature.
