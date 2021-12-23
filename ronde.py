@@ -2,21 +2,21 @@
 
 """
 
-@author: Bertille Dubosc de Pesquidoux, Adrian "Relex12" Bonnet
+@author: Bertille Dubosc de Pesquidoux, Adrien Laporte, Adrian "Relex12" Bonnet
 
 The purpose of this script is to determine a cycle of people which should
 offer a present to the next one on the cycle and to inform them trough
 an e-mail
 """
 
-import argparse
+import datetime
 import json
 import random
-from textwrap import dedent
 from yaml import safe_load, scanner
-from lib.graph_generation import generate_graph
+from lib.graph_generation import generate_graph, giftee
 from lib.hamiltonian_path import hamilton
 from lib.mail_sender import send_mails
+from lib.parser import parser
 
 
 def pretty_print(graph):
@@ -30,76 +30,56 @@ def pretty_print(graph):
     print(json.dumps(graph_values_as_list, indent=2))
 
 
-def makeParser() -> argparse.ArgumentParser:
-    """Fabrique et retourne le parser des arguments"""
-    parser = argparse.ArgumentParser(
-        description=dedent("""\
-            Ce programme permet de générer un tirage de gens à qui offrir
-            des cadeaux en prenant en compte un système de contraintes
-            complexes. Si un chemin hamiltonien est trouvé, un mail est
-            envoyé à chacun⋅e des participant⋅e⋅s leur indiquant à qui
-            offrir un présent.
-            """
-                           ),
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    parser.add_argument(
-        '-f', '--file',
-        type=argparse.FileType('r'),
-        help='Fichier yaml à parser',
-        required=True,
-    )
-
-    parser.add_argument(
-        '-a', '--auth',
-        type=argparse.FileType('r'),
-        help='Fichier de configuration mail',
-        required=True,
-    )
-
-    parser.add_argument(
-        '-m', '--message',
-        type=argparse.FileType('r'),
-        help='Fichier mail type',
-        default=DEFAULT_MAIL_TEMPLATE,
-    )
-
-    return parser
-
-
-DEFAULT_MAIL_TEMPLATE = 'message.txt'
-
-
-def ronde_cadeaux(data: dict, mail_auth: dict, message: str) -> None:
+def ronde_cadeaux(data: dict,
+                  show_path: bool = False,
+                  output_file=None,
+                  mail_auth: dict = None,
+                  message: str = None,
+                  ) -> None:
     """Routine principale
 
     `data` : données à partir desquelles construire un graphe
     `mail_auth` : configuration mail
     `message` : mail type
+    `show_path` : afficher le chemin calculé
     """
 
+    # Création du graphe
     graph = generate_graph(data)
     # pretty_print(graph)
 
+    # Résolution du problème
     path = hamilton(graph, random.choice(list(graph)), [])
-    # print(path)  # Au cas où...
     if not path:
         print("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
         exit()
 
-    with open('circuit.txt', 'w') as f:
-        # on sauvegarde le circuit obtenu dans un fichier au cas où ça planterait
-        # quelque part au milieu de l'envoi de mails, pour ne pas se retrouver avec
-        # un tirage incomplet
-        f.write(str(path))
+    # Création d'un résumé du tirage
+    max_name_length = max(len(p) for p in path)
+    draw = '\n'.join([
+        f"{person:>{max_name_length}} → {giftee(path, person)}"
+        for person in path
+    ])
 
-    send_mails(data["people"], path, mail_auth, message)
+    # Affichage éventuel
+    if show_path:
+        print(draw)
+
+    # Export éventuel dans un fichier texte
+    if output_file:
+        with output_file as f:
+            f.write(f"Tirage du {datetime.datetime.now()} :\n")
+            f.write(draw)
+            f.write('\n\n')
+
+    # Enfin envoi éventuel des mails
+    if mail_auth:
+        send_mails(data["people"], path, mail_auth, message)
 
 
 if __name__ == '__main__':
     # Parsing des arguments
-    args = makeParser().parse_args()
+    args = parser.parse_args()
 
     try:
         data = safe_load(args.file)
@@ -107,13 +87,23 @@ if __name__ == '__main__':
         print("Impossible de charger le fichier d'entrée : yaml invalide.")
         exit()
 
-    try:
-        mail_auth = safe_load(args.auth)
-    except scanner.ScannerError:
-        print("Impossible de charger le fichier de configuration mail : yaml invalide.")
-        exit()
+    mail_auth = None
+    message = None
+    if args.auth:
+        try:
+            mail_auth = safe_load(args.auth)
+        except scanner.ScannerError:
+            print(
+                "Impossible de charger le fichier de configuration mail : yaml invalide.")
+            exit()
 
-    message = args.message.read()
+        message = args.message.read()
 
     # Exécution
-    ronde_cadeaux(data, mail_auth, message)
+    ronde_cadeaux(
+        data=data,
+        mail_auth=mail_auth,
+        message=message,
+        show_path=args.show,
+        output_file=args.output,
+    )
