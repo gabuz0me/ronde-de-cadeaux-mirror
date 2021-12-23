@@ -2,6 +2,7 @@ import imaplib
 import smtplib
 import time
 from typing import Dict, List
+from .graph_generation import giftee
 
 
 def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
@@ -31,7 +32,7 @@ def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
 
         for person in people:
             # logiquement la personne doit faire un cadeau à cellui qui la suit dans la liste
-            giftee_name = path[(path.index(person["name"]) + 1) % len(path)]
+            giftee_name = giftee(path, person['name'])
 
             # on remplace les variables par leurs valeurs
             msg = message.format(

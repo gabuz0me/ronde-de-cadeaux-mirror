@@ -90,3 +90,10 @@ def generate_graph(data: Dict) -> Dict:
         graph[gifter["name"]].discard(gifter["name"])
 
     return graph
+
+
+def giftee(path: list, person_name: str) -> str:
+    """Renvoie la personne à qui `person` doit offrir
+    un cadeau, d'après `path`
+    """
+    return path[(path.index(person_name) + 1) % len(path)]
