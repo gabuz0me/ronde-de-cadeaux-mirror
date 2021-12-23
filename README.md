@@ -52,6 +52,23 @@ optional arguments:
 4. Si vous voulez sauvegarder le tirage dans un fichier, passez le fichier en argument `--output`
 5. Croiser les doigts.
 
+Par exemple :
+```console
+$ ./ronde.py examples/example_data.yaml --show
+   Alice Foo → Isobel Bar
+  Isobel Bar → Carol Foo
+   Carol Foo → Henry Bar
+   Henry Bar → Dave Foo
+    Dave Foo → Gulliver Bar
+Gulliver Bar → Flora Bar
+   Flora Bar → Nick Qux
+    Nick Qux → Jack Baz
+    Jack Baz → Bob Foo
+     Bob Foo → Linda Qux
+   Linda Qux → Eve Bar
+     Eve Bar → Mark Qux
+    Mark Qux → Alice Foo
+```
 
 ## FAQ
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
