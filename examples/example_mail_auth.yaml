@@ -8,5 +8,5 @@ imap_port: 143
 username: "username"
 password: "xxx"
 sender: "email_address"
-sender_name: "Secret Santa"
+sender_name: "The Invisible Hand of the Draw"
 sent_folder: "Sent"

@@ -6,7 +6,7 @@ Subject: {gifter}, cette année tu feras un cadeau à…
 
 Bonjour {gifter} !<br><br>
 
-La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>. Tu dois donc lui trouver un cadeau de Noël.<br><br>
+La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>. Tu dois donc lui trouver un cadeau.<br><br>
 
 On se voit au [lieu] le [date] pour l’ouverture.<br><br>
 
