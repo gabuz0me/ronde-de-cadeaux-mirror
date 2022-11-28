@@ -1,15 +1,16 @@
-"""From: Tirage au sort de Noël <{mail_from}>
-To: {name} <{mail_to}>
+From: {sender_name} <{mail_from}>
+To: {gifter} <{mail_to}>
 MIME-Version: 1.0
 Content-type: text/html; charset=utf-8
-Subject: {name}, cette année tu feras un cadeau à…
+Subject: {gifter}, cette année tu feras un cadeau à…
 
-Bonjour {name} !<br><br>
+Bonjour {gifter} !<br><br>
 
-La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>.<br><br>
+La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>. Tu dois donc lui trouver un cadeau de Noël.<br><br>
 
-On se voit à [lieu] le [date] pour l’ouverture, gros bisous,<br>
-[Prénom]<br><br>
+On se voit au [lieu] le [date] pour l’ouverture.<br><br>
 
-<a href="https://framagit.org/bertille/ronde-de-cadeaux">Codé avec les 🦶 et avec le 🫀</a>
-"""
+Gros bisous,<br>
+[prénom]<br><br>
+
+<a href="https://framagit.org/bertille-ddp/ronde-de-cadeaux">Codé avec les 🦶 et avec le 🫀</a>
