@@ -44,44 +44,44 @@ def generate_graph(data: Dict) -> Dict:
 
     # Construction du graphe
     for gifter in people:
-        had_whitelist = False
+        had_allowlist = False
 
-        # Whitelist
-        if 'whitelist' in gifter:
-            had_whitelist = True
-            graph[gifter['name']] = set(gifter['whitelist'])
+        # allowlist
+        if 'allowlist' in gifter:
+            had_allowlist = True
+            graph[gifter['name']] = set(gifter['allowlist'])
 
-        # Whitelist de clusters
-        if clusters and 'whitelist_clusters' in gifter:
-            had_whitelist = True
+        # allowlist de clusters
+        if clusters and 'allowlist_clusters' in gifter:
+            had_allowlist = True
             graph[gifter['name']] = \
                 graph[gifter['name']].union(
                     {
                         person
-                        for cluster_name in gifter['whitelist_clusters']
+                        for cluster_name in gifter['allowlist_clusters']
                         for person in clusters[cluster_name]
                     }
             )
 
         # Si aucun des deux on considère que la personne peut
         # offrir à tout le monde
-        if not had_whitelist:
+        if not had_allowlist:
             graph[gifter['name']] = set([person['name'] for person in people])
 
-        # Blacklist
-        if 'blacklist' in gifter:
+        # denylist
+        if 'denylist' in gifter:
             graph[gifter['name']] = \
                 graph[gifter['name']].difference(
-                    set(gifter['blacklist'])
+                    set(gifter['denylist'])
             )
 
-        # Blacklist de clusters
-        if clusters and 'blacklist_clusters' in gifter:
+        # denylist de clusters
+        if clusters and 'denylist_clusters' in gifter:
             graph[gifter['name']] = \
                 graph[gifter['name']].difference(
                     {
                         person
-                        for cluster_name in gifter['blacklist_clusters']
+                        for cluster_name in gifter['denylist_clusters']
                         for person in clusters[cluster_name]
                     }
             )

@@ -5,61 +5,61 @@
 people:
   - name: "Alice Foo"
     email: "alice@foo.me"
-    blacklist: ["Bob Foo"]
-    blacklist_clusters: ["Foo_siblings"]
+    denylist: ["Bob Foo"]
+    denylist_clusters: ["Foo_siblings"]
 
   - name: "Bob Foo"
     email: "bob@foo.me"
-    blacklist: ["Alice Foo"]
-    blacklist_clusters: ["Foo_siblings"]
+    denylist: ["Alice Foo"]
+    denylist_clusters: ["Foo_siblings"]
 
   - name: "Carol Foo"
     email: "carol@foo.me"
-    blacklist_clusters: ["Foo_siblings"]
+    denylist_clusters: ["Foo_siblings"]
 
   - name: "Dave Foo"
     email: "dave@foo.me"
-    whitelist_clusters: ["cousins"]
-    blacklist_clusters: ["Foo_siblings"]
+    allowlist_clusters: ["cousins"]
+    denylist_clusters: ["Foo_siblings"]
 
   - name: "Eve Bar"
     email: "eve@bar.me"
-    blacklist: ["Flora Bar"]
-    blacklist_clusters: ["Bar_siblings"]
+    denylist: ["Flora Bar"]
+    denylist_clusters: ["Bar_siblings"]
 
   - name: "Flora Bar"
     email: "flora@bar.me"
-    blacklist: ["Eve Bar"]
-    blacklist_clusters: ["Bar_siblings"]
+    denylist: ["Eve Bar"]
+    denylist_clusters: ["Bar_siblings"]
 
   - name: "Gulliver Bar"
     email: "gulliver@bar.me"
-    blacklist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar_siblings"]
 
   - name: "Henry Bar"
     email: "henry@bar.me"
-    whitelist_clusters: ["cousins"]
-    blacklist_clusters: ["Bar_siblings"]
+    allowlist_clusters: ["cousins"]
+    denylist_clusters: ["Bar_siblings"]
 
   - name: "Isobel Bar"
     email: "isobel@bar.me"
-    whitelist_clusters: ["cousins"]
-    blacklist_clusters: ["Bar_siblings"]
+    allowlist_clusters: ["cousins"]
+    denylist_clusters: ["Bar_siblings"]
 
   - name: "Jack Baz"
     email: "jack@baz.me"
 
   - name: "Linda Qux"
     email: "linda@qux.me"
-    blacklist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux_polycule"]
 
   - name: "Mark Qux"
     email: "mark@qux.me"
-    blacklist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux_polycule"]
 
   - name: "Nick Qux"
     email: "nick@qux.me"
-    blacklist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux_polycule"]
 
 
 ##########################

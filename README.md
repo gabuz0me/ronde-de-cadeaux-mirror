@@ -6,19 +6,19 @@ Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par
 
 ## Motivations
 Le but de cet outil est d'attribuer à chaque personne d'un groupe une autre personne à qui faire un cadeau, tout en respectant certaines contraintes. En effet, j'ai bricolé quelque chose qui s'adapte à mon contexte familial. En particulier :
-- Pour forcer un peu de mélange, on ne veut pas que des conjoint·es puissent se piocher entre elleux. Des adelphes non plus. Ça veut dire mettre en place un système de liste noire.
+- Pour forcer un peu de mélange, on ne veut pas que des conjoint·es puissent se piocher entre elleux. Des adelphes non plus. Ça veut dire mettre en place un système de liste d'interdiction.
 - Les parents font déjà des cadeaux à leurs enfants hors de la ronde. On ne veut donc pas qu'iels les tirent, pour éviter la redondance. Ça veut dire que le graphe de qui peut tirer qui est orienté.
-- On veut que les plus jeunes ne puissent tirer que des gens de leur génération, pour qui iels trouveront plus facilement des idées de cadeau. Ça veut dire mettre en place un système de liste blanche. (Pas réciproque non plus : on peut être de la plus jeune génération mais avoir plus de 15 ans)
-- On est nombreuxes. Écrire pour chacun·e une liste des personnes autorisées ou interdites, c'est pas gérable. Ça veut dire avoir un mécanisme où on définit des groupes (qui peuvent être des unions de groupes) à un endroit, qui sont réutilisés pour les listes noire et blanche.
+- On veut que les plus jeunes ne puissent tirer que des gens de leur génération, pour qui iels trouveront plus facilement des idées de cadeau. Ça veut dire mettre en place un système de liste d'autorisation. (Pas réciproque non plus : on peut être de la plus jeune génération mais avoir plus de 15 ans)
+- On est nombreuxes. Écrire pour chacun·e une liste des personnes autorisées ou interdites, c'est pas gérable. Ça veut dire avoir un mécanisme où on définit des groupes (qui peuvent être des unions de groupes) à un endroit, qui sont réutilisés pour les listes d'interdiction et d'autorisation.
 
 Le système final est assez souple. On peut imaginer par exemple un cas d'usage en entreprise :
 - Par défaut, on ne doit pas pouvoir piocher quelqu'un·e de son service, pour forcer le mélange.
 - Les stagiaires, qui sont moins bien intégré·es, peuvent piocher quelqu'un·e de leur service ou bien un·e autre stagiaire.
 
-Il suffit de déclarer la composition de chaque service et la liste des stagiaires et puis hop, black ou whitelister correctement pour chaque personne et le tour est joué.
+Il suffit de déclarer la composition de chaque service et la liste des stagiaires et puis hop, deny ou allowlister correctement pour chaque personne et le tour est joué.
 
 Dans les autres features, il y a quelques garde-fous pour éviter certaines erreurs d'interface chaise-clavier :
-- En utilisant une première fois Secret-Santa, j'avais oublié de mettre chaque personne dans sa propre blacklist et quelqu'une s'était tirée elle-même. Là, au moment de la génération du graphe des tirages potentiels, cette possibilité est bien éliminée.
+- En utilisant une première fois Secret-Santa, j'avais oublié de mettre chaque personne dans sa propre denylist et quelqu'une s'était tirée elle-même. Là, au moment de la génération du graphe des tirages potentiels, cette possibilité est bien éliminée.
 - En le relançant pour corriger cette erreur, j'avais mal saisi une adresse mail. Pas moyen ensuite de retrouver l'information de qui avait été tiré et, sans pouvoir redonner l'instruction manuellement, il a fallu faire un troisième tirage. Ça commence à faire beaucoup de confusion (et de la mauvaise pub pour les outils libres). Du coup, entre le tirage au sort et l'envoi des mails, les attributions sont écrites dans un fichier txt pour pouvoir être retrouvées au cas où. Et puis les mails envoyés sont copiés dans le dossier des mails sortants. Ceinture + bretelles.
 
 Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veut faire une seule grande chaîne avec tout le monde. Ce qui, en termes compréhensibles par quelqu'un·e qui lit un README, veut dire qu'il nous faut un algorithme pour trouver un circuit hamiltonien.
@@ -73,11 +73,11 @@ Gulliver Bar → Flora Bar
 ## FAQ
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
 
-Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de whitelist ou blacklist !
+Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de allowlist ou denylist !
 
 > Ah en fait maintenant que j'y pense il y a deux personnes qui peuvent pas se blairer…
 
-C'est possible de juste les interdire mutuellement, soit en créant un cluster les contenant et l'ajouter à leurs `blacklist_clusters`, soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `blacklist`.
+C'est possible de juste les interdire mutuellement, soit en créant un cluster les contenant et l'ajouter à leurs `denylist_clusters`, soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `denylist`.
 
 > On peut contribuer ?
 
@@ -92,10 +92,10 @@ OUI. Pour des idées de contributions, voir la section suivante.
 - [x] Le formatage de string pour le message est sale.
 - [ ] Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
 - [ ] La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
-- [x] Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes). 
+- [x] Il n'est pas possible de faire cohabiter les deux mécanismes de denylist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes). 
 → *Adri2 le 21/12/2021* On peut maintenant :D
-- [ ] Au moment de construire le graphe, la liste blanche est d'abord évaluée, et ensuite les gens de la liste noire sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste blanche sont **forcément** autorisés.
-- [ ] Si plusieurs groupes sont sur liste blanche (resp. noire), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
-- [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste blanche, la liste noire ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
+- [ ] Au moment de construire le graphe, la liste d'autorisation est d'abord évaluée, et ensuite les gens de la liste d'interdiction sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste d'autorisation sont **forcément** autorisés.
+- [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
+- [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
 - [x] Pouvoir afficher de l'aide et passer des options pour contrôler plus finement le comportement.
 - [ ] Demander le mot de passe de la boîte mail au moment de l'exécution pour ne pas le laisser se balader dans la nature.
