@@ -8,4 +8,5 @@ imap_port: 143
 username: "username"
 password: "xxx"
 sender: "email_address"
+sender_name: "Secret Santa"
 sent_folder: "Sent"

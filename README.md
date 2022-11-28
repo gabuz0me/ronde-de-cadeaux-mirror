@@ -47,9 +47,9 @@ optional arguments:
                         Fichier dans lequel exporter le tirage (default: None)
 ```
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
-2. Si vous voulez envoyer des mails, créez un fichier yaml (voir `example/example_mail_auth.yaml` pour la structure) et passez le en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou que vous passiez en argument `--message` un fichier texte faisant office de patron pour le mail, sachant que `{mail_from}` sera remplacé par votre adresse mail, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{name}` par son nom et `{giftee}` par le nom de la personne tirée.
-3. Si vous voulez afficher la ronde calculée, passez `--show` en argument.
-4. Si vous voulez sauvegarder le tirage dans un fichier, passez le fichier en argument `--output`
+2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `example/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail (sachant que `{mail_from}` sera remplacé par l'adresse expéditrice, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{gifter}` par son nom et `{giftee}` par le nom de la personne tirée).
+3. Pour afficher la ronde calculée, passer `--show` en argument.
+4. Pour sauvegarder le tirage dans un fichier, passer le nom du fichier en argument `--output`
 5. Croiser les doigts.
 
 Par exemple :
@@ -85,15 +85,15 @@ OUI. Pour des idées de contributions, voir la section suivante.
 
 
 ## Défauts / pistes d'amélioration
-- [x] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…  
-    → Zbim c'est déjà un peu plus propre :D
+- [x] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…
+→ *Adri2 le 20/12/2021* Zbim c'est déjà un peu plus propre :D
 - [x] La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
 - [ ] Pareil, niveau complexité, c'est sans doute pas OP, on pourrait trouver de meilleurs algorithmes (ou utiliser des libs faites pour manipuler des graphes).
 - [x] Le formatage de string pour le message est sale.
 - [ ] Il n'y a pas de vérification de l'unicité des personnes (et j'ai pas testé ce qui se passe en cas d'homonymes).
 - [ ] La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
-- [x] ~~Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes).~~  
-On peut maintenant :D
+- [x] Il n'est pas possible de faire cohabiter les deux mécanismes de blacklist (une personne qui ne pourrait tirer ni George ni Alfred, et une autre qui ne pourrait pas tirer les Amants de Venise ; c'est pour tout le fichier soit des gens soit des groupes). 
+→ *Adri2 le 21/12/2021* On peut maintenant :D
 - [ ] Au moment de construire le graphe, la liste blanche est d'abord évaluée, et ensuite les gens de la liste noire sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste blanche sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste blanche (resp. noire), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste blanche, la liste noire ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).

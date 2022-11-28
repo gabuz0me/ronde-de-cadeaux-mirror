@@ -37,8 +37,9 @@ def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
             # on remplace les variables par leurs valeurs
             msg = message.format(
                 mail_from=mail_auth['sender'],
+                sender_name=mail_auth['sender_name'],
                 mail_to=person["email"],
-                name=person["name"],
+                gifter=person["name"],
                 giftee=giftee_name,
             ).encode('utf-8')
 
