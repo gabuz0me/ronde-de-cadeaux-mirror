@@ -70,7 +70,7 @@ optional arguments:
 ```
 
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
-2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `example/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail (sachant que `{mail_from}` sera remplacé par l'adresse expéditrice, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{gifter}` par son nom et `{giftee}` par le nom de la personne tirée).
+2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `example/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail (sachant que `{mail_from}` sera remplacé par l'adresse expéditrice, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{gifter}` par son nom et `{giftee}` par le nom de la personne tirée). **Attention**, ce programme se connecte au serveur mail en STARTTLS. Ce n'est pas supporté par tous les serveurs.
 3. Pour afficher la ronde calculée, passer `--show` en argument.
 4. Pour sauvegarder le tirage dans un fichier, passer le nom du fichier en argument `--output`
 5. Croiser les doigts.
