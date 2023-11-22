@@ -4,7 +4,7 @@ from typing import Dict, List
 
 def shuffled(sucessors: set) -> list:
     """Renvoie une liste mélangée créée à partir d'un set"""
-    return sample(sucessors, len(sucessors))
+    return sample(sorted(sucessors), len(sucessors))
 
 
 def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
