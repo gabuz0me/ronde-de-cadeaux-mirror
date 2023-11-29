@@ -123,4 +123,4 @@ OUI. Pour des idées de contributions, voir la section suivante.
 - [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
 - [x] Pouvoir afficher de l'aide et passer des options pour contrôler plus finement le comportement.
-- [ ] Demander le mot de passe de la boîte mail au moment de l'exécution pour ne pas le laisser se balader dans la nature.
+- [x] Demander le mot de passe de la boîte mail au moment de l'exécution pour ne pas le laisser se balader dans la nature.

@@ -6,7 +6,7 @@ hostname: "mailserver.org"
 smtp_port: 587
 imap_port: 143
 username: "username"
-password: "xxx"
+password: "xxx" # optionnel, le mdp sera alors demandé à chaque utilisation
 sender: "email_address"
 sender_name: "The Invisible Hand of the Draw"
 sent_folder: "Sent"
