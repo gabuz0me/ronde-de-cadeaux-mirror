@@ -1,32 +1,54 @@
 # Ronde de cadeaux
+
 Un outil pour tirer au sort des gens à qui faire des cadeaux.
 
-Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par Adrian "Relex12" Bonnet sous licence MIT et que l'on peut retrouver ici : https://github.com/Relex12/Secret-Santa
-
+Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par Adrian "Relex12" Bonnet sous licence MIT et que l'on peut retrouver ici : [https://github.com/Relex12/Secret-Santa](https://github.com/Relex12/Secret-Santa)
 
 ## Motivations
+
 Le but de cet outil est d'attribuer à chaque personne d'un groupe une autre personne à qui faire un cadeau, tout en respectant certaines contraintes. En effet, j'ai bricolé quelque chose qui s'adapte à mon contexte familial. En particulier :
+
 - Pour forcer un peu de mélange, on ne veut pas que des conjoint·es puissent se piocher entre elleux. Des adelphes non plus. Ça veut dire mettre en place un système de liste d'interdiction.
 - Les parents font déjà des cadeaux à leurs enfants hors de la ronde. On ne veut donc pas qu'iels les tirent, pour éviter la redondance. Ça veut dire que le graphe de qui peut tirer qui est orienté.
 - On veut que les plus jeunes ne puissent tirer que des gens de leur génération, pour qui iels trouveront plus facilement des idées de cadeau. Ça veut dire mettre en place un système de liste d'autorisation. (Pas réciproque non plus : on peut être de la plus jeune génération mais avoir plus de 15 ans)
 - On est nombreuxes. Écrire pour chacun·e une liste des personnes autorisées ou interdites, c'est pas gérable. Ça veut dire avoir un mécanisme où on définit des groupes (qui peuvent être des unions de groupes) à un endroit, qui sont réutilisés pour les listes d'interdiction et d'autorisation.
 
 Le système final est assez souple. On peut imaginer par exemple un cas d'usage en entreprise :
+
 - Par défaut, on ne doit pas pouvoir piocher quelqu'un·e de son service, pour forcer le mélange.
 - Les stagiaires, qui sont moins bien intégré·es, peuvent piocher quelqu'un·e de leur service ou bien un·e autre stagiaire.
 
 Il suffit de déclarer la composition de chaque service et la liste des stagiaires et puis hop, deny ou allowlister correctement pour chaque personne et le tour est joué.
 
 Dans les autres features, il y a quelques garde-fous pour éviter certaines erreurs d'interface chaise-clavier :
+
 - En utilisant une première fois Secret-Santa, j'avais oublié de mettre chaque personne dans sa propre denylist et quelqu'une s'était tirée elle-même. Là, au moment de la génération du graphe des tirages potentiels, cette possibilité est bien éliminée.
 - En le relançant pour corriger cette erreur, j'avais mal saisi une adresse mail. Pas moyen ensuite de retrouver l'information de qui avait été tiré et, sans pouvoir redonner l'instruction manuellement, il a fallu faire un troisième tirage. Ça commence à faire beaucoup de confusion (et de la mauvaise pub pour les outils libres). Du coup, entre le tirage au sort et l'envoi des mails, les attributions sont écrites dans un fichier txt pour pouvoir être retrouvées au cas où. Et puis les mails envoyés sont copiés dans le dossier des mails sortants. Ceinture + bretelles.
 
 Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veut faire une seule grande chaîne avec tout le monde. Ce qui, en termes compréhensibles par quelqu'un·e qui lit un README, veut dire qu'il nous faut un algorithme pour trouver un circuit hamiltonien.
 
-
 ## Comment qu'on s'en sert ?
-Voir déjà le message d'aide :
+
+### Installation des dépendances
+
+Ce projet python s'appuie sur les dépendances suivantes : `pyyaml`.  
+Elle peut être installée avec `pip` (éventuellement dans un [environnement virtuel](https://docs.python.org/fr/3/library/venv.html)) avec :
+
+```console
+pip install pyyaml
 ```
+
+Ou bien directement via le fichier `requirements.txt` via:
+
+```console
+pip install -r requirements.txt
+```
+
+### Utilisation
+
+Voir déjà le message d'aide :
+
+```text
 usage: ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] file
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en
@@ -46,6 +68,7 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         Fichier dans lequel exporter le tirage (default: None)
 ```
+
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
 2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `example/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail (sachant que `{mail_from}` sera remplacé par l'adresse expéditrice, `{mail_to}` par l'adresse de la personne qui reçoit le mail, `{gifter}` par son nom et `{giftee}` par le nom de la personne tirée).
 3. Pour afficher la ronde calculée, passer `--show` en argument.
@@ -53,6 +76,7 @@ optional arguments:
 5. Croiser les doigts.
 
 Par exemple :
+
 ```console
 $ ./ronde.py examples/example_data.yaml --show
    Alice Foo → Isobel Bar
@@ -71,6 +95,7 @@ Gulliver Bar → Flora Bar
 ```
 
 ## FAQ
+
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
 
 Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de allowlist ou denylist !
@@ -83,8 +108,8 @@ C'est possible de juste les interdire mutuellement, soit en créant un cluster l
 
 OUI. Pour des idées de contributions, voir la section suivante.
 
-
 ## Défauts / pistes d'amélioration
+
 - [x] C'est fait globalement à l'arrache et dans l'urgence alors il y a sans doute pas mal de trucs stupides. Aussi, je connais pas très bien le Python, ses bonnes pratiques, les PEPs, ce qui est plus ou moins idiomatique, comment gérer proprement des exceptions…
 → *Adri2 le 20/12/2021* Zbim c'est déjà un peu plus propre :D
 - [x] La construction du graphe des tirages possibles est pas très élégante, on pourrait certainement faire moins de boucles for.
