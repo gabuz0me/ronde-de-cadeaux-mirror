@@ -14,8 +14,8 @@ import getpass
 import json
 import random
 from yaml import safe_load, scanner
-from lib.graph_generation import generate_graph, giftee
-from lib.hamiltonian_path import hamilton
+from lib.graph_generation import generate_graph, Person
+from lib.hamiltonian_path import hamilton, path_as_tuples
 from lib.mail_sender import send_mails
 from lib.parser import parser
 
@@ -23,19 +23,16 @@ from lib.parser import parser
 def pretty_print(graph):
     """Afficher joliment le graphe
 
-    (debug en vrai)"""
-    graph_values_as_list = {
-        key: list(value)
-        for (key, value) in graph.items()
-    }
-    print(json.dumps(graph_values_as_list, indent=2))
+    (debug en vrai)
+    """
+    print(json.dumps(graph, indent=2))
 
 
 def ronde_cadeaux(data: dict,
                   show_path: bool = False,
                   output_file=None,
                   mail_auth: dict = None,
-                  message: str = None,
+                  template_message: str = None,
                   ) -> None:
     """Routine principale
 
@@ -55,11 +52,19 @@ def ronde_cadeaux(data: dict,
         print("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
         exit()
 
+    # Création des données pour affichage
+    people_data = data['people']
+    people_object_dict = {
+        gifter_id : Person(gifter_id, people_data[gifter_id])
+        for gifter_id in graph.keys()
+    }
+    gifter_giftee_tuple = path_as_tuples(path)
+
     # Création d'un résumé du tirage
-    max_name_length = max(len(p) for p in path)
+    max_name_length = max(len(p.name) for p in people_object_dict.values()) # Aligner sur le nom le plus long
     draw = '\n'.join([
-        f"{person:>{max_name_length}} → {giftee(path, person)}"
-        for person in path
+        f"{people_object_dict[gifter].name:>{max_name_length}} → {people_object_dict[giftee].name}"
+        for gifter, giftee in gifter_giftee_tuple
     ])
 
     # Affichage éventuel
@@ -75,7 +80,7 @@ def ronde_cadeaux(data: dict,
 
     # Enfin envoi éventuel des mails
     if mail_auth:
-        send_mails(data["people"], path, mail_auth, message)
+        send_mails(data["people"], gifter_giftee_tuple, people_object_dict, mail_auth, template_message)
 
 
 if __name__ == '__main__':
@@ -106,7 +111,7 @@ if __name__ == '__main__':
     ronde_cadeaux(
         data=data,
         mail_auth=mail_auth,
-        message=message,
+        template_message=message,
         show_path=args.show,
         output_file=args.output,
     )
