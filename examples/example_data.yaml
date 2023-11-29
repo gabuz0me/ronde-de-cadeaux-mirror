@@ -3,63 +3,69 @@
 #######################
 
 people:
-  - name: "Alice Foo"
+  alice_foo:
+    display_name: "Alice-Andréa-Alexia Foo"
     email: "alice@foo.me"
     denylist: ["Bob Foo"]
-    denylist_clusters: ["Foo_siblings"]
+    denylist_clusters: ["Foo siblings"]
 
-  - name: "Bob Foo"
+  bob_foo:
+    display_name: "Bœbælius Foo"
+    nickname: "Bob Foo"
     email: "bob@foo.me"
     denylist: ["Alice Foo"]
-    denylist_clusters: ["Foo_siblings"]
+    denylist_clusters: ["Foo siblings"]
 
-  - name: "Carol Foo"
+  Carol Foo:
+    display_name: "Cärol Foo"
     email: "carol@foo.me"
-    denylist_clusters: ["Foo_siblings"]
+    denylist_clusters: ["Foo siblings"]
 
-  - name: "Dave Foo"
+  Dave Foo:
     email: "dave@foo.me"
     allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Foo_siblings"]
+    denylist_clusters: ["Foo siblings"]
 
-  - name: "Eve Bar"
+  Eve Bar:
     email: "eve@bar.me"
     denylist: ["Flora Bar"]
-    denylist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar siblings"]
 
-  - name: "Flora Bar"
+  Flora Bar:
+    nickname: "Flo Bar"
     email: "flora@bar.me"
     denylist: ["Eve Bar"]
-    denylist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar siblings"]
 
-  - name: "Gulliver Bar"
+  Gulliver Bar:
     email: "gulliver@bar.me"
-    denylist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar siblings"]
 
-  - name: "Henry Bar"
+  Henry Bar:
     email: "henry@bar.me"
     allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar siblings"]
 
-  - name: "Isobel Bar"
+  Isobel Bar:
+    display_name: "Isöbel Bar"
     email: "isobel@bar.me"
     allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Bar_siblings"]
+    denylist_clusters: ["Bar siblings"]
 
-  - name: "Jack Baz"
+  Jack Baz:
     email: "jack@baz.me"
 
-  - name: "Linda Qux"
+  Linda Qux:
     email: "linda@qux.me"
-    denylist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux polycule"]
 
-  - name: "Mark Qux"
+  Mark Qux:
     email: "mark@qux.me"
-    denylist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux polycule"]
 
-  - name: "Nick Qux"
+  Nick Qux:
     email: "nick@qux.me"
-    denylist_clusters: ["Qux_polycule"]
+    denylist_clusters: ["Qux polycule"]
 
 
 ##########################
@@ -67,11 +73,11 @@ people:
 ##########################
 
 clusters:
-  - name: "Foo_siblings"
+  Foo siblings:
     people: ["Carol Foo", "Dave Foo"]
-  - name: "Bar_siblings"
+  Bar siblings:
     people: ["Gulliver Bar", "Henry Bar", "Isobel Bar"]
-  - name: "Qux_polycule"
+  Qux polycule:
     people: ["Linda Qux", "Mark Qux", "Nick Qux"]
-  - name: "cousins"
-    subclusters: ["Foo_siblings", "Bar_siblings"]
+  cousins:
+    subclusters: ["Foo siblings", "Bar siblings"]

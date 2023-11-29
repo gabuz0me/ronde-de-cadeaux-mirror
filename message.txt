@@ -1,12 +1,12 @@
 From: {sender_name} <{mail_from}>
-To: {gifter} <{mail_to}>
+To: {gifter_name} <{mail_to}>
 MIME-Version: 1.0
 Content-type: text/html; charset=utf-8
-Subject: {gifter}, cette année tu feras un cadeau à…
+Subject: {gifter_name}, cette année tu feras un cadeau à…
 
-Bonjour {gifter} !<br><br>
+Bonjour {gifter_nickname} !<br><br>
 
-La personne qui t’a été attribuée lors du tirage est <b>{giftee}</b>. Tu dois donc lui trouver un cadeau.<br><br>
+La personne qui t’a été attribuée lors du tirage est <b>{giftee_name}</b>. Tu dois donc lui trouver un cadeau.<br><br>
 
 On se voit au [lieu] le [date] pour l’ouverture.<br><br>
 

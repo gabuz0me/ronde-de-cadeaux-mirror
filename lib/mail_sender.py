@@ -2,10 +2,33 @@ import imaplib
 import smtplib
 import time
 from typing import Dict, List
-from .graph_generation import giftee
+from .graph_generation import Person
+
+class Default(dict):
+    """Laisser inchanger les clés non trouvées dans le formattage de String"""
+    def __missing__(self, key): 
+        return key.join("{}")
+    
+def format_message_mail(sender_mail:str, sender_name: str, template_message: str) -> str:
+    # on remplace les variables par leurs valeurs
+    msg = template_message.format_map(Default({
+        'mail_from':sender_mail,
+        'sender_name':sender_name,
+    }))
+    return msg
+
+def format_message_people(gifter: Person, giftee: Person, template_message: str) -> str:
+    msg = template_message.format_map(Default({
+        'mail_to':gifter.email,
+        'gifter_name':gifter.name,
+        'giftee_name':gifter.name,
+        'gifter_nickname':gifter.nickname,
+        'giftee_nickname':gifter.nickname,
+    }))
+    return msg
 
 
-def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
+def send_mails(people: Dict, gifter_giftee_tuple: List, people_object_dict: Dict, mail_auth: Dict, template_message: str):
     try:
         # connexion au serveur SMTP pour l'envoi de mail
         smtp_server = smtplib.SMTP(
@@ -30,22 +53,17 @@ def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
             mail_auth['password'],
         )
 
-        for person in people:
-            # logiquement la personne doit faire un cadeau à cellui qui la suit dans la liste
-            giftee_name = giftee(path, person['name'])
+        sender_mail = mail_auth['sender']
+        msg_base = format_message_mail(sender_mail, mail_auth['sender_name'], template_message)
 
-            # on remplace les variables par leurs valeurs
-            msg = message.format(
-                mail_from=mail_auth['sender'],
-                sender_name=mail_auth['sender_name'],
-                mail_to=person["email"],
-                gifter=person["name"],
-                giftee=giftee_name,
-            ).encode('utf-8')
+        for gifter, giftee in gifter_giftee_tuple:
+            gifter = people_object_dict[gifter]
+            giftee = people_object_dict[giftee]
+            msg = format_message_people(gifter, giftee, msg_base)
+            msg = msg.encode('utf-8')
 
-            # et on envoie
             # print (f"{person['name']} doit donner un cadeau à {giftee_name}")
-            smtp_server.sendmail(mail_auth['sender'], person["email"], msg)
+            smtp_server.sendmail(sender_mail, gifter.email, msg)
             imap_server.append(
                 mailbox=mail_auth['sent_folder'],
                 flags='\\Seen',
@@ -59,4 +77,4 @@ def send_mails(people: Dict, path: List, mail_auth: Dict, message: str):
         print("L'envoi de mail a réussi")
 
     except Exception as e:
-        print("Erreur : " + str(e))
+        print(f"Erreur : {repr(e)}")

@@ -2,9 +2,9 @@ from random import sample
 from typing import Dict, List
 
 
-def shuffled(sucessors: set) -> list:
+def shuffled(sucessors: List) -> List:
     """Renvoie une liste mélangée créée à partir d'un set"""
-    return sample(sorted(sucessors), len(sucessors))
+    return sample(sucessors, len(sucessors))
 
 
 def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
@@ -34,3 +34,11 @@ def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
 
     # Si nœud déjà dans chemin ou si pas trouvé de chemin possibles
     return None
+
+def path_as_tuples(path: List) -> List:
+    """Crée une liste de tuple `(gifter, giftee)` correspondant au `path` donné"""
+    result = []
+    N = len(path)
+    for i in range(N):
+        result.append( (path[i], path[(i+1)%N]) )
+    return result
