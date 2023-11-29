@@ -10,6 +10,7 @@ an e-mail
 """
 
 import datetime
+import getpass
 import json
 import random
 from yaml import safe_load, scanner
@@ -96,6 +97,8 @@ if __name__ == '__main__':
             print(
                 "Impossible de charger le fichier de configuration mail : yaml invalide.")
             exit()
+        if not 'password' in mail_auth:
+            mail_auth['password'] = getpass.getpass("Mot de passe mail :") # n'affiche pas ce qui est tapé
 
         message = args.message.read()
 
