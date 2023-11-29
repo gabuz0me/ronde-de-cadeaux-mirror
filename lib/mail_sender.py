@@ -12,18 +12,18 @@ class Default(dict):
 def format_message_mail(sender_mail:str, sender_name: str, template_message: str) -> str:
     # on remplace les variables par leurs valeurs
     msg = template_message.format_map(Default({
-        'mail_from':sender_mail,
+        'sender_mail':sender_mail,
         'sender_name':sender_name,
     }))
     return msg
 
 def format_message_people(gifter: Person, giftee: Person, template_message: str) -> str:
     msg = template_message.format_map(Default({
-        'mail_to':gifter.email,
-        'gifter_name':gifter.name,
-        'giftee_name':gifter.name,
+        'gifter_name'    :gifter.name,
         'gifter_nickname':gifter.nickname,
-        'giftee_nickname':gifter.nickname,
+        'gifter_mail'    :gifter.email,
+        'giftee_name'    :giftee.name,
+        'giftee_nickname':giftee.nickname,
     }))
     return msg
 
@@ -53,7 +53,7 @@ def send_mails(people: Dict, gifter_giftee_tuple: List, people_object_dict: Dict
             mail_auth['password'],
         )
 
-        sender_mail = mail_auth['sender']
+        sender_mail = mail_auth['sender_mail']
         msg_base = format_message_mail(sender_mail, mail_auth['sender_name'], template_message)
 
         for gifter, giftee in gifter_giftee_tuple:
@@ -62,7 +62,7 @@ def send_mails(people: Dict, gifter_giftee_tuple: List, people_object_dict: Dict
             msg = format_message_people(gifter, giftee, msg_base)
             msg = msg.encode('utf-8')
 
-            # print (f"{person['name']} doit donner un cadeau à {giftee_name}")
+            # print(f"{gifter.name} doit donner un cadeau à {giftee.name}")
             smtp_server.sendmail(sender_mail, gifter.email, msg)
             imap_server.append(
                 mailbox=mail_auth['sent_folder'],

@@ -53,8 +53,9 @@ optional arguments:
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
 2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `examples/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail. Les remplacement textuels suivant auront lieu:
    
-   - `{mail_from}` → adresse expéditrice,
-   - `{mail_to}` → adresse de la personne qui reçoit le mail,
+   - `{sender_mail}` → adresse mail expéditrice,
+   - `{sender_name}` → nom associé à l'adresse expéditrice,
+   - `{gifter_mail}` → adresse de la personne qui reçoit le mail,
    - `{gifter_name}` et `{gifter_nickname}` → nom et surnom de la personne qui reçoit le message,
    - `{giftee_name}` et `{giftee_nickname}` → nom et surnom de la personne tirée.
   
