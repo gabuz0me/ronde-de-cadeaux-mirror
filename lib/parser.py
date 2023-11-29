@@ -1,7 +1,8 @@
 import argparse
+import pathlib
 from textwrap import dedent
 
-DEFAULT_MAIL_TEMPLATE = 'message.txt'
+DEFAULT_MAIL_TEMPLATE = pathlib.Path(__file__).parent / '../message.txt'
 
 
 def makeParser() -> argparse.ArgumentParser:
@@ -40,7 +41,7 @@ def makeParser() -> argparse.ArgumentParser:
         '-m', '--message',
         type=argparse.FileType('r', encoding='utf-8'),
         help="Fichier mail type",
-        default=DEFAULT_MAIL_TEMPLATE,
+        default=str(DEFAULT_MAIL_TEMPLATE),
     )
 
     parser.add_argument(
