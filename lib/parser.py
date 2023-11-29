@@ -20,7 +20,7 @@ def makeParser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         'file',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('r', encoding='utf-8'),
         help="Fichier yaml des données d'entrer à parser",
     )
 
@@ -32,20 +32,20 @@ def makeParser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         '-a', '--auth',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('r', encoding='utf-8'),
         help="Fichier de configuration mail",
     )
 
     parser.add_argument(
         '-m', '--message',
-        type=argparse.FileType('r'),
+        type=argparse.FileType('r', encoding='utf-8'),
         help="Fichier mail type",
         default=DEFAULT_MAIL_TEMPLATE,
     )
 
     parser.add_argument(
         '-o', '--output',
-        type=argparse.FileType('a'),
+        type=argparse.FileType('a', encoding='utf-8'),
         help="Fichier dans lequel exporter le tirage",
     )
 
