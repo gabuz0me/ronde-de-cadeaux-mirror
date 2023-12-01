@@ -112,7 +112,6 @@ Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui pas
 OUI. Pour des idées de contributions, voir la section suivante.
 
 ## Défauts / pistes d'amélioration
-- [ ] La construction de listes de listes n'a aucune protection contre les boucles infinies. Aussi, il faut faire attention à l'ordre dans lequel on les déclare. (Dans l'exemple, chacune des listes `siblings` est déclarée avant la liste `cousins`, qui est l'union des deux. Le comportement quand c'est pas le cas n'est pas testé.)
 - [ ] Au moment de construire le graphe, la liste d'autorisation est d'abord évaluée, et ensuite les gens de la liste d'interdiction sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste d'autorisation sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).

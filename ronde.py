@@ -14,7 +14,7 @@ import getpass
 import json
 import random
 from yaml import safe_load, scanner
-from lib.graph_generation import generate_graph, Person
+from lib.graph_generation import generate_graph, Person, GraphGenerationException
 from lib.hamiltonian_path import hamilton, path_as_tuples
 from lib.mail_sender import send_mails
 from lib.parser import parser
@@ -42,8 +42,12 @@ def ronde_cadeaux(data: dict,
     `show_path` : afficher le chemin calculé
     """
 
-    # Création du graphe
-    graph = generate_graph(data)
+    try:
+        # Création du graphe
+        graph = generate_graph(data)
+    except GraphGenerationException as err:
+        print("Erreur dans la génération du graphe : " + str(err))
+        exit()
     # pretty_print(graph)
 
     # Résolution du problème
