@@ -1,5 +1,8 @@
 from typing import Dict
 
+class GraphGenerationException(Exception):
+    pass
+
 class Person:
     def __init__(self, id: str, data: Dict):
         self._name = id
@@ -25,26 +28,45 @@ class Person:
         return self._data['email']
         
 
+def lazy_build_cluster(cluster_data: Dict, cluster_dict: Dict, cluster_name: str, parent_clusters_names: set) -> None:
+    """Au premier appel, construit la clique ; aux suivants, ne fait rien.
+    """
+
+    if cluster_name in cluster_dict:
+        return
+
+    if cluster_name in parent_clusters_names:
+        raise GraphGenerationException("Boucle infinie dans les cliques.")
+
+    parent_clusters_names.add(cluster_name)
+
+    cluster = set()
+    data = cluster_data[cluster_name]
+
+    # On prend tout d'abord les listes de personnes
+    if 'people' in data:
+        cluster |= set(data['people'])
+
+    # Et ensuite les listes de listes
+    if 'subclusters' in data:
+        for subcluster_name in data['subclusters']:
+            lazy_build_cluster(cluster_data, cluster_dict, subcluster_name, parent_clusters_names)
+            cluster |= cluster_dict[subcluster_name]
+
+    cluster_dict[cluster_name] = cluster
+
+    parent_clusters_names.remove(cluster_name)
+
+
 def build_cluster_dict(cluster_data: Dict) -> Dict:
     """Construit un dictionnaire avec le nom d'une clique et la
-    liste des personnes qui en font partie
+    liste des personnes qui en font partie.
     """
 
     cluster_dict = {}
 
-    # On prend tout d'abord les listes de personnes
     for cluster_name, data in cluster_data.items():
-        if 'people' in data:
-            cluster_dict[cluster_name] = set(data['people'])
-
-    # Et ensuite les listes de listes
-    for cluster_name, data in cluster_data.items():
-        if 'subclusters' in data:
-            cluster_dict[cluster_name] = {
-                person
-                for subcluster_name in data['subclusters']
-                for person in cluster_dict[subcluster_name]
-            }
+        lazy_build_cluster(cluster_data, cluster_dict, cluster_name, set())
 
     return cluster_dict
 
