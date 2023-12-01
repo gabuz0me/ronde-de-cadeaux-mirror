@@ -143,3 +143,9 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 ---
 
 Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par Adrian "Relex12" Bonnet sous licence MIT et que l'on peut retrouver ici : [https://github.com/Relex12/Secret-Santa](https://github.com/Relex12/Secret-Santa)
+
+Contributeurices :
+- Bertille Dubosc de Pesquidoux
+- Adrien Laporte
+- Adrian "Relex12" Bonnet
+- Vincent Menegaux
