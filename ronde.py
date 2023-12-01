@@ -2,7 +2,7 @@
 
 """
 
-@author: Bertille Dubosc de Pesquidoux, Adrien Laporte, Adrian "Relex12" Bonnet
+@author: Bertille Dubosc de Pesquidoux, Adrien Laporte, Adrian "Relex12" Bonnet, Vincent Menegaux
 
 The purpose of this script is to determine a cycle of people which should
 offer a present to the next one on the cycle and to inform them trough
