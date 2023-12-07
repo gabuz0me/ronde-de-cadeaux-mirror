@@ -92,7 +92,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     try:
-        data = safe_load(args.file)
+        data = safe_load(args.FICHIER)
     except scanner.ScannerError:
         print("Impossible de charger le fichier d'entrée : yaml invalide.")
         exit()
