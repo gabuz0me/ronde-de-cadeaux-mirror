@@ -15,13 +15,13 @@ avec `git` clonez le repo, ou bien téléchargez ce projet sur votre ordinateur.
 Ce projet python s'appuie sur les dépendances suivantes : `pyyaml`.  
 Elle peut être installée avec `pip` (éventuellement dans un [environnement virtuel](https://docs.python.org/fr/3/library/venv.html)) avec :
 
-```console
+```sh
 pip install pyyaml
 ```
 
 Ou bien directement via le fichier `requirements.txt` via:
 
-```console
+```sh
 pip install -r requirements.txt
 ```
 
@@ -29,25 +29,26 @@ pip install -r requirements.txt
 
 Voir déjà le message d'aide :
 
-```text
-usage: ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] file
+```console
+$ ./ronde.py --help
+Utilisation : ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] FICHIER
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en
 prenant en compte un système de contraintes complexes. Si un chemin
 hamiltonien est trouvé, un mail est envoyé à chacun⋅e des participant⋅e⋅s leur
 indiquant à qui offrir un présent.
 
-positional arguments:
-  file                  Fichier yaml des données d'entrer à parser
+Arguments positionnels:
+  FICHIER               Fichier yaml des données d'entrer à parser
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -s, --show            Afficher la ronde calculée (default: False)
-  -a AUTH, --auth AUTH  Fichier de configuration mail (default: None)
+Arguments optionnels:
+  -h, --help            Afficher ce message et quitter
+  -s, --show            Afficher la ronde calculée
+  -a AUTH, --auth AUTH  Fichier de configuration mail
   -m MESSAGE, --message MESSAGE
-                        Fichier mail type (default: message.txt)
+                        Fichier mail type (Par défaut : .../message.txt)
   -o OUTPUT, --output OUTPUT
-                        Fichier dans lequel exporter le tirage (default: None)
+                        Fichier dans lequel exporter le tirage
 ```
 
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
