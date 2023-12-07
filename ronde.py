@@ -14,10 +14,10 @@ import getpass
 import json
 import random
 from yaml import safe_load, scanner
-from lib.graph_generation import generate_graph, Person, GraphGenerationException
-from lib.hamiltonian_path import hamilton, path_as_tuples
-from lib.mail_sender import send_mails
-from lib.parser import parser
+from src.graph_generation import generate_graph, Person, GraphGenerationException
+from src.hamiltonian_path import hamilton, path_as_tuples
+from src.mail_sender import send_mails
+from src.parser import parser
 
 
 def pretty_print(graph):
