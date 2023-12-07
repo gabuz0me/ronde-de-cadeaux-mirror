@@ -40,6 +40,12 @@ def makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        '-n', '--no-imap',
+        help="Ne pas copier les mails dans la boîte d'envoi",
+        action='store_true',
+    )
+
+    parser.add_argument(
         '-m', '--message',
         type=argparse.FileType('r', encoding='utf-8'),
         help="Fichier mail type (Par défaut : %(default)s)",

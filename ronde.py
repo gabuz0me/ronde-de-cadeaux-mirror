@@ -33,6 +33,7 @@ def ronde_cadeaux(data: dict,
                   output_file=None,
                   mail_auth: dict = None,
                   template_message: str = None,
+                  no_imap: bool = False
                   ) -> None:
     """Routine principale
 
@@ -84,7 +85,8 @@ def ronde_cadeaux(data: dict,
 
     # Enfin envoi éventuel des mails
     if mail_auth:
-        send_mails(data["people"], gifter_giftee_tuple, people_object_dict, mail_auth, template_message)
+        mail_auth['copy_to_sent_folder'] = not no_imap # = yes_imap :D
+        send_mails(people_object_dict, gifter_giftee_tuple, mail_auth, template_message)
 
 
 if __name__ == '__main__':
@@ -118,4 +120,5 @@ if __name__ == '__main__':
         template_message=message,
         show_path=args.show,
         output_file=args.output,
+        no_imap=args.no_imap,
     )

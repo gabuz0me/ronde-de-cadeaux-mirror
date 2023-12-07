@@ -4,6 +4,7 @@
 
 hostname: "mailserver.org"
 smtp_port: 587
+imap_hostname: "imap.mailserver.org" # optionnel, si non renseigné on utilisera le même serveur que pour smtp
 imap_port: 143
 username: "username"
 password: "xxx" # optionnel, le mdp sera alors demandé à chaque utilisation

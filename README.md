@@ -8,7 +8,7 @@
 
 ### Installation du projet
 
-avec `git` clonez le repo, ou bien téléchargez ce projet sur votre ordinateur. Assurez-vous d'avoir Python 3 d'installé sur votre machine.
+Avec `git` clonez le repo, ou bien téléchargez ce projet sur votre ordinateur. Assurez-vous d'avoir Python 3 d'installé sur votre machine.
 
 ### Installation des dépendances
 
@@ -45,26 +45,28 @@ Arguments optionnels:
   -h, --help            Afficher ce message et quitter
   -s, --show            Afficher la ronde calculée
   -a AUTH, --auth AUTH  Fichier de configuration mail
+  -n, --no-imap         Ne pas copier les mails dans la boîte d'envoi
   -m MESSAGE, --message MESSAGE
                         Fichier mail type (Par défaut : .../message.txt)
   -o OUTPUT, --output OUTPUT
                         Fichier dans lequel exporter le tirage
 ```
 
-1. Créer un fichier yaml avec dedans les données personnelles de vos ami·es. Possibilité de copier et adapter celui contenu dans `examples`.
-2. Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir `examples/example_mail_auth.yaml` pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail. Les remplacement textuels suivant auront lieu:
-   
-   - `{sender_mail}` → adresse mail expéditrice,
-   - `{sender_name}` → nom associé à l'adresse expéditrice,
-   - `{gifter_mail}` → adresse de la personne qui reçoit le mail,
-   - `{gifter_name}` et `{gifter_nickname}` → nom et surnom de la personne qui reçoit le message,
-   - `{giftee_name}` et `{giftee_nickname}` → nom et surnom de la personne tirée.
-  
-   **Attention**, ce programme se connecte au serveur mail en STARTTLS. Ce n'est pas supporté par tous les serveurs.
+1. Créer un fichier yaml avec dedans les données personnelles de vos ami⋅e⋅s. Possibilité de copier et adapter [`examples/example_data.yaml`](examples/example_data.yaml).
+2. Afficher, exporter dans un fichier ou envoyer par mail le tirage.
+  - Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir [`examples/example_mail_auth.yaml`](examples/example_mail_auth.yaml) pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail. Les remplacement textuels suivant auront lieu:
+    - `{sender_mail}` → adresse mail expéditrice,
+    - `{sender_name}` → nom associé à l'adresse expéditrice,
+    - `{gifter_mail}` → adresse de la personne qui reçoit le mail,
+    - `{gifter_name}` et `{gifter_nickname}` → nom et surnom de la personne qui reçoit le message,
+    - `{giftee_name}` et `{giftee_nickname}` → nom et surnom de la personne tirée.
 
-3. Pour afficher la ronde calculée, passer `--show` en argument.
-4. Pour sauvegarder le tirage dans un fichier, passer le nom du fichier en argument `--output`
-5. Croiser les doigts.
+    **Attention**, ce programme se connecte au serveur mail en STARTTLS. Ce n'est pas supporté par tous les serveurs.
+
+  - Pour afficher la ronde calculée, passer `--show` en argument.
+  - Pour sauvegarder le tirage dans un fichier, passer le nom du fichier en argument `--output`.
+  - Il est possible de n'utiliser ni `--auth` ni `--show` ni `--output` : si le tirage se produit sans problème le programme n'affichera rien. Cela peut par exemple servir à tester si une solution est possible pour la configuration donnée.
+3. Croiser les doigts.
 
 Par exemple :
 
@@ -113,6 +115,7 @@ Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui pas
 OUI. Pour des idées de contributions, voir la section suivante.
 
 ## Défauts / pistes d'amélioration
+
 - [ ] Au moment de construire le graphe, la liste d'autorisation est d'abord évaluée, et ensuite les gens de la liste d'interdiction sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste d'autorisation sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
