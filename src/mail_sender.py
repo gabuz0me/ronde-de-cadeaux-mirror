@@ -3,6 +3,7 @@ import smtplib
 import time
 from typing import Dict, List
 from .graph_generation import Person
+from .logger import logger
 
 class Default(dict):
     """Laisser inchanger les clés non trouvées dans le formattage de String"""
@@ -48,8 +49,8 @@ def send_mails(people_object_dict: Dict, gifter_giftee_tuple: List, mail_auth: D
             mail_auth['password'],
         )
     except:
-        print("Impossible de se connecter au serveur SMTP")
-        exit()
+        logger.error("Impossible de se connecter au serveur SMTP")
+        return
 
     if copy_to_sent_folder:
         try:
@@ -65,9 +66,9 @@ def send_mails(people_object_dict: Dict, gifter_giftee_tuple: List, mail_auth: D
                 mail_auth['password'],
             )
         except:
-            print("Impossible de se connecter au serveur IMAP")
+            logger.error("Impossible de se connecter au serveur IMAP")
             smtp_server.close()
-            exit()
+            return
 
     # C'est parti pour l'envoi !
     try:
@@ -91,10 +92,10 @@ def send_mails(people_object_dict: Dict, gifter_giftee_tuple: List, mail_auth: D
                 )
 
     except Exception as e:
-        print(f"Erreur : {repr(e)}")
+        logger.error(f"Erreur : {repr(e)}")
 
     else:
-        print("L'envoi de mail a réussi")
+        logger.info("L'envoi de mail a réussi.")
 
     finally:
         if imap_server is not None : imap_server.logout()

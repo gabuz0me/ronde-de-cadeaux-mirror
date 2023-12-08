@@ -16,6 +16,7 @@ import random
 from yaml import safe_load, scanner
 from src.graph_generation import generate_graph, Person, GraphGenerationException
 from src.hamiltonian_path import hamilton, path_as_tuples
+from src.logger import logger
 from src.mail_sender import send_mails
 from src.parser import parser
 
@@ -25,7 +26,7 @@ def pretty_print(graph):
 
     (debug en vrai)
     """
-    print(json.dumps(graph, indent=2))
+    logger.debug(json.dumps(graph, indent=2))
 
 
 def ronde_cadeaux(data: dict,
@@ -47,15 +48,15 @@ def ronde_cadeaux(data: dict,
         # Création du graphe
         graph = generate_graph(data)
     except GraphGenerationException as e:
-        print("Erreur dans la génération du graphe : " + e.message)
-        exit()
+        logger.error("Erreur dans la génération du graphe : " + e.message)
+        return
     # pretty_print(graph)
 
     # Résolution du problème
     path = hamilton(graph, random.choice(list(graph)))
     if not path:
-        print("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
-        exit()
+        logger.error("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
+        return
 
     # Création des données pour affichage
     people_data = data['people']
@@ -74,7 +75,7 @@ def ronde_cadeaux(data: dict,
 
     # Affichage éventuel
     if show_path:
-        print(draw)
+        logger.output(draw)
 
     # Export éventuel dans un fichier texte
     if output_file:
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     try:
         data = safe_load(args.FICHIER)
     except scanner.ScannerError:
-        print("Impossible de charger le fichier d'entrée : yaml invalide.")
+        logger.error("Impossible de charger le fichier d'entrée : yaml invalide.")
         exit()
 
     mail_auth = None
@@ -105,8 +106,7 @@ if __name__ == '__main__':
         try:
             mail_auth = safe_load(args.auth)
         except scanner.ScannerError:
-            print(
-                "Impossible de charger le fichier de configuration mail : yaml invalide.")
+            logger.error("Impossible de charger le fichier de configuration mail : yaml invalide.")
             exit()
         if not 'password' in mail_auth:
             mail_auth['password'] = getpass.getpass("Mot de passe mail :") # n'affiche pas ce qui est tapé

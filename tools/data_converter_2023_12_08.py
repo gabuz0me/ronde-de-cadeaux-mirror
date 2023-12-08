@@ -2,7 +2,7 @@
 
 """
 En l'an de grâce 2023, au huitième (8) jour du dernier mois (12) du calendrier grégorien alors en vogue,
-la structure de donnée pour créer des personnes et des groupes changea irrémédiablement :
+la structure de données pour créer des personnes et des groupes changea irrémédiablement :
 En effet, pourquoi s'ennuyer avec des "groupes de personnes" et des "groupes de groupes" dans la création
 des groupes ?, et pourquoi créer une allow list de groupes et une de personnes (idem deny list) quand on peut
 mélanger les deux ? En fait, une personne peut être vue comme un groupe ne contenant qu'elle. Il devrait
