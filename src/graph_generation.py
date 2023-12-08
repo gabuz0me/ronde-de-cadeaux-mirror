@@ -1,7 +1,24 @@
-from typing import Dict
+from enum import Enum, auto
+from typing import Dict, Set, List
+
+
+class GraphGenerationExceptionType(Enum):
+    """Pour les tests unitaires.
+    Permet de savoir à quel moment l'exception a été levée.
+    """
+    GENERIC = auto()
+    INFINITE_RECURSION = auto()
+    CLUSTER_IS_ALSO_PERSON = auto()
+    UNDEFINED_CONSTRUCTING_CLUSTERS = auto()
+    UNDEFINED_CONSTRUCTING_LISTS = auto()
+    PEOPLE_EMPTY = auto()
+
 
 class GraphGenerationException(Exception):
-    pass
+    def __init__(self, message: str, type = GraphGenerationExceptionType.GENERIC):
+        self.message = message
+        self.type = type
+
 
 class Person:
     def __init__(self, id: str, data: Dict):
@@ -26,49 +43,75 @@ class Person:
     @property
     def email(self):
         return self._data['email']
-        
 
-def lazy_build_cluster(cluster_data: Dict, cluster_dict: Dict, cluster_name: str, parent_clusters_names: set) -> None:
-    """Au premier appel, construit la clique ; aux suivants, ne fait rien.
+
+def recursive_build_cluster(cluster_data: Dict, people_set : Set[str], final_cluster_dict: Dict, current_cluster_key: str, parent_clusters_names: Set[str] = set()) -> None:
+    """Au premier appel, construit l'ensemble des nœuds enfants de `current_cluster_key` dans `final_cluster_dict`.
+    Pour ce faire on utilise les données contenues dans `cluster_data`. On tient la liste des clusters parents dans
+    `parent_clusters_names`. `people_set` sert à savoir si un élément est une clé pour le dict des gens ou des groupes.
     """
 
-    if cluster_name in cluster_dict:
+    if current_cluster_key in final_cluster_dict: # On est déjà passé par là
         return
 
-    if cluster_name in parent_clusters_names:
-        raise GraphGenerationException("Boucle infinie dans les cliques.")
+    if current_cluster_key in parent_clusters_names:
+        raise GraphGenerationException("Boucle infinie dans les groupes.", GraphGenerationExceptionType.INFINITE_RECURSION)
+    
+    if current_cluster_key in people_set:
+        raise GraphGenerationException(f"Le cluster '{current_cluster_key}' est aussi l'identifiant unique d'une personne.", GraphGenerationExceptionType.CLUSTER_IS_ALSO_PERSON)
 
-    parent_clusters_names.add(cluster_name)
+    parent_clusters_names.add(current_cluster_key)
+    data = cluster_data[current_cluster_key] # data est une liste de ce qui est contenu dans un cluster
 
-    cluster = set()
-    data = cluster_data[cluster_name]
+    # On trie d'un côté les gens et de l'autre les groupes
+    set_people = set()
+    set_clusters = set()
+    for element in data:
+        if element in cluster_data:
+            set_clusters.add(element)
+        elif element in people_set:
+            set_people.add(element)
+        else:
+            raise GraphGenerationException(f"Le groupe ou la personne '{element}', présent·e dans le groupe '{current_cluster_key}' n'est pas défini·e.", GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_CLUSTERS)
 
-    # On prend tout d'abord les listes de personnes
-    if 'people' in data:
-        cluster |= set(data['people'])
+    # On itère récursivement sur les groupes
+    for subcluster_name in set_clusters:
+        recursive_build_cluster(cluster_data, people_set, final_cluster_dict, subcluster_name, parent_clusters_names)
+        set_people |= final_cluster_dict[subcluster_name]
 
-    # Et ensuite les listes de listes
-    if 'subclusters' in data:
-        for subcluster_name in data['subclusters']:
-            lazy_build_cluster(cluster_data, cluster_dict, subcluster_name, parent_clusters_names)
-            cluster |= cluster_dict[subcluster_name]
-
-    cluster_dict[cluster_name] = cluster
-
-    parent_clusters_names.remove(cluster_name)
+    final_cluster_dict[current_cluster_key] = set_people
+    parent_clusters_names.remove(current_cluster_key)
 
 
-def build_cluster_dict(cluster_data: Dict) -> Dict:
-    """Construit un dictionnaire avec le nom d'une clique et la
+def build_cluster_dict(cluster_data: Dict | None, people_set: Set[str]) -> Dict:
+    """Construit un dictionnaire avec le nom d'un groupe et la
     liste des personnes qui en font partie.
     """
 
+    if cluster_data is None:
+        return None
+    
     cluster_dict = {}
-
-    for cluster_name, data in cluster_data.items():
-        lazy_build_cluster(cluster_data, cluster_dict, cluster_name, set())
-
+    for cluster_name in cluster_data.keys():
+        recursive_build_cluster(cluster_data, people_set, cluster_dict, cluster_name)
     return cluster_dict
+
+def get_people_from_people_and_cluster_list(people_set: Set[str], clusters: Dict, elements: List[str], is_allowlist: bool, gifter_id: str) -> Set[str]:
+    """D'une liste composée de groupes et de personnes, on retourne toutes les personnes, qu'elles
+    soient contenues initalement dans un groupe ou pas
+    """
+    final_set = set()
+    for element in elements:
+        if element in people_set:
+            final_set.add(element)
+        elif clusters is not None and element in clusters:
+            for person in clusters[element]:
+                final_set.add(person)
+        else:
+            which_list = 'allowlist' if is_allowlist else 'denylist'
+            raise GraphGenerationException(f"Le groupe ou la personne '{element}', présent·e dans la '{which_list}' de '{gifter_id}' n'est pas défini·e.", GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_LISTS)
+
+    return final_set
 
 
 def generate_graph(data: Dict) -> Dict:
@@ -76,65 +119,36 @@ def generate_graph(data: Dict) -> Dict:
     et les valeurs des listes de personnes pouvant être tirées par læ participant⋅e.
     """
 
-    people = data['people']
-    clusters = build_cluster_dict(data['clusters']) \
-        if 'clusters' in data \
-        else None
+    people = data.get('people')
+    if people is None or len(people) == 0 :
+        raise GraphGenerationException(f"Il n'y a aucune personne à tirer.", GraphGenerationExceptionType.PEOPLE_EMPTY)
+    people_set = {p for p in people.keys()}
 
-    # Initialisation du graphe
-    graph = {
-        gifter_id: set()
-        for gifter_id, _ in people.items()
-    }
+    clusters = build_cluster_dict(data.get('clusters'), people_set)
 
     # Construction du graphe
+    graph = {}
     for gifter_id, gifter_data in people.items():
-        had_allowlist = False
 
-        # allowlist
+        # On calcule toutes les personnes qu'on a le droit de tirer
+        allowlist = set()
         if 'allowlist' in gifter_data:
-            had_allowlist = True
-            graph[gifter_id] = set(gifter_data['allowlist'])
+            allowlist = get_people_from_people_and_cluster_list(people_set, clusters, gifter_data['allowlist'], True, gifter_id)
+        else:
+            allowlist = people_set
 
-        # allowlist de clusters
-        if clusters and 'allowlist_clusters' in gifter_data:
-            had_allowlist = True
-            graph[gifter_id] = \
-                graph[gifter_id].union(
-                    {
-                        person
-                        for cluster_name in gifter_data['allowlist_clusters']
-                        for person in clusters[cluster_name]
-                    }
-            )
-
-        # Si aucun des deux on considère que la personne peut
-        # offrir à tout le monde
-        if not had_allowlist:
-            graph[gifter_id] = set([other_id for other_id in people.keys()])
-
-        # denylist
+        # On calcule toutes les personnes qu'on n'a pas le droit de tirer
+        denylist = set()
         if 'denylist' in gifter_data:
-            graph[gifter_id] = \
-                graph[gifter_id].difference(
-                    set(gifter_data['denylist'])
-            )
+            denylist = get_people_from_people_and_cluster_list(people_set, clusters, gifter_data['denylist'], False, gifter_id)
 
-        # denylist de clusters
-        if clusters and 'denylist_clusters' in gifter_data:
-            graph[gifter_id] = \
-                graph[gifter_id].difference(
-                    {
-                        person
-                        for cluster_name in gifter_data['denylist_clusters']
-                        for person in clusters[cluster_name]
-                    }
-            )
-
+        # On soustrait les deux
+        final_set = allowlist - denylist
+        
         # On ne peut pas se piocher soi-même, mieux vaut s'en assurer
-        graph[gifter_id].discard(gifter_id)
+        final_set.discard(gifter_id)
 
-        # Enfin on transform le Set en List
-        graph[gifter_id] = list(graph[gifter_id])
+        # Enfin on transform le Set en List et on le met dans le graphe final
+        graph[gifter_id] = list(final_set)
 
     return graph
