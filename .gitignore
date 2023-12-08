@@ -1,5 +1,2 @@
-mail_auth.yaml
-data.yaml
-circuit.txt
-src/__pycache__
+*/__pycache__
 env/

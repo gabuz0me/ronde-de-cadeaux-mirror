@@ -9,76 +9,91 @@
 # C'est utile pour les noms longs ou composés ou avec trop de caractères spéciaux :
 # pour se référer à la personne dans l'outil et dans ce fichier on utilise son identifiant,
 # mais lors de l'affichage on utilisera bien son nom à afficher.
-# Si ce champ n'est pas créé, on utilisera l'identifiant comme nom à afficher.
-# le champ `nickname` permet d'ajouter un surnom. Pareillement, il n'est pas obligatoire.
+# Si ce champ n'est pas créé, l'identifiant sera utilisé comme nom à afficher.
+# Le champ `nickname` permet d'ajouter un surnom. Pareillement, il n'est pas obligatoire.
 # S'il n'est pas renseigné, on utilisera dans les messages d'abord le nom à afficher, et s'il n'existe pas
 # non plus son identifiant.
 
 people:
-  alice_foo:
-    display_name: "Alice-Andréa-Alexia Foo"
-    email: "alice@foo.me"
-    denylist: ["Bob Foo"]
-    denylist_clusters: ["Foo siblings"]
 
-  bob_foo:
-    display_name: "Bœbælius Foo"
-    nickname: "Bob Foo"
-    email: "bob@foo.me"
-    denylist: ["Alice Foo"]
-    denylist_clusters: ["Foo siblings"]
+  Alice:
+    display_name: Alice-Andréa-Alexia Foo
+    email: alice@foo.me
+    denylist:
+    - Bob
+    - Foo siblings
+    
+  Bob:
+    display_name: Bœbælius Foo
+    nickname: Bob Foo
+    email: bob@foo.me
+    denylist:
+    - Alice
+    - Foo siblings
 
   Carol Foo:
-    display_name: "Cärol Foo"
-    email: "carol@foo.me"
-    denylist_clusters: ["Foo siblings"]
+    display_name: Cärol Foo
+    email: carol@foo.me
+    denylist:
+    - Foo siblings
 
   Dave Foo:
-    email: "dave@foo.me"
-    allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Foo siblings"]
+    email: dave@foo.me
+    allowlist:
+    - cousins
+    denylist:
+    - Foo siblings
 
   Eve Bar:
-    email: "eve@bar.me"
-    denylist: ["Flora Bar"]
-    denylist_clusters: ["Bar siblings"]
+    email: eve@bar.me
+    denylist:
+    - Flora Bar
+    - Bar siblings
 
   Flora Bar:
-    nickname: "Flo Bar"
-    email: "flora@bar.me"
-    denylist: ["Eve Bar"]
-    denylist_clusters: ["Bar siblings"]
+    nickname: Flo Bar
+    email: flora@bar.me
+    denylist:
+    - Eve Bar
+    - Bar siblings
 
   Gulliver Bar:
-    email: "gulliver@bar.me"
-    denylist_clusters: ["Bar siblings"]
+    email: gulliver@bar.me
+    denylist:
+    - Bar siblings
 
   Henry Bar:
-    email: "henry@bar.me"
-    allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Bar siblings"]
+    email: henry@bar.me
+    allowlist:
+    - cousins
+    denylist:
+    - Bar siblings
 
   Isobel Bar:
-    display_name: "Isöbel Bar"
-    email: "isobel@bar.me"
-    allowlist_clusters: ["cousins"]
-    denylist_clusters: ["Bar siblings"]
+    display_name: Isöbel Bar
+    email: isobel@bar.me
+    allowlist:
+    - cousins
+    denylist:
+    - Bar siblings
 
   Jack Baz:
-    email: "jack@baz.me"
+    email: jack@baz.me
 
   Linda Qux:
-    email: "linda@qux.me"
-    denylist_clusters: ["Qux polycule"]
+    email: linda@qux.me
+    denylist:
+    - Qux polycule
 
   Mark Qux:
-    email: "mark@qux.me"
-    denylist_clusters: ["Qux polycule"]
+    email: mark@qux.me
+    denylist:
+    - Qux polycule
 
   Nick Qux:
-    email: "nick@qux.me"
-    denylist_clusters: ["Qux polycule"]
-
+    email: nick@qux.me
+    denylist:
+    - Qux polycule
 
 ##########################
 # Liste des sous-groupes #
@@ -88,14 +103,23 @@ people:
 # Pour ajouter un cluster, il faut créer comme ci-dessous un cluster avec un identifiant unique.
 # Chaque cluster peut référencer des personnes (en utilisant leurs identifiants) ou d'autres clusters
 # (en utilisant également leurs identifiant).
-# Il faudra créer un champ `people` pour référencer des personnes et `subclusters` pour référencer d'autres clusters.
 
 clusters:
+
   Foo siblings:
-    people: ["Carol Foo", "Dave Foo"]
+  - Carol Foo
+  - Dave Foo
+
   Bar siblings:
-    people: ["Gulliver Bar", "Henry Bar", "Isobel Bar"]
+  - Gulliver Bar
+  - Henry Bar
+  - Isobel Bar
+
   Qux polycule:
-    people: ["Linda Qux", "Mark Qux", "Nick Qux"]
+  - Linda Qux
+  - Mark Qux
+  - Nick Qux
+
   cousins:
-    subclusters: ["Foo siblings", "Bar siblings"]
+  - Foo siblings
+  - Bar siblings

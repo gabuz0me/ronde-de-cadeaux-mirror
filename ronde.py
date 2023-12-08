@@ -46,13 +46,13 @@ def ronde_cadeaux(data: dict,
     try:
         # Création du graphe
         graph = generate_graph(data)
-    except GraphGenerationException as err:
-        print("Erreur dans la génération du graphe : " + str(err))
+    except GraphGenerationException as e:
+        print("Erreur dans la génération du graphe : " + e.message)
         exit()
     # pretty_print(graph)
 
     # Résolution du problème
-    path = hamilton(graph, random.choice(list(graph)), [])
+    path = hamilton(graph, random.choice(list(graph)))
     if not path:
         print("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
         exit()
