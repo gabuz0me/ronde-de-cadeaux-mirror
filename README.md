@@ -100,26 +100,40 @@ Bonne question, voilà des pistes de réflexions en vrac :
 
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
 
-Il suffit juste de ne pas déclarer de clusters et de ne pas mettre de *allowlist* ou *denylist* !
+Il suffit juste de ne pas déclarer de *clusters* et de ne pas mettre d'*allowlist* ou de *denylist* !
 
 > Ah en fait maintenant que j'y pense il y a deux personnes qui peuvent pas se blairer…
 
-C'est possible de juste les interdire mutuellement, soit en créant un cluster les contenant et l'ajouter à leurs `denylist_clusters`, soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `denylist`.
+C'est possible de juste les interdire mutuellement, soit en créant un cluster les contenant soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `denylist`.
 
 > Je veux faire un tirage pour ma famille et que les adultes se tirent entre eux et les enfants entre eux, comment je fais ?
 
 Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui passe par toutes les personnes impliquées. Dans le cas proposé là, l'outil ne trouvera aucune solution, en effet une solution serait une boucle d'adultes et une autre boucle, pour les enfants. Dans ce cas, il faudra faire deux tirages. Plus généralement, si il y a *N* sous-groupes qui n'intéragissent pas les uns avec les autres, il faudra faire *N* tirages.
 
+> Oué alors moi j'avais fait tout un fichier de config l'année dernière, un truc bien quali tavu, et cette année ça marche même plus vazy j'me désabonne.
+
+La structure de donnée a changé en décembre 2023. Mais tu peux utiliser [le convertisseur](tools/data_converter_2023_12_08.py) pour transformer tes anciennes données dans le nouveau format !
+
 > On peut contribuer ?
 
 OUI. Pour des idées de contributions, voir la section suivante.
 
-## Défauts / pistes d'amélioration
+## Comment contribuer ?
+
+Déjà il n'y a pas besoin d'être dev pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contactez-nous par mail ou mieux, si vous avez un compte framagit, [créez un ticket](https://framagit.org/bertille-ddp/ronde-de-cadeaux/-/issues/new).
+
+Si vous faites une merge request, n'hésitez pas à créer des tests unitaires pour vous assurer que tout fonctionne. Et il faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
+
+```sh
+python -m unittest tests/test_xxx.py
+```
+
+Et sinon des pistes de trucs en vrac :
 
 - [ ] Au moment de construire le graphe, la liste d'autorisation est d'abord évaluée, et ensuite les gens de la liste d'interdiction sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste d'autorisation sont **forcément** autorisés.
 - [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
 - [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
-- [ ] Faire de la GUI :D
+- [ ] Faire de la GUI, [WIP ici](https://framagit.org/gabuzome/guirlande-de-cadeaux/) :D
 
 ## Motivations
 
