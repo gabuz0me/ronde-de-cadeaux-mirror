@@ -111,7 +111,7 @@ if __name__ == '__main__':
         if not 'password' in mail_auth:
             mail_auth['password'] = getpass.getpass("Mot de passe mail :") # n'affiche pas ce qui est tapé
 
-        message = args.message.read()
+        message = "\r\n".join(args.message.read().splitlines())
 
     # Exécution
     ronde_cadeaux(
