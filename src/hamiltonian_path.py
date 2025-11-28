@@ -1,15 +1,15 @@
+"""Partie algo de la génération de graphe."""
+
 from random import sample
-from typing import Dict, List
 
 
-def shuffled(sucessors: List) -> List:
-    """Renvoie une liste mélangée créée à partir d'un set"""
-    return sample(sucessors, len(sucessors))
+def shuffled(successors: list) -> list:
+    """Renvoie une liste mélangée créée à partir d'un set."""
+    return sample(successors, len(successors))
 
 
-def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
-    """Algorithme récursif permettant de trouver un cycle hamiltonien dans un graphe donné"""
-
+def hamilton(graph: list, current_node: str, path: list = []) -> list:
+    """Algorithme récursif permettant de trouver un cycle hamiltonien dans un graphe donné."""
     # print(f"{'   '*len(path)}→{current_node} [{len(path)}/{len(graph)}]")
     if current_node not in path:
         path.append(current_node)
@@ -35,10 +35,11 @@ def hamilton(graph: Dict, current_node: str, path: List = []) -> List:
     # Si nœud déjà dans chemin ou si pas trouvé de chemin possibles
     return None
 
-def path_as_tuples(path: List) -> List:
-    """Crée une liste de tuple `(gifter, giftee)` correspondant au `path` donné"""
+
+def path_as_tuples(path: list) -> list:
+    """Crée une liste de tuple `(gifter, giftee)` correspondant au `path` donné."""
     result = []
     N = len(path)
     for i in range(N):
-        result.append( (path[i], path[(i+1)%N]) )
+        result.append((path[i], path[(i + 1) % N]))
     return result
