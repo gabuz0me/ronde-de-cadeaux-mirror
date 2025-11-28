@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-@author: Bertille Dubosc de Pesquidoux, Adrien Laporte, Adrian "Relex12" Bonnet, Vincent Menegaux
+@author: Adrien Laporte, Bertille Dubosc de Pesquidoux, Adrian "Relex12" Bonnet, Vincent Menegaux
 
 The purpose of this script is to determine a cycle of people which should
 offer a present to the next one on the cycle and to inform them trough
@@ -9,16 +9,16 @@ an e-mail
 """  # noqa
 
 import datetime
-import getpass
 import json
 import random
+from argparse import Namespace
 
 from yaml import safe_load, scanner
 
 from src.graph_generation import GraphGenerationException, Person, generate_graph
 from src.hamiltonian_path import hamilton, path_as_tuples
 from src.logger import logger
-from src.mail_sender import send_mails
+from src.mail_sender import mail_data_to_mail_info, send_mails, test_mail_sending
 from src.parser import parser
 
 
@@ -31,20 +31,11 @@ def pretty_print(graph: dict) -> None:
 
 
 def ronde_cadeaux(
+    args: Namespace,
     data: dict,
-    show_path: bool = False,
-    output_file: str | None = None,
-    mail_auth: dict | None = None,
-    template_message: str | None = None,
-    no_imap: bool = False,
+    mail_data: dict | None = None,
 ) -> None:
-    """Routine principale.
-
-    `data` : données à partir desquelles construire un graphe
-    `mail_auth` : configuration mail
-    `message` : mail type
-    `show_path` : afficher le chemin calculé
-    """
+    """Routine principale."""
     try:
         # Création du graphe
         graph = generate_graph(data)
@@ -62,32 +53,33 @@ def ronde_cadeaux(
     # Création des données pour affichage
     people_data = data["people"]
     people_object_dict = {gifter_id: Person(gifter_id, people_data[gifter_id]) for gifter_id in graph.keys()}
-    gifter_giftee_tuple = path_as_tuples(path)
+    gifter_giftee_tuple = path_as_tuples(people_object_dict, path)
 
     # Création d'un résumé du tirage
     max_name_length = max(len(p.name) for p in people_object_dict.values())  # Aligner sur le nom le plus long
-    draw = "\n".join(
-        [
-            f"{people_object_dict[gifter].name:>{max_name_length}} → {people_object_dict[giftee].name}"
-            for gifter, giftee in gifter_giftee_tuple
-        ]
-    )
+    draw = "\n".join([f"{gifter.name:>{max_name_length}} → {giftee.name}" for gifter, giftee in gifter_giftee_tuple])
 
     # Affichage éventuel
-    if show_path:
+    if args.show:
         logger.output(draw)
 
     # Export éventuel dans un fichier texte
-    if output_file:
-        with output_file as f:
-            f.write(f"Tirage du {datetime.datetime.now()} :\n")
+    if args.output:
+        with args.output as f:
+            f.write(f"Tirage du {datetime.datetime.now().replace(microsecond=0)} :\n")
             f.write(draw)
             f.write("\n\n")
 
     # Enfin envoi éventuel des mails
-    if mail_auth:
-        mail_auth["copy_to_sent_folder"] = not no_imap  # = yes_imap :D
-        send_mails(people_object_dict, gifter_giftee_tuple, mail_auth, template_message)
+    if mail_data:
+        mail_data["copy_to_sent_folder"] = not args.no_imap  # = yes_imap :D
+        mail_data["plain_text"] = args.plain_text
+        mail_info = mail_data_to_mail_info(mail_data)
+        if args.test_mail:
+            test_mail_sending(mail_info)
+            exit(0)
+
+        send_mails(gifter_giftee_tuple, mail_info)
 
 
 if __name__ == "__main__":
@@ -98,27 +90,22 @@ if __name__ == "__main__":
         data = safe_load(args.FICHIER)
     except scanner.ScannerError:
         logger.error("Impossible de charger le fichier d'entrée : yaml invalide.")
-        exit()
+        exit(1)
 
-    mail_auth = None
-    message = None
+    mail_data: dict[str, str] | None = None
     if args.auth:
         try:
-            mail_auth = safe_load(args.auth)
+            mail_data = safe_load(args.auth)
         except scanner.ScannerError:
             logger.error("Impossible de charger le fichier de configuration mail : yaml invalide.")
-            exit()
-        if "password" not in mail_auth:
-            mail_auth["password"] = getpass.getpass("Mot de passe mail :")  # n'affiche pas ce qui est tapé
+            exit(1)
 
-        message = "\r\n".join(args.message.read().splitlines())
+        mail_data["message"] = args.message.read()
+        mail_data["plain_text"] = args.plain_text
 
     # Exécution
     ronde_cadeaux(
+        args,
         data=data,
-        mail_auth=mail_auth,
-        template_message=message,
-        show_path=args.show,
-        output_file=args.output,
-        no_imap=args.no_imap,
+        mail_data=mail_data,
     )
