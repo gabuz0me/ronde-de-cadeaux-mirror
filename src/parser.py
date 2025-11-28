@@ -65,6 +65,20 @@ def makeParser() -> argparse.ArgumentParser:
         help="Fichier dans lequel exporter le tirage",
     )
 
+    parser.add_argument(
+        "-p",
+        "--plain-text",
+        action="store_true",
+        help="Envoyer un mail au format texte à la place de HTML",
+    )
+
+    parser.add_argument(
+        "-t",
+        "--test-mail",
+        action="store_true",
+        help="Tester la configuration de mail (si --auth est fourni)",
+    )
+
     return parser
 
 

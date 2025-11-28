@@ -37,8 +37,8 @@ class Person:
         self._name = id
         self._data = data
 
-    def __str__(self) -> str:
-        return self._name
+    def __repr__(self) -> str:
+        return f"Person:{self._name}"
 
     @property
     def name(self) -> str:
@@ -160,7 +160,7 @@ def get_people_from_people_and_cluster_list(
     return final_set
 
 
-def generate_graph(data: dict) -> dict:
+def generate_graph(data: dict) -> dict[str, list[str]]:
     """Génère le graphe final.
 
     Crée un dictionnaire dont les clés sont les participant⋅e⋅s de la ronde

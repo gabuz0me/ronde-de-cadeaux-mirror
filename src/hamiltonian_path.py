@@ -2,15 +2,16 @@
 
 from random import sample
 
+from .graph_generation import Person
+
 
 def shuffled(successors: list) -> list:
     """Renvoie une liste mélangée créée à partir d'un set."""
     return sample(successors, len(successors))
 
 
-def hamilton(graph: list, current_node: str, path: list = []) -> list:
+def hamilton(graph: list, current_node: str, path: list[str] = []) -> list[str]:
     """Algorithme récursif permettant de trouver un cycle hamiltonien dans un graphe donné."""
-    # print(f"{'   '*len(path)}→{current_node} [{len(path)}/{len(graph)}]")
     if current_node not in path:
         path.append(current_node)
 
@@ -36,10 +37,10 @@ def hamilton(graph: list, current_node: str, path: list = []) -> list:
     return None
 
 
-def path_as_tuples(path: list) -> list:
+def path_as_tuples(people_object_dict: dict, path: list) -> list[tuple[Person, Person]]:
     """Crée une liste de tuple `(gifter, giftee)` correspondant au `path` donné."""
-    result = []
+    result: list[tuple[Person, Person]] = []
     N = len(path)
     for i in range(N):
-        result.append((path[i], path[(i + 1) % N]))
+        result.append((people_object_dict[path[i]], people_object_dict[path[(i + 1) % N]]))
     return result

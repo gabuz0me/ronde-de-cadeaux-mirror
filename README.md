@@ -31,7 +31,7 @@ Voir déjà le message d'aide :
 
 ```console
 $ ./ronde.py --help
-Utilisation : ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] FICHIER
+Utilisation : ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] [-p] [-t] FICHIER
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en
 prenant en compte un système de contraintes complexes. Si un chemin
@@ -50,6 +50,8 @@ Arguments optionnels:
                         Fichier mail type (Par défaut : .../message.txt)
   -o OUTPUT, --output OUTPUT
                         Fichier dans lequel exporter le tirage
+  -p, --plain-text      Envoyer un mail au format texte à la place de HTML
+  -t, --test-mail       Tester la configuration de mail (si --auth est fourni)
 ```
 
 1. Créer un fichier yaml avec dedans les données personnelles de vos ami⋅e⋅s. Possibilité de copier et adapter [`examples/example_data.yaml`](examples/example_data.yaml).
@@ -60,6 +62,10 @@ Arguments optionnels:
     - `{gifter_mail}` → adresse de la personne qui reçoit le mail,
     - `{gifter_name}` et `{gifter_nickname}` → nom et surnom de la personne qui reçoit le message,
     - `{giftee_name}` et `{giftee_nickname}` → nom et surnom de la personne tirée.
+
+    La première ligne du fichier sert d'objet pour l'email, le reste constitue le corps.
+
+    Utiliser `--test-mail` est utile pour tester la configuration mail *avant* le tirage final.
 
     **Attention**, ce programme se connecte au serveur mail en STARTTLS. Ce n'est pas supporté par tous les serveurs.
 
@@ -163,7 +169,7 @@ Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veu
 Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par Adrian "Relex12" Bonnet sous licence MIT et que l'on peut retrouver ici : [https://github.com/Relex12/Secret-Santa](https://github.com/Relex12/Secret-Santa)
 
 Contributeurices :
-- Bertille Dubosc de Pesquidoux
 - Adrien Laporte
+- Bertille Dubosc de Pesquidoux
 - Adrian "Relex12" Bonnet
 - Vincent Menegaux
