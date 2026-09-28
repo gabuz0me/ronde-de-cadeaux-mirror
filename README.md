@@ -1,5 +1,7 @@
 # Ronde de cadeaux
 
+[![en](https://img.shields.io/badge/Language-English-red.svg)](https://framagit.org/ronde-de-cadeaux/ronde-de-cadeaux/-/blob/main/README-en.md) [![en](https://img.shields.io/badge/Langue-Français-blue.svg)](https://framagit.org/ronde-de-cadeaux/ronde-de-cadeaux/-/blob/main/README.md)
+
 **Ronde de cadeaux** est un outil libre pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par un mécanisme de listes de rejet ou de *cluster* pour ajouter des contraintes (par exemple on peut vouloir que des personnes en couple ne puissent pas tomber l'une sur l'autre).
 
 ---
