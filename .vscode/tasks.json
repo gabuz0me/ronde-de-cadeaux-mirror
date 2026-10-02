@@ -1,0 +1,49 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build package",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "build",
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Upload to Test PyPI",
+            "command": "python",
+            "args": [
+                "-m",
+                "twine",
+                "upload",
+                "--repository",
+                "testpypi",
+                "--password",
+                "${input:token}",
+                "dist/*",
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+            },
+            "problemMatcher": [],
+        },
+    ],
+    "inputs": [
+        {
+            "id": "token",
+            "description": "API token",
+            "type": "promptString"
+        }
+    ]
+}
