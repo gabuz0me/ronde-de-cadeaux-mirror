@@ -99,12 +99,12 @@ people:
 # Liste des sous-groupes #
 ##########################
 
-# Les clusters servent à définir des contraintes.
-# Pour ajouter un cluster, il faut créer comme ci-dessous un cluster avec un identifiant unique.
-# Chaque cluster peut référencer des personnes (en utilisant leurs identifiants) ou d'autres clusters
+# Les groupes servent à définir des contraintes.
+# Pour ajouter un groupe, il faut créer comme ci-dessous un groupe avec un identifiant unique.
+# Chaque groupe peut référencer des personnes (en utilisant leurs identifiants) ou d'autres groupes
 # (en utilisant également leurs identifiant).
 
-clusters:
+groups:
 
   Foo siblings:
   - Carol Foo

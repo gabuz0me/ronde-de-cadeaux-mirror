@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ronde-de-cadeaux"
+version = "0.1.0"
+authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
+description = "Tirage au sort pour un Secret Santa"
+requires-python = ">=3.12"
+license = "CeCILL-2.1"
+dependencies = ["pyyaml", "pydantic[email]"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+ronde = "ronde_de_cadeaux.cli:main"
+
+# [tool.setuptools]
+# packages = ["ronde_de_cadeaux"]
+
+[tool.basedpyright]
+pythonVersion = "3.12"
+reportAny = false
+reportExplicitAny = false
+reportAttributeAccessIssue = false
+reportMissingTypeStubs = false
+reportUnannotatedClassAttribute = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnusedCallResult = false
+
+[tool.ruff]
+line-length = 140
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "D",   # pydocstyle
+    "DOC", # pydoclint
+    "ANN",
+    "F",   # Pyflakes
+    "I",   # isort
+]
+ignore = [
+    "D105",   # Missing docstring in magic method
+    "D418",   # No docstrings in @overload decorated functions
+    "ANN204", # Missing return type annotation for special method `__init__`
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "D101", # Missing docstring in public class
+    "D102", # Missing docstring in public method
+    "D103", # Missing docstring in public function
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

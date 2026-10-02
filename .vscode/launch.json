@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Ronde de Cadeaux",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "ronde_de_cadeaux.cli",
+            "args": [
+                // "-a",
+                // "./private/mail_auth.yaml",
+                // "-m",
+                // "./private/message.txt",
+                "-i",
+                "./private/data.yaml",
+                "-s",
+                "-o",
+                "./private/output.txt",
+                "--force",
+            ],
+            "cwd": "${workspaceFolder}",
+        },
+    ]
+}

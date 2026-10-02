@@ -4,3 +4,11 @@ __pycache__
 env/
 .env/
 .venv/
+
+build/
+*.egg-info
+
+private/
+
+# for now
+uv.lock

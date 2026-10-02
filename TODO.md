@@ -1,0 +1,21 @@
+# ToDo
+
+- [x] Make code basedpyright-compliant :p
+- [x] Refacto
+    - [x] Data structure for people and groups
+    - [x] MailInfo object is to be passed in the main function, not created after
+    - [x] Better MailInfo object storing two sub-objects with info in it
+- [ ] Internationalization:
+    - [ ] Variables, comments in code
+    - [ ] Detect language, add language option to parser, translate strings
+- [ ] Create templates
+    - [ ] Create CLI to do so
+    - [ ] Create template files
+- [ ] Tests
+    - [ ] Validation of input data
+        - [ ] Mail auth
+        - [ ] Message file
+        - [ ] Input data
+    - [ ] Unit tests everything
+- [ ] Support CSV input
+- [ ] Multiple cycle handling? Mabe not, or using a SAT solver as it is a hard problem to find the minimal covering hamiltonian cycles of a graph
