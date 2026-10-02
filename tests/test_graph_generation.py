@@ -1,43 +1,43 @@
 import pathlib
 import sys
 import unittest
+
 import yaml
 
 root = pathlib.Path(__file__).parent.parent
 sys.path.append(str(root))
 
-from src.graph_generation import generate_graph, GraphGenerationException, GraphGenerationExceptionType
+from .graph_generation import GraphGenerationException, GraphGenerationExceptionType, generate_graph
 
 
 class GraphGenerationTesting(unittest.TestCase):
-
     def test_example_data(self):
         """Teste si les données fournies en exemple fonctionnent réellement :D"""
-        path = root / 'examples/example_data.yaml'
+        path = root / "examples/example_data.yaml"
         with open(path) as file:
             data = yaml.safe_load(file)
         generate_graph(data)
 
     def test_invalid_person_in_person_list(self):
         data = {
-            'people': {
+            "people": {
                 "Alice": {},
-                "Bob": {'denylist' : ["Eve"]}, # Eve n'existe pas
+                "Bob": {"denylist": ["Eve"]},  # Eve n'existe pas
             }
         }
         with self.assertRaises(GraphGenerationException) as context:
             generate_graph(data)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_LISTS)
 
-    def test_invalid_person_in_clusters(self):
+    def test_invalid_person_in_groups(self):
         data = {
-            'people': {
+            "people": {
                 "Alice": {},
                 "Bob": {},
             },
-            'clusters': {
-                'invalid_cluster': ['Eve'], # Eve n'existe pas
-            }
+            "groups": {
+                "invalid_group": ["Eve"],  # Eve n'existe pas
+            },
         }
         with self.assertRaises(GraphGenerationException) as context:
             generate_graph(data)
@@ -45,30 +45,30 @@ class GraphGenerationTesting(unittest.TestCase):
 
     def test_infinite_recursion(self):
         data = {
-            'people': {
+            "people": {
                 "Alice": {},
                 "Bob": {},
             },
-            'clusters': {
-                'cluster_A': ['cluster_B'],
-                'cluster_B': ['cluster_C'],
-                'cluster_C': ['cluster_D'],
-                'cluster_D': ['cluster_A'],
-            }
+            "groups": {
+                "group_A": ["group_B"],
+                "group_B": ["group_C"],
+                "group_C": ["group_D"],
+                "group_D": ["group_A"],
+            },
         }
         with self.assertRaises(GraphGenerationException) as context:
             generate_graph(data)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.INFINITE_RECURSION)
 
-    def test_cluster_name_also_person(self):
+    def test_group_name_also_person(self):
         data = {
-            'people': {
+            "people": {
                 "Alice": {},
                 "Bob": {},
             },
-            'clusters': {
-                'Alice': ['Bob'], # Alice est déjà une personne
-            }
+            "groups": {
+                "Alice": ["Bob"],  # Alice est déjà une personne
+            },
         }
         with self.assertRaises(GraphGenerationException) as context:
             generate_graph(data)
@@ -76,12 +76,11 @@ class GraphGenerationTesting(unittest.TestCase):
 
     def test_empty_list_of_people(self):
         data_A = {
-            'people': {
+            "people": {},
+            "groups": {
+                "group_A": [],
+                "group_B": ["group_A"],
             },
-            'clusters': {
-                'cluster_A': [],
-                'cluster_B': ['cluster_A'],
-            }
         }
         data_B = {}
 

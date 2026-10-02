@@ -11,4 +11,4 @@ On se voit au [lieu] le [date] pour l’ouverture.<br><br>
 Gros bisous,<br>
 [prénom]<br><br>
 
-<a href="https://framagit.org/bertille-ddp/ronde-de-cadeaux">Codé avec les 🦶 et avec le 🫀</a>
+<a href="https://framagit.org/gabuzome/ronde-de-cadeaux">Codé avec les 🦶 et avec le 🫀</a>
