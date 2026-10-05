@@ -56,7 +56,6 @@ def _makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "-p",
         "--plain-text",
         action="store_true",
         help="Envoyer un mail au format texte à la place de HTML",
@@ -86,14 +85,20 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà.",
+        help="Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà",
     )
 
     return parser
 
 
 class ParserArgs:
-    """Represent the parser namespace after data validation.
+    """Structure représentant les données d'entrées après validation.
+
+    Lève une `ValueError` s'il y a un problème.
+
+    ---
+
+    Represent the parser namespace after data validation.
 
     Raise `ValueError` if anything is wrong.
     """
@@ -112,21 +117,29 @@ class ParserArgs:
 
         if args.test_mail:
             if not args.auth:
-                raise ValueError("Missing auth file for testing mail configuration")
-        # Drawing
+                raise ValueError("Fichier de configuration mail manquant pour le test de connexion")
+                # raise ValueError("Missing auth file for testing mail configuration")
+        # Tirage
         else:
-            # At least one action
+            # Au moins une action
             if not (args.output or args.show or args.auth):
-                raise ValueError("Please show, write to a file or send by mail the draw")
+                raise ValueError(
+                    dedent(
+                        """Effectuez au moins une action parmi afficher, écrire dans un fichier ou
+                        envoyer par mail le résultat du tirage"""
+                    )
+                )
+                # raise ValueError("Please show, write to a file or send by mail the draw")
             # Mail --> Message
             if args.auth and not args.message:
-                raise ValueError("Missing message file for email sending")
-            # Provide an input file
+                raise ValueError("Fichier de message manquant pour l'envoi des mails")
+                # raise ValueError("Missing message file for email sending")
             if not args.input:
-                raise ValueError("Missing input file for the draw")
-            # If we output to a file, it better not exist already # TODO Should we really test?
+                raise ValueError("Fichier d'entrée manquant")
+                # raise ValueError("Missing input file for the draw")
             if self.output and self.output.exists() and not args.force:
-                raise ValueError("Output file already exist, use `--force` to override")
+                raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
+                # raise ValueError("Output file already exist, use `--force` to override")
 
             self.people_and_groups = create_people_and_groups_info(args.test_mail, args.input)
 

@@ -1,10 +1,4 @@
-#!/usr/bin/env python3
-
-"""
-Point d'entrée de la CLI utilisée par `ronde`.
-
-Entry point of the CLI used by `ronde`.
-"""
+"""Point d'entrée de la CLI utilisée par `ronde`."""
 
 import datetime
 import sys
@@ -29,10 +23,9 @@ def main() -> None:
         sys.exit(0)
 
     try:
-        # Graph creation
         people_graph = generate_people_graph_and_dict(args.people_and_groups)
     except GraphGenerationException as e:
-        logger.error("Erreur dans la génération du graphe : " + e.message)
+        logger.error(f"Erreur dans la génération du graphe : {e.message}.")
         sys.exit(1)
 
     path = compute_hamiltonian_cycle(people_graph)

@@ -1,6 +1,8 @@
-"""Ronde de Cadeaux.
+"""Tirage au sort pour Père Noël Secret.
 
-Random Draw for your Secret Santa.
+---
+
+Random draw for your Secret Santa.
 """
 
 from importlib.metadata import version

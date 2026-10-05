@@ -1,4 +1,4 @@
-"""Ici on s'occupe de générer des graphes."""
+"""Ici on s'occupe de générer les graphes de qui peut tirer qui."""
 
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -8,13 +8,13 @@ from typing import override
 import yaml
 from pydantic import BaseModel, EmailStr, ValidationError
 
-from .tools import Graph, path_as_tuples
+from .tools import Graph, list_as_cyclic_pairs
 
 
 class _PersonModel(BaseModel):
     display_name: str | None = None
     nickname: str | None = None
-    email: EmailStr | None = None  # Mandatory for email sending though...
+    email: EmailStr | None = None  # Obligatoire pour envoyer des mails cependant. Vérifié dans `create_people_and_groups_info`
     allowlist: list[str] | None = None
     denylist: list[str] | None = None
 
@@ -25,7 +25,7 @@ class _PeopleModel(BaseModel):
 
 
 class Person:
-    """Wrapper permettant de s'abstraire d'un dictionnaire."""
+    """Structure permettant de s'abstraire d'un dictionnaire."""
 
     def __init__(self, id_: str, data: _PersonModel) -> None:
         self.id = id_
@@ -52,18 +52,23 @@ class Person:
 
     @property
     def allowlist(self) -> list[str]:
-        """Person allowlist."""
+        """Liste d'autorisation."""
         return self._data.allowlist or []
 
     @property
     def denylist(self) -> list[str]:
-        """Person denylist."""
+        """Liste de rejet."""
         return self._data.denylist or []
 
 
 @dataclass
 class PeopleAndGroups:
-    """Main data class for the people involved in that happy little moment."""
+    """Classe principale décrivant les personnes impliquées dans ce joyeux petit moment.
+
+    ---
+
+    Main data class for the people involved in that happy little moment.
+    """
 
     id_to_person: dict[str, Person]
     groups: dict[str, list[str]] | None = None
@@ -74,12 +79,23 @@ class PeopleAndGroups:
 
 
 def create_people_and_groups_info(send_mail: bool, people_path: Path) -> PeopleAndGroups:
-    """Create the people and groups structure based on the path of the file.
+    """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
+
+    Ne fait que valider les données d'un point de vue de la structure, rien n'ai fait quant au graphe.
+
+    Lève:
+      - `ValueError` si le fichier est invalide.
+      - `FileNotFoundError` si le fichier n'existe pas.
+
+    ---
+
+    Create the people and groups structure based on the path of the file.
 
     Only validates the data, no graph shenanigans are performed (yet).
 
-    Raise `ValueError` if invalid data is given.
-    Raise `FileNotFoundError` if one of the files doesn't exist.
+    Raise:
+      - `ValueError` if invalid data is given.
+      - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not (f := people_path.exists()):
         raise FileNotFoundError(f"File {f} doesn't exist")
@@ -88,14 +104,17 @@ def create_people_and_groups_info(send_mail: bool, people_path: Path) -> PeopleA
             people_data = yaml.safe_load(f)
             people = _PeopleModel.model_validate(people_data)
         except yaml.YAMLError:
-            raise ValueError("Invalid people configuration file (Ill-formed YAML)")
+            raise ValueError("Fichier de donnée des gens invalide (YAML invalide)")
+            # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
         except ValidationError:
-            raise ValueError("Invalid people configuration file (Invalid YAML)")
+            raise ValueError("Fichier de donnée des gens invalide (non conforme au schéma)")
+            # raise ValueError("Invalid people configuration file (Invalid schema)")
 
     if send_mail:
         for person in people.people.values():
             if not person.email:
-                raise ValueError(f"Mail sending is enabled, but person '{f}' has no email adress")
+                raise ValueError(f"L'envoi de mail est activé mais la personne '{f}' n'a pas d'adresse mail")
+                # raise ValueError(f"Mail sending is enabled, but person '{f}' has no email address")
 
     return PeopleAndGroups(
         {k: Person(k, v) for k, v in people.people.items()},
@@ -174,7 +193,7 @@ def _recursive_build_group_to_person_set_dict(
             set_people.add(element)
         else:
             raise GraphGenerationException(
-                f"Le groupe ou la personne '{element}', présent·e dans le groupe '{current_group_key}'" + "n'est pas défini·e.",
+                f"Le groupe ou la personne '{element}', présent·e dans le groupe '{current_group_key}' n'est pas défini·e.",
                 GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_CLUSTERS,
             )
 
@@ -207,13 +226,13 @@ def _build_group_to_person_set_dict(data: PeopleAndGroups, people_name_set: set[
 def get_people_from_people_and_group_list(
     people_set: set[str],
     groups: dict[str, set[str]] | None,
-    elements: list[str],  # people and groups of the deny/allow list
+    elements: list[str],  # personnes et groupes contenus dans la allow/deny list
     is_allowlist: bool,
     gifter_id: str,
 ) -> set[str]:
-    """D'une liste composée de groupes et de personnes, on retourne toutes les personnes, qu'elles
-    soient contenues initalement dans un groupe ou pas
-    """  # noqa #TODO commenter la fonction
+    """D'une liste composée de groupes et de personnes, on retourne toutes les
+    personnes, qu'elles soient contenues initialement dans un groupe ou pas.
+    """  # noqa
     final_set = set()
     for element in elements:
         if element in people_set:
@@ -222,9 +241,9 @@ def get_people_from_people_and_group_list(
             for person in groups[element]:
                 final_set.add(person)
         else:
-            which_list = "allowlist" if is_allowlist else "denylist"
+            which_list = "liste d'autorisation" if is_allowlist else "liste de rejet"
             raise GraphGenerationException(
-                f"Le groupe ou la personne '{element}'," + f"présent·e dans la '{which_list}' de '{gifter_id}' n'est pas défini·e.",
+                f"Le groupe ou la personne '{element}'," + f"présent·e dans la {which_list} de {gifter_id} n'est pas défini·e.",
                 GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_LISTS,
             )
 
@@ -275,14 +294,11 @@ Draw = list[tuple[Person, Person]]
 
 
 def get_people_cycle(people: PeopleAndGroups, path: list[str]) -> Draw:
-    """From a given path (as strings), return the draw as a list of pair or `Person`."""
+    """D'un cycle donné (`path_`), retourne une liste de paire de `Person` (Offreureuse, Destinataire).
+
+    ---
+
+    From a given cycle (`path_`), return the draw as a list of pair or `Person` (Gifter, Giftee).
+    """
     path_person = [people.id_to_person[id_] for id_ in path]
-    return path_as_tuples(path_person)
-
-
-# def pretty_print(dict_: dict[Any, Any]) -> None:
-#     """Afficher joliment le graphe.
-
-#     (debug en vrai)
-#     """
-#     logger.debug(json.dumps(dict_, indent=2))
+    return list_as_cyclic_pairs(path_person)
