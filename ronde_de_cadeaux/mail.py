@@ -1,4 +1,7 @@
-"""Module d'envoi de mails."""
+"""Module relatif au mails.
+
+Validation des données et envoi.
+"""
 
 import getpass
 import imaplib
@@ -66,7 +69,12 @@ class _MailModel(BaseModel):
 
 
 class MailInfo:
-    """Container for all mail-related settings."""
+    """Classe contenant les paramètres relatifs aux mails.
+
+    ---
+
+    Container for all mail-related settings.
+    """
 
     ImapInfo = NamedTuple("_ImapInfo", [("hostname", str), ("port", int), ("sent_folder", str)])
 
@@ -88,7 +96,7 @@ class MailInfo:
 
     @property
     def password(self) -> str:
-        """Password."""
+        """Mot de passe."""
         if not self._password:
             self._password = getpass.getpass("Mot de passe mail :")
         return self._password
@@ -149,7 +157,12 @@ def _to_header(msg: str) -> str:
 
 
 def _add_to_imap_server(server: imaplib.IMAP4, mail: MIMEMultipart, sent_folder: str) -> None:
-    """Wrapper for `server.append(...)`."""  # noqa
+    """Appelle proprement `server.append(...)`.
+
+    ---
+
+    Wrapper for `server.append(...)`.
+    """
     server.append(
         mailbox=sent_folder,
         flags="\\Seen",
@@ -188,7 +201,7 @@ def test_mail_sending(mail_info: MailInfo) -> None:
 
 
 def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
-    """Envoi des mails!."""
+    """Envoi des mails."""
     smtp_server, imap_server = create_servers(mail_info)
     try:
         sender = formataddr((_to_header(mail_info.sender_name), mail_info.sender_mail))
@@ -221,15 +234,24 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
 
 
 def create_mail_info(testing: bool, config_path: Path, message_path: Path, plain_text: bool, no_imap: bool) -> MailInfo:
-    """Convert parser mail arguments into a proper `MailInfo` structure.
+    """Convertit les arguments relatifs aux mails venant du parser en une structure `MailInfo`.
 
-    Raise `ValueError` if invalid data is given.
-    Raise `FileNotFoundError` if one of the files doesn't exist.
+    Lève:
+      - `ValueError` si des données invalides sont données
+      - `FileNotFoundError` si un des fichiers n'existe pas
+
+    ---
+
+    Convert parser mail arguments into a proper `MailInfo` structure.
+
+    Raise:
+      - `ValueError` if invalid data is given.
+      - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not (f := config_path.exists()):
-        raise FileNotFoundError(f"File {f} doesn't exist")
+        raise FileNotFoundError(f"Le fichier `{f}` n'existe pas")
     if not testing and not (f := message_path.exists()):
-        raise FileNotFoundError(f"File {f} doesn't exist")
+        raise FileNotFoundError(f"Le fichier `{f}` n'existe pas")
 
     message = ""
     if not testing:
@@ -241,9 +263,11 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path, plain
             mail_data = yaml.safe_load(f)
             config = _MailModel.model_validate(mail_data)
         except yaml.YAMLError:
-            raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
+            raise ValueError("Fichier de configuration mail invalide (YAML invalide)")
+            # raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
         except ValidationError:
-            raise ValueError("Invalid mail configuration file (Invalid YAML)")
+            raise ValueError("Fichier de configuration mail invalide (non conforme au schéma)")
+            # raise ValueError("Invalid mail configuration file (Invalid schema)")
     return MailInfo(
         config=config,
         message=message,

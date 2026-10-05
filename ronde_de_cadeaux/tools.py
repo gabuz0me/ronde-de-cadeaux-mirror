@@ -1,4 +1,4 @@
-"""Partie algo de la génération de graphe."""
+"""Boîte à outils."""
 
 import random
 from random import sample
@@ -8,16 +8,19 @@ T = TypeVar("T")
 
 
 def shuffled(successors: list[T]) -> list[T]:
-    """Renvoie une liste mélangée créée à partir d'un set."""
+    """Renvoie une liste mélangée créée à partir d'une liste."""
     return sample(successors, len(successors))
 
 
-def path_as_tuples(path: list[T]) -> list[tuple[T, T]]:
-    """Crée une liste de tuple `(gifter, giftee)` correspondant au `path` donné."""
+def list_as_cyclic_pairs(list_: list[T]) -> list[tuple[T, T]]:
+    """Crée une liste cyclique de tuple `(A, B)` correspondant à une liste `list_` donnée.
+
+    `[A, B, C]` -> `[(A,B), (B,C), (C,A)]`
+    """
     result: list[tuple[T, T]] = []
-    N = len(path)
+    N = len(list_)
     for i in range(N):
-        result.append((path[i], path[(i + 1) % N]))
+        result.append((list_[i], list_[(i + 1) % N]))
     return result
 
 
