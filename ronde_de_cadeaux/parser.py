@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from sys import argv
 from textwrap import dedent
+from typing import Any
 
 from ronde_de_cadeaux.graph_generation import create_people_and_groups_info
 
@@ -88,6 +89,11 @@ def _makeParser() -> argparse.ArgumentParser:
         help="Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà",
     )
 
+    parser.add_argument(
+        "--seed",
+        help="Utilise cette graine aléatoire pour le tirage",
+    )
+
     return parser
 
 
@@ -114,6 +120,7 @@ class ParserArgs:
         self.mail: MailInfo | None = None
         self.show: bool = args.show
         self.output: Path | None = args.output
+        self.seed: Any | None = args.seed
 
         if args.test_mail:
             if not args.auth:
