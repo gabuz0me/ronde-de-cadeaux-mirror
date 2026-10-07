@@ -22,6 +22,9 @@ def main() -> None:
         test_mail_sending(args.mail)
         sys.exit(0)
 
+    if args.seed:
+        random.seed(args.seed)
+
     try:
         people_graph = generate_people_graph_and_dict(args.people_and_groups)
     except GraphGenerationException as e:
