@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, override
+from typing import Any, NamedTuple, Protocol, override
 
 import yaml
 from pydantic import BaseModel, EmailStr, ValidationError
@@ -22,6 +22,32 @@ class _PersonModel(BaseModel):
 class _PeopleModel(BaseModel):
     people: dict[str, _PersonModel | None]
     groups: dict[str, list[str]] | None = None
+
+
+class PersonLike(Protocol):
+    """Has the fields of a `Person`."""
+
+    @property
+    def id(self) -> str: ...  # noqa
+    @property
+    def name(self) -> str: ...  # noqa
+    @property
+    def nickname(self) -> str: ...  # noqa
+    @property
+    def email(self) -> str | None: ...  # noqa
+    @property
+    def allowlist(self) -> list[str]: ...  # noqa
+    @property
+    def denylist(self) -> list[str]: ...  # noqa
+
+
+class PersonTuple(NamedTuple):  # noqa
+    id: str
+    name: str
+    nickname: str
+    email: str | None
+    allowlist: list[str]
+    denylist: list[str]
 
 
 class Person:

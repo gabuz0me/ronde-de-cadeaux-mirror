@@ -153,4 +153,7 @@ class ParserArgs:
             self.people_and_groups = create_people_and_groups_info(args.input, args.test_mail)
 
         if args.auth:
-            self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.plain_text, args.no_imap)
+            try:
+                self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.plain_text, args.no_imap)
+            except (ValueError, FileNotFoundError) as e:
+                raise ValueError(e)
