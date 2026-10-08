@@ -31,17 +31,13 @@ Homepage = "https://framagit.org/gabuzome/ronde-de-cadeaux"
 [tool.setuptools]
 packages = ["ronde_de_cadeaux"]
 
-[tool.basedpyright]
-pythonVersion = "3.12"
-reportAny = false
-reportExplicitAny = false
-reportAttributeAccessIssue = false
-reportMissingTypeStubs = false
-reportUnannotatedClassAttribute = false
-reportUnknownArgumentType = false
-reportUnknownMemberType = false
-reportUnknownVariableType = false
-reportUnusedCallResult = false
+# Ruff
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.ruff]
 line-length = 140
@@ -70,11 +66,21 @@ ignore = [
     "ANN201", # Missing return type annotation for public function
 ]
 
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
+# BasedPyright
 
-[tool.ruff.format]
-docstring-code-format = true
+[tool.basedpyright]
+pythonVersion = "3.12"
+reportAny = false
+reportExplicitAny = false
+reportAttributeAccessIssue = false
+reportMissingTypeStubs = false
+reportUnannotatedClassAttribute = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnusedCallResult = false
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+[[tool.basedpyright.executionEnvironments]]
+root = "tests"
+extraPaths = ["."]
+reportPrivateUsage = false
