@@ -109,9 +109,11 @@ class ParserArgs:
     Raise `ValueError` if anything is wrong.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, custom_args: str | list[str] | None = None) -> None:
         parser = _makeParser()
-        args = parser.parse_args()
+        if isinstance(custom_args, str):
+            custom_args = custom_args.split()
+        args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
 
         if len(argv) == 1:
             parser.print_help(sys.stderr)
@@ -148,7 +150,7 @@ class ParserArgs:
                 raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
                 # raise ValueError("Output file already exist, use `--force` to override")
 
-            self.people_and_groups = create_people_and_groups_info(args.test_mail, args.input)
+            self.people_and_groups = create_people_and_groups_info(args.input, args.test_mail)
 
         if args.auth:
             self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.plain_text, args.no_imap)

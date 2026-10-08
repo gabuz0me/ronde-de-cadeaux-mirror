@@ -11,11 +11,11 @@
 - [ ] Create templates
     - [ ] Create CLI to do so
     - [ ] Create template files
-- [ ] Tests
-    - [ ] Validation of input data
-        - [ ] Mail auth
-        - [ ] Message file
-        - [ ] Input data
-    - [ ] Unit tests everything
+- [x] Tests
+    - [x] Validation of input data
+        - [x] Mail auth
+        - [x] Message file
+        - [x] Input data
+    - [x] Unit tests everything
 - [ ] Support CSV input
-- [ ] Multiple cycle handling? Mabe not, or using a SAT solver as it is a hard problem to find the minimal covering hamiltonian cycles of a graph
+- [ ] Multiple cycle handling? Maybe not, or using a SAT solver as it is a hard problem to find the minimal covering hamiltonian cycles of a graph

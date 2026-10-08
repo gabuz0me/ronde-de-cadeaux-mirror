@@ -34,11 +34,14 @@ def format_message_people(gifter: Person, giftee: Person, template_message: str)
     msg = template_message.format_map(
         _DefaultFormatter(
             {
+                "gifter_id": gifter.id,
                 "gifter_name": gifter.name,
                 "gifter_nickname": gifter.nickname,
                 "gifter_mail": gifter.email,
+                "giftee_id": giftee.id,
                 "giftee_name": giftee.name,
                 "giftee_nickname": giftee.nickname,
+                "giftee_mail": giftee.email,
             }
         )
     )
@@ -147,7 +150,7 @@ def message_to_subject_body(message: str) -> tuple[str, str]:
     """À partir d'un message, extrait l'objet et le corps de texte."""
     as_list = message.split("\n")
     subject = as_list[0]
-    body = "".join(as_list[1:]).strip()
+    body = "\n".join(as_list[1:]).strip()  # HTML n'a que faire des \n mais le mode --plain-text en a besoin
 
     return subject, body
 
@@ -236,6 +239,8 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
 def create_mail_info(testing: bool, config_path: Path, message_path: Path, plain_text: bool, no_imap: bool) -> MailInfo:
     """Convertit les arguments relatifs aux mails venant du parser en une structure `MailInfo`.
 
+    Délègue à `_create_mail_info`.
+
     Lève:
       - `ValueError` si des données invalides sont données
       - `FileNotFoundError` si un des fichiers n'existe pas
@@ -243,6 +248,8 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path, plain
     ---
 
     Convert parser mail arguments into a proper `MailInfo` structure.
+
+    Delegates to `_create_mail_info`.
 
     Raise:
       - `ValueError` if invalid data is given.
@@ -261,13 +268,21 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path, plain
     with open(config_path, "r", encoding="utf-8") as f:
         try:
             mail_data = yaml.safe_load(f)
-            config = _MailModel.model_validate(mail_data)
         except yaml.YAMLError:
             raise ValueError("Fichier de configuration mail invalide (YAML invalide)")
             # raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
-        except ValidationError:
-            raise ValueError("Fichier de configuration mail invalide (non conforme au schéma)")
-            # raise ValueError("Invalid mail configuration file (Invalid schema)")
+
+    return _create_mail_info(testing, mail_data, message, plain_text, no_imap)
+
+
+def _create_mail_info(testing: bool, mail_data: Any, message: str, plain_text: bool, no_imap: bool) -> MailInfo:  # noqa: ANN401
+    """Version privée, utilisée pour les tests unitaires."""
+    try:
+        config = _MailModel.model_validate(mail_data)
+    except ValidationError:
+        raise ValueError("Fichier de configuration mail invalide (non conforme au schéma)")
+        # raise ValueError("Invalid mail configuration file (Invalid schema)")
+
     return MailInfo(
         config=config,
         message=message,

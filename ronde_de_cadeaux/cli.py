@@ -1,6 +1,7 @@
 """Point d'entrée de la CLI utilisée par `ronde`."""
 
 import datetime
+import random
 import sys
 
 from .graph_generation import GraphGenerationException, generate_people_graph_and_dict, get_people_cycle

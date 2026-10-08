@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import override
+from typing import Any, override
 
 import yaml
 from pydantic import BaseModel, EmailStr, ValidationError
@@ -20,16 +20,16 @@ class _PersonModel(BaseModel):
 
 
 class _PeopleModel(BaseModel):
-    people: dict[str, _PersonModel]
+    people: dict[str, _PersonModel | None]
     groups: dict[str, list[str]] | None = None
 
 
 class Person:
     """Structure permettant de s'abstraire d'un dictionnaire."""
 
-    def __init__(self, id_: str, data: _PersonModel) -> None:
+    def __init__(self, id_: str, data: _PersonModel | None) -> None:
         self.id = id_
-        self._data = data
+        self._data = data or _PersonModel()  # On s'assure de construire un objet par défaut
 
     @override
     def __repr__(self) -> str:
@@ -78,10 +78,12 @@ class PeopleAndGroups:
         return self.id_to_person.values()
 
 
-def create_people_and_groups_info(send_mail: bool, people_path: Path) -> PeopleAndGroups:
+def create_people_and_groups_info(people_path: Path, check_mail_address: bool = False) -> PeopleAndGroups:
     """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
 
     Ne fait que valider les données d'un point de vue de la structure, rien n'ai fait quant au graphe.
+
+    Délègue à `_create_people_and_groups_info`.
 
     Lève:
       - `ValueError` si le fichier est invalide.
@@ -93,6 +95,8 @@ def create_people_and_groups_info(send_mail: bool, people_path: Path) -> PeopleA
 
     Only validates the data, no graph shenanigans are performed (yet).
 
+    Delegates to `_create_people_and_groups_info`.
+
     Raise:
       - `ValueError` if invalid data is given.
       - `FileNotFoundError` if one of the files doesn't exist.
@@ -102,19 +106,25 @@ def create_people_and_groups_info(send_mail: bool, people_path: Path) -> PeopleA
     with open(people_path, "r", encoding="utf-8") as f:
         try:
             people_data = yaml.safe_load(f)
-            people = _PeopleModel.model_validate(people_data)
         except yaml.YAMLError:
             raise ValueError("Fichier de donnée des gens invalide (YAML invalide)")
             # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
-        except ValidationError:
-            raise ValueError("Fichier de donnée des gens invalide (non conforme au schéma)")
-            # raise ValueError("Invalid people configuration file (Invalid schema)")
+    return _create_people_and_groups_info(people_data, check_mail_address)
 
-    if send_mail:
+
+def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = False) -> PeopleAndGroups:  # noqa: ANN401
+    """Version privée, utilisée pour les tests unitaires."""
+    try:
+        people = _PeopleModel.model_validate(people_data)
+    except ValidationError:
+        raise ValueError("Fichier de donnée des gens invalide (non conforme au schéma)")
+        # raise ValueError("Invalid people configuration file (Invalid schema)")
+
+    if check_mail_address:
         for person in people.people.values():
-            if not person.email:
-                raise ValueError(f"L'envoi de mail est activé mais la personne '{f}' n'a pas d'adresse mail")
-                # raise ValueError(f"Mail sending is enabled, but person '{f}' has no email address")
+            if person is None or not person.email:
+                raise ValueError(f"L'envoi de mail est activé mais la personne '{person}' n'a pas d'adresse mail")
+                # raise ValueError(f"Mail sending is enabled, but person '{person}' has no email address")
 
     return PeopleAndGroups(
         {k: Person(k, v) for k, v in people.people.items()},
@@ -275,7 +285,7 @@ def generate_people_graph_and_dict(data: PeopleAndGroups) -> Graph:
 
         # On calcule toutes les personnes qu'on n'a pas le droit de tirer
         denylist = set()
-        if gifter.allowlist:
+        if gifter.denylist:
             denylist = get_people_from_people_and_group_list(people_name_set, groups, gifter.denylist, False, gifter.id)
 
         # On soustrait les deux
