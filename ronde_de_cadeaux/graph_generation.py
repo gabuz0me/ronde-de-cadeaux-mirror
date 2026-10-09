@@ -127,8 +127,8 @@ def create_people_and_groups_info(people_path: Path, check_mail_address: bool = 
       - `ValueError` if invalid data is given.
       - `FileNotFoundError` if one of the files doesn't exist.
     """
-    if not (f := people_path.exists()):
-        raise FileNotFoundError(f"File {f} doesn't exist")
+    if not people_path.exists():
+        raise FileNotFoundError(f"File {people_path} doesn't exist")
     with open(people_path, "r", encoding="utf-8") as f:
         try:
             people_data = yaml.safe_load(f)

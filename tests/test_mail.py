@@ -1,9 +1,10 @@
+from pathlib import Path
 from textwrap import dedent
 
 import yaml
 
 from ronde_de_cadeaux.graph_generation import _create_people_and_groups_info
-from ronde_de_cadeaux.mail import MailInfo, _create_mail_info, format_message_people, message_to_subject_body
+from ronde_de_cadeaux.mail import MailInfo, Message, _create_mail_info, format_message_people, message_to_subject_body
 from tests.base import RondeTest
 from tests.test_people import PEOPLE_MAXIMAL
 
@@ -50,15 +51,13 @@ class MailTest(RondeTest):
         return _create_mail_info(
             testing=True,  # Pas de demande de message
             mail_data=data,
-            message="",
-            plain_text=False,
+            message=None,
             no_imap=False,
         )
 
     def test_minimal(self):
         mail_info = self.to_mail_info(MINIMAL)
         self.assertEqual(mail_info.testing, True)
-        self.assertEqual(mail_info.plain_text, False)
         self.assertEqual(mail_info.copy_to_sent_folder, True)
 
         self.assertEqual(mail_info.smtp.hostname, "server.abc")
@@ -75,7 +74,6 @@ class MailTest(RondeTest):
     def test_maximal(self):
         mail_info = self.to_mail_info(MAXIMAL)
         self.assertEqual(mail_info.testing, True)
-        self.assertEqual(mail_info.plain_text, False)
         self.assertEqual(mail_info.copy_to_sent_folder, True)
 
         self.assertEqual(mail_info.smtp.hostname, "smtp.server.abc")
@@ -92,6 +90,35 @@ class MailTest(RondeTest):
     def test_invalid(self):
         with self.assertRaises(ValueError):
             self.to_mail_info(INVALID)
+
+    def test_text_format(self):
+        file_txt = Path(self.get_existing_file(".txt", "Text File"))
+        file_html = Path(self.get_existing_file(".html", "HTML File"))
+        file_pdf = Path(self.get_existing_file(".pdf", "PDF File"))
+
+        self.assertIsNone(Message.FromMessagePath(None, "auto"))
+        self.assertIsNone(Message.FromMessagePath(None, "txt"))
+        self.assertIsNone(Message.FromMessagePath(None, "html"))
+        self.assertIsNone(Message.FromMessagePath(None, "other"))
+
+        self.assertTrue((msg := Message.FromMessagePath(file_txt, "txt")) and msg.is_plain_text)
+        self.assertFalse((msg := Message.FromMessagePath(file_txt, "html")) and msg.is_plain_text)
+        self.assertTrue((msg := Message.FromMessagePath(file_txt, "auto")) and msg.is_plain_text)
+        with self.assertRaises(ValueError):
+            Message.FromMessagePath(file_txt, "other")
+
+        self.assertTrue((msg := Message.FromMessagePath(file_html, "txt")) and msg.is_plain_text)
+        self.assertFalse((msg := Message.FromMessagePath(file_html, "html")) and msg.is_plain_text)
+        self.assertFalse((msg := Message.FromMessagePath(file_html, "auto")) and msg.is_plain_text)
+        with self.assertRaises(ValueError):
+            Message.FromMessagePath(file_html, "other")
+
+        self.assertTrue((msg := Message.FromMessagePath(file_pdf, "txt")) and msg.is_plain_text)
+        self.assertFalse((msg := Message.FromMessagePath(file_pdf, "html")) and msg.is_plain_text)
+        with self.assertRaises(ValueError):
+            Message.FromMessagePath(file_pdf, "auto")
+        with self.assertRaises(ValueError):
+            Message.FromMessagePath(file_pdf, "other")
 
     def test_mail_subject_body(self):
         subject, body = message_to_subject_body(MESSAGE)
