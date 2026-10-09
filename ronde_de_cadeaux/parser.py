@@ -29,10 +29,9 @@ def _makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "-t",
         "--test-mail",
         action="store_true",
-        help="Tester la configuration de mail (si --auth est fourni)",
+        help="Tester la configuration de mail",
     )
 
     parser.add_argument(
@@ -46,11 +45,10 @@ def _makeParser() -> argparse.ArgumentParser:
         "-m",
         "--message",
         type=Path,
-        help="Fichier mail type",
+        help="Fichier patron du message envoyé par mail",
     )
 
     parser.add_argument(
-        "-n",
         "--no-imap",
         help="Ne pas copier les mails dans la boîte d'envoi",
         action="store_true",
@@ -64,10 +62,10 @@ def _makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "-i",
-        "--input",
+        "-p",
+        "--people",
         type=Path,
-        help="Fichier yaml des données d'entrer à parser",
+        help="Fichier des personnes",
     )
 
     parser.add_argument(
@@ -144,15 +142,15 @@ class ParserArgs:
             if args.auth and not args.message:
                 raise ValueError("Fichier de message manquant pour l'envoi des mails")
                 # raise ValueError("Missing message file for email sending")
-            if not args.input:
-                raise ValueError("Fichier d'entrée manquant")
+            if not args.people:
+                raise ValueError("Fichier décrivant les personnes manquant")
                 # raise ValueError("Missing input file for the draw")
             if self.output and self.output.exists() and not args.force:
                 raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
                 # raise ValueError("Output file already exist, use `--force` to override")
 
             try:
-                self.people_and_groups = create_people_and_groups_info(args.input, args.test_mail)
+                self.people_and_groups = create_people_and_groups_info(args.people, args.test_mail)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e)
 
