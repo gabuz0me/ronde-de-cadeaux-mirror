@@ -57,9 +57,10 @@ def _makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "--plain-text",
-        action="store_true",
-        help="Envoyer un mail au format texte à la place de HTML",
+        "--text-format",
+        choices=["html", "txt", "auto"],
+        default="auto",
+        help="Formatage du corps du mail (par défaut `auto`, essaye de détecter)",
     )
 
     parser.add_argument(
@@ -150,10 +151,13 @@ class ParserArgs:
                 raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
                 # raise ValueError("Output file already exist, use `--force` to override")
 
-            self.people_and_groups = create_people_and_groups_info(args.input, args.test_mail)
+            try:
+                self.people_and_groups = create_people_and_groups_info(args.input, args.test_mail)
+            except (ValueError, FileNotFoundError) as e:
+                raise ValueError(e)
 
         if args.auth:
             try:
-                self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.plain_text, args.no_imap)
+                self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.text_format.lower(), args.no_imap)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e)

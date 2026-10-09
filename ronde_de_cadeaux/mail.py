@@ -13,7 +13,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from pathlib import Path
-from typing import Any, ClassVar, NamedTuple
+from typing import Any, ClassVar, NamedTuple, Self
 
 import yaml
 from pydantic import BaseModel, ValidationError
@@ -71,6 +71,32 @@ class _MailModel(BaseModel):
     sender_name: str | None = None
 
 
+class Message(NamedTuple):
+    """Un message et son format."""
+
+    text: str
+    is_plain_text: bool
+
+    @classmethod
+    def FromMessagePath(cls, message_path: Path | None, text_format: str) -> Self | None:
+        """Crée un message ou pas selon le chemin et le format précisé."""
+        if message_path:
+            with open(message_path, "r", encoding="utf-8") as f:
+                message_text = f.read()
+            if text_format == "auto":
+                text_format = message_path.suffix.lower()[1:]
+            match text_format:
+                case "txt":
+                    plain_text = True
+                case "html":
+                    plain_text = False
+                case _:
+                    raise ValueError("Format invalide pour l'argument `--text-format`")
+            return cls(message_text, plain_text)
+        else:
+            return None
+
+
 class MailInfo:
     """Classe contenant les paramètres relatifs aux mails.
 
@@ -81,7 +107,7 @@ class MailInfo:
 
     ImapInfo = NamedTuple("_ImapInfo", [("hostname", str), ("port", int), ("sent_folder", str)])
 
-    def __init__(self, config: _MailModel, message: str | None, copy_to_imap: bool, plain_text: bool, testing: bool) -> None:
+    def __init__(self, config: _MailModel, message: Message | None, copy_to_imap: bool, testing: bool) -> None:
         self.smtp = config.smtp
         self.imap = self.ImapInfo(
             config.imap.hostname if config.imap and config.imap.hostname else self.smtp.hostname,
@@ -94,7 +120,6 @@ class MailInfo:
         self.sender_name = config.sender_name if config.sender_name else self.username
         self.message = message
         self.copy_to_sent_folder = copy_to_imap
-        self.plain_text = plain_text
         self.testing = testing
 
     @property
@@ -193,14 +218,14 @@ def test_mail_sending(mail_info: MailInfo) -> None:
     subject = "Test de configuration Ronde de Cadeaux"
     body = "Ça a l'air de marcher :D"
     if mail_info.message:
-        formatted = format_message_people(_to_person_tuple("offreureuse"), _to_person_tuple("destinataire"), mail_info.message)
+        formatted = format_message_people(_to_person_tuple("offreureuse"), _to_person_tuple("destinataire"), mail_info.message.text)
         subject, body = message_to_subject_body(formatted)
 
     mail = MIMEMultipart()
     mail["From"] = sender
     mail["To"] = sender
     mail["Subject"] = _to_header(subject)
-    mail.attach(MIMEText(body, "plain" if mail_info.plain_text else "html"))
+    mail.attach(MIMEText(body, "plain" if mail_info.message is None or mail_info.message.is_plain_text else "html"))
 
     try:
         smtp_server.sendmail(mail_info.sender_mail, mail_info.sender_mail, mail.as_string())
@@ -239,10 +264,10 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
             mail = MIMEMultipart()
             mail["From"] = sender
             mail["To"] = formataddr((_to_header(gifter.name), gifter.email))
-            formatted = format_message_people(gifter, giftee, mail_info.message)
+            formatted = format_message_people(gifter, giftee, mail_info.message.text)
             subject, body = message_to_subject_body(formatted)
             mail["Subject"] = _to_header(subject)
-            mail.attach(MIMEText(body, "plain" if mail_info.plain_text else "html"))
+            mail.attach(MIMEText(body, "plain" if mail_info.message.is_plain_text else "html"))
 
             smtp_server.sendmail(mail_info.sender_mail, gifter.email, mail.as_string())
             if mail_info.copy_to_sent_folder:
@@ -261,7 +286,7 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
         smtp_server.quit()
 
 
-def create_mail_info(testing: bool, config_path: Path, message_path: Path | None, plain_text: bool, no_imap: bool) -> MailInfo:
+def create_mail_info(testing: bool, config_path: Path, message_path: Path | None, text_format: str, no_imap: bool) -> MailInfo:
     """Convertit les arguments relatifs aux mails venant du parser en une structure `MailInfo`.
 
     Délègue à `_create_mail_info`.
@@ -281,14 +306,11 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path | None
       - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not config_path.exists():
-        raise FileNotFoundError(f"Le fichier `{config_path}` n'existe pas")
+        raise FileNotFoundError(f"Le fichier de configuration mail `{config_path}` n'existe pas")
     if message_path and not message_path.exists():
-        raise FileNotFoundError(f"Le fichier `{message_path}` n'existe pas")
+        raise FileNotFoundError(f"Le fichier de message `{message_path}` n'existe pas")
 
-    message = None
-    if message_path:
-        with open(message_path, "r", encoding="utf-8") as f:
-            message = f.read()
+    message = Message.FromMessagePath(message_path, text_format)
 
     with open(config_path, "r", encoding="utf-8") as f:
         try:
@@ -297,10 +319,10 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path | None
             raise ValueError("Fichier de configuration mail invalide (YAML invalide)")
             # raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
 
-    return _create_mail_info(testing, mail_data, message, plain_text, no_imap)
+    return _create_mail_info(testing, mail_data, message, no_imap)
 
 
-def _create_mail_info(testing: bool, mail_data: Any, message: str | None, plain_text: bool, no_imap: bool) -> MailInfo:  # noqa: ANN401
+def _create_mail_info(testing: bool, mail_data: Any, message: Message | None, no_imap: bool) -> MailInfo:  # noqa: ANN401
     """Version privée, utilisée pour les tests unitaires."""
     try:
         config = _MailModel.model_validate(mail_data)
@@ -312,6 +334,5 @@ def _create_mail_info(testing: bool, mail_data: Any, message: str | None, plain_
         config=config,
         message=message,
         copy_to_imap=not no_imap,
-        plain_text=plain_text,
         testing=testing,
     )

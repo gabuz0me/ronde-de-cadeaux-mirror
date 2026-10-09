@@ -15,7 +15,7 @@ class ExampleTest(RondeTest):
     def test_people_data(self):
         """Teste si les données fournies en exemple fonctionnent réellement."""
         try:
-            with open(self.people) as file:
+            with open(self.example_people) as file:
                 data = yaml.safe_load(file)
             pag = _create_people_and_groups_info(data)
             gra = generate_people_graph_and_dict(pag)
@@ -26,8 +26,8 @@ class ExampleTest(RondeTest):
     def test_mail_config(self):
         """Teste si le fichier d'example de configuration mail est valide."""
         try:
-            with open(self.mail) as file:
+            with open(self.example_mail) as file:
                 data = yaml.safe_load(file)
-            _create_mail_info(True, data, "", True, True)
+            _create_mail_info(True, data, None, True)
         except Exception as e:
             self.fail(e)
