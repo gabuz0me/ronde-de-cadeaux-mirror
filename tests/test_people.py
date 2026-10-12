@@ -1,3 +1,4 @@
+import random
 from typing import Any
 
 import yaml
@@ -6,8 +7,9 @@ from ronde_de_cadeaux.graph_generation import (
     GraphGenerationException,
     GraphGenerationExceptionType,
     _create_people_and_groups_info,
-    generate_people_graph_and_dict,
+    generate_people_graph,
 )
+from ronde_de_cadeaux.tools import compute_hamiltonian_cycle
 from tests.base import RondeTest
 
 DataAndBool = tuple[dict[str, Any], bool]  # Données des gens associées à un booléen "envoyer les mails ?"
@@ -109,7 +111,7 @@ class GraphGenerationTesting(RondeTest):
         people = _create_people_and_groups_info(data)
         try:
             # Alice ne peut offrir de cadeau à personne, mais ça n'est pas une erreur à ce stade
-            graph = generate_people_graph_and_dict(people)
+            graph = generate_people_graph(people)
         except GraphGenerationException as e:
             self.fail(e)
         self.assertEqual(graph["Alice"], [])
@@ -123,7 +125,7 @@ class GraphGenerationTesting(RondeTest):
         }
         people = _create_people_and_groups_info(data)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people)
+            generate_people_graph(people)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_LISTS)
 
     def test_invalid_person_in_groups(self):
@@ -138,7 +140,7 @@ class GraphGenerationTesting(RondeTest):
         }
         people = _create_people_and_groups_info(data)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people)
+            generate_people_graph(people)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_CLUSTERS)
 
     def test_infinite_recursion(self):
@@ -156,7 +158,7 @@ class GraphGenerationTesting(RondeTest):
         }
         people = _create_people_and_groups_info(data)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people)
+            generate_people_graph(people)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.INFINITE_RECURSION)
 
     def test_group_name_also_person(self):
@@ -171,7 +173,7 @@ class GraphGenerationTesting(RondeTest):
         }
         people = _create_people_and_groups_info(data)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people)
+            generate_people_graph(people)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.GROUP_IS_ALSO_PERSON)
 
     def test_empty_list_of_people(self):
@@ -186,10 +188,42 @@ class GraphGenerationTesting(RondeTest):
 
         people_A = _create_people_and_groups_info(data_A)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people_A)
+            generate_people_graph(people_A)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.PEOPLE_EMPTY)
 
         people_B = _create_people_and_groups_info(data_B)
         with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph_and_dict(people_B)
+            generate_people_graph(people_B)
         self.assertEqual(context.exception.type, GraphGenerationExceptionType.PEOPLE_EMPTY)
+
+    def test_random_seed(self):
+        """Bon c'est pas opti.
+
+        Dans l'idée on génère des graphes aléatoire, une fois sans seed et on regarde si tous les résultats
+        sont différents, une fois avec et on regarde si tous les résultats sont pareils. SVP pas de jugement.
+        """
+        data = {
+            "people": {
+                "Alice": {},
+                "Bob": {},
+                "Carole": {},
+                "Diana": {},
+                "Ève": {},
+                "Floréal": {},
+                "Gargamel": {},
+            },
+        }
+        pag = _create_people_and_groups_info(data)
+        graph = generate_people_graph(pag)
+
+        NB = 10
+        SEED = 1337
+
+        results_random = {hash(tuple(compute_hamiltonian_cycle(graph))) for _ in range(NB)}  # pyright: ignore[reportArgumentType]
+        results_fixed = set()
+        for _ in range(NB):
+            random.seed(SEED)
+            results_fixed.add(hash(tuple(compute_hamiltonian_cycle(graph))))  # pyright: ignore[reportArgumentType]
+
+        self.assertEqual(len(results_random), NB)
+        self.assertEqual(len(results_fixed), 1)
