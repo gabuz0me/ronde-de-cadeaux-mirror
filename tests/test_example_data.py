@@ -2,7 +2,7 @@ import yaml
 
 from ronde_de_cadeaux.graph_generation import (
     _create_people_and_groups_info,
-    generate_people_graph_and_dict,
+    generate_people_graph,
 )
 from ronde_de_cadeaux.mail import _create_mail_info
 from ronde_de_cadeaux.tools import compute_hamiltonian_cycle
@@ -18,7 +18,7 @@ class ExampleTest(RondeTest):
             with open(self.example_people) as file:
                 data = yaml.safe_load(file)
             pag = _create_people_and_groups_info(data)
-            gra = generate_people_graph_and_dict(pag)
+            gra = generate_people_graph(pag)
             compute_hamiltonian_cycle(gra)
         except Exception as e:
             self.fail(e)

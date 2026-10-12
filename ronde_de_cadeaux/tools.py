@@ -30,7 +30,7 @@ Graph = dict[str, list[str]]
 def compute_hamiltonian_cycle(graph: Graph, current_node: str | None = None, path: list[str] | None = None) -> list[str] | None:
     """Algorithme récursif permettant de trouver un cycle hamiltonien dans un graphe donné."""
     if current_node is None:
-        current_node = random.choice(list(graph))
+        current_node = random.choice(sorted(graph))  # sorted pour avoir un comportement déterministe
 
     if path is None:
         path = []

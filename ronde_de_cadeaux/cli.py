@@ -4,7 +4,7 @@ import datetime
 import random
 import sys
 
-from .graph_generation import GraphGenerationException, generate_people_graph_and_dict, get_people_cycle
+from .graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
 from .logger import logger
 from .mail import send_mails, test_mail_sending
 from .parser import ParserArgs
@@ -27,7 +27,7 @@ def main() -> None:
         random.seed(args.seed)
 
     try:
-        people_graph = generate_people_graph_and_dict(args.people_and_groups)
+        people_graph = generate_people_graph(args.people_and_groups)
     except GraphGenerationException as e:
         logger.error(f"Erreur dans la génération du graphe : {e.message}.")
         sys.exit(1)

@@ -286,7 +286,7 @@ def get_people_from_people_and_group_list(
     return final_set
 
 
-def generate_people_graph_and_dict(data: PeopleAndGroups) -> Graph:
+def generate_people_graph(data: PeopleAndGroups) -> Graph:
     """Génère le graphe final.
 
     Crée un dictionnaire dont les clés sont les participant⋅e⋅s de la ronde
@@ -321,7 +321,7 @@ def generate_people_graph_and_dict(data: PeopleAndGroups) -> Graph:
         final_set.discard(gifter.id)
 
         # Enfin on transform le Set en List et on le met dans le graphe final
-        graph[gifter.id] = list(final_set)
+        graph[gifter.id] = sorted(final_set)  # sorted pour avoir un comportement déterministe
 
     return graph
 
