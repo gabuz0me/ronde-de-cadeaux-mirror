@@ -84,7 +84,9 @@ class Message(NamedTuple):
             with open(message_path, "r", encoding="utf-8") as f:
                 message_text = f.read()
             if text_format == "auto":
-                text_format = message_path.suffix.lower()[1:]
+                text_format = message_path.suffix.lower()
+                if text_format.startswith("."):
+                    text_format = text_format[1:]
             match text_format:
                 case "txt":
                     plain_text = True
