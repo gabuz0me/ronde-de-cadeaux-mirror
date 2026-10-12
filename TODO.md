@@ -17,5 +17,5 @@
         - [x] Message file
         - [x] Input data
     - [x] Unit tests everything
-- [ ] Support CSV input
+- [x] Support CSV input
 - [ ] Multiple cycle handling? Maybe not, or using a SAT solver as it is a hard problem to find the minimal covering hamiltonian cycles of a graph

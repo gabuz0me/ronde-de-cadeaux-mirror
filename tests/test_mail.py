@@ -3,10 +3,10 @@ from textwrap import dedent
 
 import yaml
 
-from ronde_de_cadeaux.graph_generation import _create_people_and_groups_info
 from ronde_de_cadeaux.mail import MailInfo, Message, _create_mail_info, format_message_people, message_to_subject_body
+from ronde_de_cadeaux.people_graph_generation import _create_people_and_groups_info
 from tests.base import RondeTest
-from tests.test_people import PEOPLE_MAXIMAL
+from tests.test_people import YAML_PEOPLE_MAXIMAL
 
 MESSAGE = """\
 SUBJECT IS HERE
@@ -134,7 +134,7 @@ class MailTest(RondeTest):
         )
 
     def test_format_message_people(self):
-        data = yaml.safe_load(PEOPLE_MAXIMAL)
+        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
 
         gifter = people.id_to_person["Alice"]

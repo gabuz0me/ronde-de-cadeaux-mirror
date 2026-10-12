@@ -1,5 +1,6 @@
 """Ici on s'occupe de générer les graphes de qui peut tirer qui."""
 
+import csv
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
@@ -104,6 +105,33 @@ class PeopleAndGroups:
         return self.id_to_person.values()
 
 
+CSV_DELIMITER = ";"
+
+
+def _csv_list_to_data(list_: list[list[str]]) -> dict[str, dict[str, Any]]:
+    people_dict = {}
+    for row in list_:
+        match len(row):
+            case 0:
+                continue
+            case 1:
+                row.append("")
+            case 2:
+                pass
+            case _:
+                row = row[0:2]
+        name, email = row
+        name = name.strip()
+        email = email.strip()
+        if name == "":
+            raise ValueError("Une ligne n'a pas d'identifiant")
+        if name not in people_dict:
+            people_dict[name] = None if email == "" else {"email": email}
+        else:
+            raise ValueError("Deux personnes ont le même nom")
+    return {"people": people_dict}
+
+
 def create_people_and_groups_info(people_path: Path, check_mail_address: bool = False) -> PeopleAndGroups:
     """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
 
@@ -129,12 +157,21 @@ def create_people_and_groups_info(people_path: Path, check_mail_address: bool = 
     """
     if not people_path.exists():
         raise FileNotFoundError(f"File {people_path} doesn't exist")
+
+    ext = people_path.suffix
     with open(people_path, "r", encoding="utf-8") as f:
-        try:
-            people_data = yaml.safe_load(f)
-        except yaml.YAMLError:
-            raise ValueError("Fichier de donnée des gens invalide (YAML invalide)")
-            # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
+        if ext in [".yaml", ".yml"]:
+            try:
+                people_data = yaml.safe_load(f)
+            except yaml.YAMLError:
+                raise ValueError("Fichier de configuration des personnes invalide (YAML invalide)")
+                # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
+        elif ext in [".csv", ".txt"]:
+            r = csv.reader(f, delimiter=CSV_DELIMITER)
+            people_data = _csv_list_to_data(list(r))
+        else:
+            raise ValueError("Impossible de déterminer le type de fichier de configuration des personnes")
+
     return _create_people_and_groups_info(people_data, check_mail_address)
 
 
@@ -143,7 +180,7 @@ def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = 
     try:
         people = _PeopleModel.model_validate(people_data)
     except ValidationError:
-        raise ValueError("Fichier de donnée des gens invalide (non conforme au schéma)")
+        raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)")
         # raise ValueError("Invalid people configuration file (Invalid schema)")
 
     if check_mail_address:

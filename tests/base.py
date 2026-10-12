@@ -11,8 +11,12 @@ class RondeTest(unittest.TestCase):
     examples: Path = Path(__file__).parent.parent / "examples"
 
     @property
-    def example_people(self) -> str:
+    def example_people_yaml(self) -> str:
         return str(self.examples / "people.yaml")
+
+    @property
+    def example_people_csv(self) -> str:
+        return str(self.examples / "people.csv")
 
     @property
     def example_mail(self) -> str:

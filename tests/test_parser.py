@@ -10,7 +10,7 @@ class ParserTest(RondeTest):
 
     def test_at_least_one_action(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--people", self.example_people])
+            _ = ParserArgs(custom_args=["--people", self.example_people_yaml])
 
     def test_auth_no_message(self):
         with self.assertRaises(ValueError):
@@ -22,7 +22,7 @@ class ParserTest(RondeTest):
 
     def test_already_existing_file(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--people", self.example_people, "--output", self.get_existing_file(".txt")])
+            _ = ParserArgs(custom_args=["--people", self.example_people_yaml, "--output", self.get_existing_file(".txt")])
 
     def test_non_existing_files(self):
         with self.assertRaises(ValueError):
@@ -36,7 +36,7 @@ class ParserTest(RondeTest):
         args = ParserArgs(
             custom_args=[
                 "--people",
-                self.example_people,
+                self.example_people_yaml,
                 "--output",
                 output,
                 "--force",
