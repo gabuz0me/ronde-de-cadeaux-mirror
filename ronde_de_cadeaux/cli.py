@@ -4,10 +4,10 @@ import datetime
 import random
 import sys
 
-from .graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
 from .logger import logger
 from .mail import send_mails, test_mail_sending
 from .parser import ParserArgs
+from .people_graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
 from .tools import compute_hamiltonian_cycle
 
 

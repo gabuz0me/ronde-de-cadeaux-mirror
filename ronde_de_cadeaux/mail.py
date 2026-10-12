@@ -18,8 +18,8 @@ from typing import Any, ClassVar, NamedTuple, Self
 import yaml
 from pydantic import BaseModel, ValidationError
 
-from .graph_generation import Draw, PersonLike, PersonTuple
 from .logger import logger
+from .people_graph_generation import Draw, PersonLike, PersonTuple
 
 
 class _DefaultFormatter(dict[str, Any]):

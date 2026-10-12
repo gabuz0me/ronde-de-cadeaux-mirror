@@ -1,12 +1,16 @@
 import random
+from csv import reader
+from textwrap import dedent
 from typing import Any
 
 import yaml
 
-from ronde_de_cadeaux.graph_generation import (
+from ronde_de_cadeaux.people_graph_generation import (
+    CSV_DELIMITER,
     GraphGenerationException,
     GraphGenerationExceptionType,
     _create_people_and_groups_info,
+    _csv_list_to_data,
     generate_people_graph,
 )
 from ronde_de_cadeaux.tools import compute_hamiltonian_cycle
@@ -15,12 +19,12 @@ from tests.base import RondeTest
 DataAndBool = tuple[dict[str, Any], bool]  # Données des gens associées à un booléen "envoyer les mails ?"
 
 
-PEOPLE_MINIMAL = """\
+YAML_PEOPLE_MINIMAL = """\
 people:
     Alice:
 """
 
-PEOPLE_MAXIMAL = """\
+YAML_PEOPLE_MAXIMAL = """\
 people:
     Alice:
         display_name: "Alice Ecila"
@@ -55,7 +59,7 @@ class PeopleValidationTest(RondeTest):
     def test_invalid_data(self):
         data_list: list[DataAndBool] = []
         data_list.append(({}, False))  # Vide et incorrect, il manque "people"
-        data_list.append((yaml.safe_load(PEOPLE_MINIMAL), True))
+        data_list.append((yaml.safe_load(YAML_PEOPLE_MINIMAL), True))
 
         for data in data_list:
             with self.assertRaises(ValueError):
@@ -67,8 +71,8 @@ class PeopleValidationTest(RondeTest):
         # Vide mais correct quant au schéma car contient la clé "people".
         # Ce cas est détecté lors de la génération du graphe.
         data_list.append(({"people": {}}, False))
-        data_list.append((yaml.safe_load(PEOPLE_MINIMAL), False))
-        data_list.append((yaml.safe_load(PEOPLE_MAXIMAL), True))
+        data_list.append((yaml.safe_load(YAML_PEOPLE_MINIMAL), False))
+        data_list.append((yaml.safe_load(YAML_PEOPLE_MAXIMAL), True))
 
         for data in data_list:
             try:
@@ -77,7 +81,7 @@ class PeopleValidationTest(RondeTest):
                 self.fail(e)
 
     def test_valid_fields_minimal(self):
-        data = yaml.safe_load(PEOPLE_MINIMAL)
+        data = yaml.safe_load(YAML_PEOPLE_MINIMAL)
         people = _create_people_and_groups_info(data)
         alice = people.id_to_person.get("Alice")
         assert alice is not None
@@ -90,7 +94,7 @@ class PeopleValidationTest(RondeTest):
         self.assertEqual(alice.denylist, [])
 
     def test_valid_fields_maximal(self):
-        data = yaml.safe_load(PEOPLE_MAXIMAL)
+        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
         alice = people.id_to_person.get("Alice")
         assert alice is not None
@@ -102,12 +106,66 @@ class PeopleValidationTest(RondeTest):
         self.assertEqual(set(alice.allowlist), {"Alice", "Bob"})
         self.assertEqual(set(alice.denylist), {"Bob", "Eve"})
 
+    def test_csv_min(self):
+        text = dedent("""\
+            A
+            B
+        """).split("\n")
+        data = _csv_list_to_data(list(reader(text, delimiter=CSV_DELIMITER)))
+        try:
+            _create_people_and_groups_info(data)
+        except ValueError as e:
+            self.fail(e)
+
+    def test_csv_max(self):
+        text = dedent("""\
+            Alice, cette génie    ;    alice@eci.la
+              Robert "Bob" Trebor   ;  robert@treb.or   ;; une 4e colonne??!
+        """).split("\n")
+        data = _csv_list_to_data(list(reader(text, delimiter=CSV_DELIMITER)))
+        try:
+            pag = _create_people_and_groups_info(data, check_mail_address=True)
+            bob = pag.id_to_person.get('Robert "Bob" Trebor')
+            assert bob is not None
+            self.assertEqual(bob.email, "robert@treb.or")
+        except ValueError as e:
+            self.fail(e)
+
+    def test_csv_invalid(self):
+        invalid_text_list = [
+            dedent("""\
+                A; a@a.a
+                ; b@b.b
+            """),  # Pas d'id
+            dedent("""\
+                A; a@a.a
+                B;
+            """),  # Pas de mail
+            dedent("""\
+                A; a@a.a
+                B
+            """),  # Pas de mail
+            dedent("""\
+                A; a@a.a
+                B; mail
+            """),  # mail invalide
+            dedent("""\
+                A; a1@a1.a1
+                A; a2@a2.a2
+                B; b@b.b
+            """),  # Deux personnes ont le même nom
+        ]
+        for text in invalid_text_list:
+            with self.assertRaises(ValueError):
+                data = _csv_list_to_data(list(reader(text.split("\n"), delimiter=CSV_DELIMITER)))
+                _create_people_and_groups_info(data, check_mail_address=True)
+
 
 class GraphGenerationTesting(RondeTest):
     """Teste la construction du graphe (groupes, allow/denylist, erreurs) à partir de `PeopleAndGroups`."""
 
     def test_valid_data(self):
-        data = yaml.safe_load(PEOPLE_MAXIMAL)
+        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
         try:
             # Alice ne peut offrir de cadeau à personne, mais ça n'est pas une erreur à ce stade

@@ -1,10 +1,12 @@
+from pathlib import Path
+
 import yaml
 
-from ronde_de_cadeaux.graph_generation import (
-    _create_people_and_groups_info,
+from ronde_de_cadeaux.mail import _create_mail_info
+from ronde_de_cadeaux.people_graph_generation import (
+    create_people_and_groups_info,
     generate_people_graph,
 )
-from ronde_de_cadeaux.mail import _create_mail_info
 from ronde_de_cadeaux.tools import compute_hamiltonian_cycle
 from tests.base import RondeTest
 
@@ -12,12 +14,19 @@ from tests.base import RondeTest
 class ExampleTest(RondeTest):
     """Teste la validation et la construction de `PeopleAndGroups` à partir de données brutes."""
 
-    def test_people_data(self):
-        """Teste si les données fournies en exemple fonctionnent réellement."""
+    def test_people_data_yaml(self):
+        """Teste si les données yaml fournies en exemple fonctionnent réellement."""
         try:
-            with open(self.example_people) as file:
-                data = yaml.safe_load(file)
-            pag = _create_people_and_groups_info(data)
+            pag = create_people_and_groups_info(Path(self.example_people_yaml))
+            gra = generate_people_graph(pag)
+            compute_hamiltonian_cycle(gra)
+        except Exception as e:
+            self.fail(e)
+
+    def test_people_data_csv(self):
+        """Teste si les données csv fournies en exemple fonctionnent réellement."""
+        try:
+            pag = create_people_and_groups_info(Path(self.example_people_csv))
             gra = generate_people_graph(pag)
             compute_hamiltonian_cycle(gra)
         except Exception as e:

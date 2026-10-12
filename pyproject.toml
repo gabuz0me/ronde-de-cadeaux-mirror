@@ -52,6 +52,7 @@ select = [
     "I",   # isort
 ]
 ignore = [
+    "E741",   # Ambiguous variable name
     "D105",   # Missing docstring in magic method
     "D418",   # No docstrings in @overload decorated functions
     "ANN204", # Missing return type annotation for special method `__init__`

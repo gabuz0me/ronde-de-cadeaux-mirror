@@ -6,7 +6,7 @@ from sys import argv
 from textwrap import dedent
 from typing import Any
 
-from ronde_de_cadeaux.graph_generation import create_people_and_groups_info
+from ronde_de_cadeaux.people_graph_generation import create_people_and_groups_info
 
 from .mail import MailInfo, create_mail_info
 from .parser_translation import convert_argparse_to_french
@@ -65,7 +65,7 @@ def _makeParser() -> argparse.ArgumentParser:
         "-p",
         "--people",
         type=Path,
-        help="Fichier des personnes",
+        help="Fichier des personnes (yaml ou csv, voir la documentation pour le schéma)",
     )
 
     parser.add_argument(
