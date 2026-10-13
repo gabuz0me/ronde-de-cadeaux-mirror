@@ -12,10 +12,10 @@ requires-python = ">=3.12"
 license = "CECILL-2.1"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Topic :: Games/Entertainment",
+    "Programming Language :: Python",
     "Topic :: Communications :: Email",
+    "Topic :: Games/Entertainment",
 ]
 dependencies = ["pyyaml", "pydantic[email]"]
 
@@ -44,27 +44,27 @@ line-length = 140
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle
+    "ANN", # flake8-annotations
     "D",   # pydocstyle
     "DOC", # pydoclint
-    "ANN", # flake8-annotations
+    "E",   # pycodestyle
     "F",   # Pyflakes
     "I",   # isort
 ]
 ignore = [
-    "E741",   # Ambiguous variable name
+    "ANN204", # Missing return type annotation for special method `__init__`
     "D105",   # Missing docstring in magic method
     "D418",   # No docstrings in @overload decorated functions
-    "ANN204", # Missing return type annotation for special method `__init__`
+    "E741",   # Ambiguous variable name
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
+    "ANN201", # Missing return type annotation for public function
     "D100",   # Missing docstring in public module
     "D101",   # Missing docstring in public class
     "D102",   # Missing docstring in public method
     "D103",   # Missing docstring in public function
-    "ANN201", # Missing return type annotation for public function
 ]
 
 # BasedPyright
@@ -72,8 +72,8 @@ ignore = [
 [tool.basedpyright]
 pythonVersion = "3.12"
 reportAny = false
-reportExplicitAny = false
 reportAttributeAccessIssue = false
+reportExplicitAny = false
 reportMissingTypeStubs = false
 reportUnannotatedClassAttribute = false
 reportUnknownArgumentType = false
