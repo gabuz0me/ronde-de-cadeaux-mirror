@@ -9,11 +9,21 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true,
-    "cSpell.words": [
+    "cSpell.words": [ // Laisser trié alphabétiquement avec virgule terminale
+        "Bœbélius",
+        "Cärol",
+        "Ecila",
+        "Isöbel",
+        "Trebor",
+        "cellui",
+        "framagit",
         "françois",
         "giftee",
         "gifter",
         "hamiltonian",
-        "offreureuse"
+        "jaaj",
+        "offreureuse",
+        "polycule",
+        "starttls",
     ],
 }

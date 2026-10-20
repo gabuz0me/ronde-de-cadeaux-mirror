@@ -1,5 +1,11 @@
-# Ronde de cadeaux
+<div align=center>
 
-[![en](https://img.shields.io/badge/Language-English-red.svg)](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README-en.md) [![en](https://img.shields.io/badge/Langue-Français-blue.svg)](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README.md)
+# Ronde de Cadeaux
+
+❖ [Français](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README.md) ❖ **English** ❖
+
+</div>
+
+---
 
 **Ronde de cadeaux** is a tool....... 

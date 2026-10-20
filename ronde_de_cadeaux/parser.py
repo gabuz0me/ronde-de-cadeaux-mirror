@@ -7,7 +7,10 @@ from textwrap import dedent
 from typing import Any
 
 from ronde_de_cadeaux.people_graph_generation import create_people_and_groups_info
+from ronde_de_cadeaux.tools import fill_dedent
 
+from . import __version__
+from .logger import logger
 from .mail import MailInfo, create_mail_info
 from .parser_translation import convert_argparse_to_french
 
@@ -22,10 +25,14 @@ def _makeParser() -> argparse.ArgumentParser:
         description=dedent("""\
             Ce programme permet de générer un tirage de gens à qui offrir
             des cadeaux en prenant en compte un système de contraintes
-            complexes. Si un chemin hamiltonien est trouvé, un mail est
-            envoyé à chacun⋅e des participant⋅e⋅s leur indiquant à qui
-            offrir un présent.
+            complexes.
             """),
+    )
+
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Afficher le numéro de version et quitter",
     )
 
     parser.add_argument(
@@ -65,7 +72,7 @@ def _makeParser() -> argparse.ArgumentParser:
         "-p",
         "--people",
         type=Path,
-        help="Fichier des personnes (yaml ou csv, voir la documentation pour le schéma)",
+        help="Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)",
     )
 
     parser.add_argument(
@@ -118,6 +125,10 @@ class ParserArgs:
             parser.print_help(sys.stderr)
             sys.exit(1)
 
+        if args.version:
+            logger.info(__version__)
+            sys.exit(0)
+
         self.mail: MailInfo | None = None
         self.show: bool = args.show
         self.output: Path | None = args.output
@@ -131,12 +142,11 @@ class ParserArgs:
         else:
             # Au moins une action
             if not (args.output or args.show or args.auth):
-                raise ValueError(
-                    dedent(
-                        """Effectuez au moins une action parmi afficher, écrire dans un fichier ou
-                        envoyer par mail le résultat du tirage"""
-                    )
-                )
+                b = fill_dedent("""\
+                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou
+                    envoyer par mail le résultat du tirage
+                    """)
+                raise ValueError(b)
                 # raise ValueError("Please show, write to a file or send by mail the draw")
             # Mail --> Message
             if args.auth and not args.message:

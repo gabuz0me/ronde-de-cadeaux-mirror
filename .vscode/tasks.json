@@ -4,22 +4,16 @@
         {
             "label": "Build package",
             "type": "shell",
-            "command": "python",
+            "command": "${command:python.interpreterPath}",
             "args": [
                 "-m",
                 "build",
             ],
-            "windows": {
-                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
-            },
-            "linux": {
-                "command": "${workspaceFolder}/.venv/bin/python",
-            },
             "problemMatcher": [],
         },
         {
             "label": "Upload to Test PyPI",
-            "command": "python",
+            "command": "${command:python.interpreterPath}",
             "args": [
                 "-m",
                 "twine",
@@ -30,12 +24,6 @@
                 "${input:token}",
                 "dist/*",
             ],
-            "windows": {
-                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
-            },
-            "linux": {
-                "command": "${workspaceFolder}/.venv/bin/python",
-            },
             "problemMatcher": [],
         },
     ],

@@ -1,105 +1,351 @@
-# Ronde de cadeaux
+<div align=center>
 
-[![en](https://img.shields.io/badge/Language-English-red.svg)](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README-en.md) [![en](https://img.shields.io/badge/Langue-Français-blue.svg)](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README.md)
+# Ronde de Cadeaux
 
-**Ronde de cadeaux** est un outil libre pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne d'en tirer une autre, ou de faire en sorte qu'elle en tire une dans un groupe donné.
+❖ **Français** ❖ [English](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README-en.md) ❖
+
+</div>
 
 ---
 
-## Comment qu'on s'en sert ?
+**Ronde de Cadeaux** est un outil libre pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne d'en tirer une autre ou faire en sorte qu'elle en tire une dans un groupe donné.
 
-### Installation du projet
+---
 
-Avec `git` clonez le repo, ou bien téléchargez ce projet sur votre ordinateur. Assurez-vous d'avoir Python 3 d'installé sur votre machine.
+##### Table des matières
 
-### Installation des dépendances
+<!-- shd101wyy.markdown-preview-enhanced | VSCodium -->
+<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=4 orderedList=false} -->
+<!-- code_chunk_output -->
 
-Ce projet python s'appuie sur les dépendances suivantes : `pyyaml`.  
-Elle peut être installée avec `pip` (éventuellement dans un [environnement virtuel](https://docs.python.org/fr/3/library/venv.html)) avec :
+- [🤔 Comment qu'on s'en sert ?](#-comment-quon-sen-sert-)
+  - [📥 Installation](#-installation)
+  - [🧑‍💻 Utilisation](#-utilisation)
+    - [🎁 Effectuer un tirage](#-effectuer-un-tirage)
+    - [⚙️ Tester la configuration mail](#️-tester-la-configuration-mail)
+  - [📃 Format des différents fichiers d'entrée](#-format-des-différents-fichiers-dentrée)
+    - [😎 Le fichier contenant les informations sur les gens](#-le-fichier-contenant-les-informations-sur-les-gens)
+    - [📧 Le fichier de configuration mail](#-le-fichier-de-configuration-mail)
+    - [💬 Le fichier type de message](#-le-fichier-type-de-message)
+- [🥳 Exemples d'utilisation](#-exemples-dutilisation)
+- [🔎 FAQ](#-faq)
+- [🤓 Comment contribuer ou aider ?](#-comment-contribuer-ou-aider-)
 
-```sh
-pip install pyyaml
+<!-- /code_chunk_output -->
+
+---
+
+## 🤔 Comment qu'on s'en sert ?
+
+### 📥 Installation
+
+Cet outil est écrit en [Python](https://python.org/) 3.12, assure-toi d'avoir installé une version supérieure ou égale à la 3.12. Ronde-de-cadeaux s'installe en ligne de commande avec [*pip*](https://pypi.org/project/pip/) ou [*uv*](https://docs.astral.sh/uv/getting-started/installation/).
+
+**Installation avec pip :**
+
+```bash
+pip install ronde-de-cadeaux
 ```
 
-Ou bien directement via le fichier `requirements.txt` via:
+**Installation avec uv :**
 
-```sh
-pip install -r requirements.txt
+```bash
+uv tool install ronde-de-cadeaux
 ```
 
-### Utilisation
+### 🧑‍💻 Utilisation
 
-Voir déjà le message d'aide :
+Cet outil installe un seul exécutable, `ronde`. Voilà son message d'aide :
+<!-- Terminal size: 100 -->
+``` 
+Utilisation : ronde [-h] [--version] [--test-mail] [-a AUTH] [-m MESSAGE] [--no-imap]
+                    [--text-format {html,txt,auto}] [-p PEOPLE] [-s] [-o OUTPUT] [--force]
+                    [--seed SEED]
 
-```console
-$ ./ronde.py --help
-Utilisation : ronde.py [-h] [-s] [-a AUTH] [-m MESSAGE] [-o OUTPUT] [-p] [-t] FICHIER
+Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
+système de contraintes complexes.
 
-Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en
-prenant en compte un système de contraintes complexes. Si un chemin
-hamiltonien est trouvé, un mail est envoyé à chacun⋅e des participant⋅e⋅s leur
-indiquant à qui offrir un présent.
-
-Arguments positionnels:
-  FICHIER               Fichier yaml des données d'entrer à parser
-
-Arguments optionnels:
+Arguments:
   -h, --help            Afficher ce message et quitter
-  -s, --show            Afficher la ronde calculée
+  --version             Afficher le numéro de version et quitter
+  --test-mail           Tester la configuration de mail
   -a AUTH, --auth AUTH  Fichier de configuration mail
-  -n, --no-imap         Ne pas copier les mails dans la boîte d'envoi
   -m MESSAGE, --message MESSAGE
-                        Fichier mail type (Par défaut : .../message.txt)
+                        Fichier patron du message envoyé par mail
+  --no-imap             Ne pas copier les mails dans la boîte d'envoi
+  --text-format {html,txt,auto}
+                        Formatage du corps du mail (par défaut `auto`, essaye de détecter)
+  -p PEOPLE, --people PEOPLE
+                        Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
+  -s, --show            Afficher la ronde calculée
   -o OUTPUT, --output OUTPUT
                         Fichier dans lequel exporter le tirage
-  -p, --plain-text      Envoyer un mail au format texte à la place de HTML
-  -t, --test-mail       Tester la configuration de mail (si --auth est fourni)
+  --force               Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
+  --seed SEED           Utilise cette graine aléatoire pour le tirage
 ```
 
-1. Créer un fichier yaml avec dedans les données personnelles de vos ami⋅e⋅s. Possibilité de copier et adapter [`examples/example_data.yaml`](examples/example_data.yaml).
-2. Afficher, exporter dans un fichier ou envoyer par mail le tirage.
-  - Pour envoyer des mails, créer un fichier yaml avec les informations de connexion (voir [`examples/example_mail_auth.yaml`](examples/example_mail_auth.yaml) pour la structure) et le passer en argument `--auth`. Il faut dans ce cas que `message.txt` existe ou passer en argument `--message` un fichier texte faisant office de patron pour le mail. Les remplacement textuels suivant auront lieu:
-    - `{sender_mail}` → adresse mail expéditrice,
-    - `{sender_name}` → nom associé à l'adresse expéditrice,
-    - `{gifter_mail}` → adresse de la personne qui reçoit le mail,
-    - `{gifter_name}` et `{gifter_nickname}` → nom et surnom de la personne qui reçoit le message,
-    - `{giftee_name}` et `{giftee_nickname}` → nom et surnom de la personne tirée.
+L'outil permet deux actions principales, [effectuer un tirage](#-effectuer-un-tirage) et [tester la configuration mail](#️-tester-la-configuration-mail).
 
-    La première ligne du fichier sert d'objet pour l'email, le reste constitue le corps.
+#### 🎁 Effectuer un tirage
 
-    Utiliser `--test-mail` est utile pour tester la configuration mail *avant* le tirage final.
+Pour effectuer un tirage il faut fournir un fichier d'entrée contenant les informations sur les personnes participant au tirage, à minima leurs noms (et leur mails si on envoie le tirage par mail aux participant·e·s). Ce fichier est passé avec l'option `--people` et est au format CSV ou YAML. La structure de ce fichier est [discutée plus bas](#-le-fichier-contenant-les-informations-sur-les-gens).
 
-    **Attention**, ce programme se connecte au serveur mail en STARTTLS. Ce n'est pas supporté par tous les serveurs.
+Ensuite il faut effectuer au moins une des actions suivantes:
 
-  - Pour afficher la ronde calculée, passer `--show` en argument.
-  - Pour sauvegarder le tirage dans un fichier, passer le nom du fichier en argument `--output`.
-  - Il est possible de n'utiliser ni `--auth` ni `--show` ni `--output` : si le tirage se produit sans problème le programme n'affichera rien. Cela peut par exemple servir à tester si une solution est possible pour la configuration donnée.
-3. Croiser les doigts.
+1. Envoyer un mail aux participant·e·s en utilisant les options `--auth` suivi du fichier de configuration mail et `--message` suivi message type à envoyer aux participant·e·s. Le détail de ces fichiers est [discuté plus bas](#-le-fichier-de-configuration-mail), ainsi que des options supplémentaires à l'action d'envoi de mail.
+2. Afficher le tirage dans la console avec l'option `--show`.
+3. Écrire le résultat du tirage dans un fichier avec l'option `--output` suivie d'un nom de fichier. Si le fichier existe déjà, une erreur survient mais il est possible de forcer le programme à écraser le fichier avec `--force`
 
-Par exemple :
+Pour forcer un tirage aléatoire donnant systématiquement les mêmes résultats, il est possible de passer une *graine aléatoire* avec l'argument `--seed`. Cela permet par exemple de ne stocker en clair aucune information sur le tirage, mais d'être capable de le reproduire à l'identique dans le futur, si besoin il est.
 
-```console
-$ ./ronde.py examples/example_data.yaml --show
-               Nick Qux → Alice-Andréa-Alexia Foo
-Alice-Andréa-Alexia Foo → Gulliver Bar
-           Gulliver Bar → Bœbælius Foo
-           Bœbælius Foo → Flora Bar
-              Flora Bar → Linda Qux
-              Linda Qux → Henry Bar
-              Henry Bar → Dave Foo
-               Dave Foo → Isöbel Bar
-             Isöbel Bar → Cärol Foo
+#### ⚙️ Tester la configuration mail
+
+Avant d'envoyer un mail à tout le monde, on peut vouloir s'assurer que 1. l’authentification mail est correcte et que 2. le message type est correctement formaté. Pour ce faire on utilise l'option `--test-mail` en plus de l'option `--auth` vue plus haut. Cela se connecte aux serveurs mail et envoie un mail à l'adresse mail utilisée pour envoyer les mails. Si `--message` est passée, le message envoyé est formaté avec des valeurs de test.
+
+### 📃 Format des différents fichiers d'entrée
+
+#### 😎 Le fichier contenant les informations sur les gens
+
+Ce fichier peut être écrit au format [YAML](https://yaml.org/) ou [CSV](https://fr.wikipedia.org/wiki/Comma-separated_values). Il est passé en argument avec `--people`.
+
+##### Format CSV
+
+Ce type de fichier **doit** se terminer par l'extension `.csv` ou `.txt`, le séparateur est `;`. Voilà un exemple contenu d'un tel fichier (ou voir le [fichier d'exemple](examples/people.csv)) :
+
+```
+Alice Ecila  ; alice@eci.la ; Alice la pote de Ève
+Bœbélius            ;
+Caroline
+Ève ; ; Ève la pote d'Alice
+```
+
+Ici un tirage au sort sera effectué entre *Alice Ecila*, *Ben*, *Bœbélius* et *Caroline*. Chaque ligne représente une personne, commence par l'appellation de la personne et son (éventuelle) adresse mail est indiquée après un points virgules `;`. D'éventuels commentaires sont insérés après le deuxième `;`. Les commentaires n'ont aucune influence sur le tirage. Les espaces intermédiaires non plus et si la personne n'a pas d'adresse mail, un `;` peut être inséré après son nom ou pas. Il va sans dire que chaque personne doit avoir un nom différent.
+
+Ce fichier est la façon la plus simple de réaliser un tirage mais n'offre aucune possibilité de contraintes ni de créer des champs personnalisés pour les personnes (ex. surnom).
+
+Le fichier donné en exemple, s'il est valide pour les options `--show` et `--output` ne le sera évidemment pas pour l'option `--auth` puisque seule *Alice Ecila* possède une adresse mail.
+
+##### Le format YAML
+
+Ce type de fichier **doit** se terminer par l'extension `.yaml` ou `.yml`.
+
+Ce type de fichier permet de personnaliser les champs ainsi que de créer des contraintes de tirage via les mécanismes de listes d'autorisation (*allowlist*) et de listes de rejet (*denylist*).
+
+Un exemple de fichier est [donné en exemple](/examples/people.yaml).
+
+Un fichier yaml de description consiste en deux dictionnaires (notés avec des deux-points `:`), `people` et `groups` permettant de définir respectivement qui participe et les groupes de gens. Le second dictionnaire est optionnel et son utilité est [décrite plus bas](#les-groupes).
+
+```yaml
+# Structure de base de la configuration en YAML
+people:
+  ...
+groups: # optionnel
+  ...
+```
+
+###### Les gens
+
+
+Les éléments de `people` sont eux aussi des dictionnaires, la clé étant l'appellation (ou identifiant) d'une personne, et les valeurs des champs décrivant la personne. Par exemple :
+
+```yaml
+people:
+  Robert T:
+    display_name: "Robert Trebor"
+    nickname: "Bobby"
+    email: "robert@trev.or"
+```
+
+Les champs `display_name` et `nickname` décrivent respectivement le nom à afficher et le surnom de la personne. Ils sont optionnels et valent par défaut l'identifiant de la personne, ici "Robert T". Ces champs servent essentiellement à mettre en forme le message type pour l'envoi des mails. Le champ `email`, lui aussi optionnel désigne l'adresse mail de la personne.
+
+Le fichier de configuration YAML suivant est similaire à celui au format CSV vu plus haut :
+
+```yaml
+people:
+  Alice Ecila: # Alice la pote de Ève
+    email: "alice@eci.la"
+  Bœbélius:
+  Caroline:
+  Ève: # Ève la pote d'Alice
+```
+
+Notons que *Bœbélius*, *Caroline* et *Ève* n'ont pas de champs mais sont toujours des clés de dictionnaire et donc doivent avoir des `:` à la fin.
+
+Le format YAML permet d'ajouter des contraintes via les mécanismes de listes d'autorisation via le champ `allowlist` et de listes de rejet via le champ `denylist`. Dans l'exemple suivant :
+
+```yaml
+people:
+  A:
+    allowlist:
+    - B
+    - C
+  B:
+    denylist:
+    - A
+  C:
+    allowlist:
+    - A
+    - B
+    denylist:
+    - A
+  D:
+```
+
+- *A* ne peut tirer que *B* ou *C*
+- *B* ne peut pas tirer *A*
+- *C* peut tirer "*A* et *B* mais pas *A*" donc seulement *B*
+- *D* n'a aucune contrainte, il peut tirer tout le monde
+
+Le cas de *C* n'a pas de sens pour le moment, pourquoi s'embêter à mettre une personne à la fois dans la liste d'autorisation et dans la liste de rejet ? Ce mécanisme prend tout son sens quand on ajoute le concept de groupes.
+
+###### Les groupes
+
+Le champ `groups` est lui aussi un dictionnaire et prend en clé un nom de groupe et en valeur une liste de personnes. Prenons par exemple deux familles, les *Ecila* et les *Trebor*. *Alice E*, *Ève* et *Dorian* font partie de la famille *Ecila* et *Robert*, *Alice T* et *Fatma*. Supposons que chaque famille fait déjà une [ronde de cadeaux](https://framagit.org/gabuzome/ronde-de-cadeaux/) dans son coin et souhaite faire tirage de sorte qu'une personne d'une famille ne puisse pas tirer quelqu'un·e de sa propre famille pour éviter un cas où une personne doit offrir un cadeaux deux fois à la même personne. Maintenant supposons que *Dorian* ne connaisse pas très bien *Alice T* et qu'on souhaite faire en sorte qu'il ne puisse pas la tirer. Tout ceci est facilement modélisable, par exemple comme ceci :
+
+```yaml
+people:
+
+  # Famille Ecila
+  Alice E:
+    denylist: [Ecila]
+  Ève:
+    denylist: [Ecila]
+  Dorian:
+    denylist: [Ecila, Alice T] # Dorian ne peut tirer personne de sa famille ni `Alice T`
+
+  # Famille Trebor
+  Robert:
+    denylist: [Trebor]
+  Alice T:
+    denylist: [Trebor]
+  Fatma:
+    allowlist: [Ecila] # À deux groupes, équivalent à mettre Trebor dans sa denylist
+
+groups:
+  Ecila: [Alice E, Ève, Dorian]
+  Trebor: [Robert, Alice T, Fatma]
+```
+
+En effet ici, dans `groups` on définit deux groupes, les familles *Trebor* et *Ecila*, et dans les `allowlist` et `denylist` des personnes on ajoute ces contraintes.
+
+Notons qu'en YAML les listes peuvent être définies avec la syntaxe de liste à puce et celle utilisant des crochets, voir les deux précédents exemples.
+
+###### Résumé des contraintes
+
+- Les **personnes** définies dans `people` peuvent avoir des champs `allowlist` et `denylist`.
+- Chacun de ces champs est une liste contenant les identifiants de **personnes** ou de **groupe**.
+- Les **groupes** définis dans `groups` contiennent une liste de **personnes** ou de **groupes** .
+- Par défaut, si une **personne** n'a pas de `allowlist`, on considère qu'elle peut tirer tout le monde.
+- L'ensemble des **personnes** qu'une **personne** peut tirer est définie comme l'ensemble des gens contenus dans sa `allowlist` (ou voir règle précédente) moins l'ensemble des gens contenus dans sa `denylist`.
+
+Voir le [fichier donné en exemple](examples/people.yaml) pour un exemple complexe d'architecture de groupes et de personnes.
+
+#### 📧 Le fichier de configuration mail
+
+Le fichier de configuration de mail est un fichier au format YAML. Il est passé avec l'argument `--auth`. Il est structuré comme suit:
+
+```yaml
+smtp:
+  hostname: ...
+  port: ... # optionnel, 587 par défaut
+imap: # optionnel, utilise les mêmes paramètres que smtp par défaut
+  hostname: ... # optionnel, `smtp.hostname` par défaut
+  port: ... # optionnel, 143 par défaut
+  sent_folder: ... # optionnel "Sent" par défaut
+username: ...
+password: ... # optionnel, demandé si non fourni
+sender_mail: ... # optionnel, `username` par défaut
+sender_name: ... # optionnel, `username` par défaut
+```
+
+Un fichier minimal ressemble à :
+
+```yaml
+smtp:
+  hostname: "my_mail_server.org"
+username: "my_mail@domain.ext"
+```
+
+Un fichier plus détaillé est [donné en exemple](examples/mail.yaml).
+
+**Attention**, ce programme se connecte au serveur mail en *STARTTLS*. Ce protocole n'est pas supporté par tous les serveurs.
+
+Par défaut, lorsqu'un tirage est effectué, les personnes reçoivent un mail de la part de l'adresse expéditrice et ces mails sont copiés dans la boîte d'envoi. Il est possible de désactiver la copie en passant en argument `--no-imap`.
+
+#### 💬 Le fichier type de message
+
+Ce fichier est obligatoirement utilisé pour l'envoi des courriels. Il est passé en argument avec `--message`. C'est un modèle ou patron de conception (*template*) dont certains champs vont être remplacés par les informations concernant cellui qui offre et cellui qui reçoit.
+
+Ce message peut être au format texte brut ou HTML. Le format est déduit par défaut via l'extension du fichier (`.txt` ou `.html`).
+
+Voici un exemple de fichier type au format HTML :
+
+```html
+{gifter_name}, cette année tu feras un cadeau à…
+
+Salut {gifter_nickname} !<br>
+La personne qui t'a été attribuée lors du tirage est <b>{giftee_name}</b>.<br><br>
+
+On se voit le 13/12 chez Camille ;) 
+```
+
+La première ligne définit le sujet du message, les autres le corps du message. Il peut y avoir des lignes blanches entre les deux parties, cela ne fait aucune différence.
+
+Les remplacements par personnes seront fait comme suit, sur la base des informations des personnes :
+
+| Champ | Valeur |
+|---|---|
+| `{sender_mail}` | Adresse mail expéditrice |
+| `{sender_name}` | Nom associé à l'adresse expéditrice |
+| `{gifter_id}` | Identifiant de la personne qui reçoit le courriel |
+| `{gifter_name}` | Nom de la personne qui reçoit le courriel |
+| `{gifter_nickname}` | Surnom de la personne qui reçoit le message |
+| `{gifter_email}` | Adresse mail de la personne qui reçoit le courriel |
+| `{giftee_id}` | Identifiant de la personne tirée au sort |
+| `{giftee_name}` | Nom de la personne tirée au sort |
+| `{giftee_nickname}` | Surnom de la personne qui reçoit le message |
+| `{giftee_email}` | Adresse mail de la personne tirée au sort |
+
+En pratique, seuls les champs `gifter_name`, `gifter_nickname`, `giftee_name` et `giftee_nickname` sont utiles, mais le reste est disponible si besoin.
+
+Si ce fichier est passé en option lors du test de l'envoi des courriels (avec `--test-mail`), un mail est envoyé à l'adresse d'envoi avec des valeurs de test pour les champs à remplacer.
+
+Il est possible de forcer le format d'envoi en passant `--text-format <value>` en argument. `<value>` peut être `txt`, `html` ou `auto`, par défaut `auto` qui essaie de déduire le format de l'extension.
+
+## 🥳 Exemples d'utilisation
+
+Effectuer un tirage avec les données fournies en exemple avec la graine aléatoire `jaaj42`, les exporter dans un fichier `tirage.txt` qui existait déjà et afficher ce tirage dans la console :
+
+```sh
+$ ronde -p examples/people.yaml -o tirage.txt --force -s --seed jaaj42
+Alice-Andréa-Alexia Foo → Isöbel Bar
+             Isöbel Bar → Dave Foo
+               Dave Foo → Henry Bar
+              Henry Bar → Cärol Foo
               Cärol Foo → Eve Bar
-                Eve Bar → Mark Qux
-               Mark Qux → Jack Baz
-               Jack Baz → Nick Qux
+                Eve Bar → Linda Qux
+              Linda Qux → Gulliver Bar
+           Gulliver Bar → Nick Qux
+               Nick Qux → Flora Bar
+              Flora Bar → Jack Baz
+               Jack Baz → Bœbélius Foo
+           Bœbélius Foo → Mark Qux
+               Mark Qux → Alice-Andréa-Alexia Foo
 ```
 
-## FAQ
+Tester la connection au serveur mail avec un message type et en forçant le format texte brut malgré l'extension :
+
+```sh
+$ ronde --test-mail -a examples/mail.yaml -m examples/message.html --text-format=txt
+```
+
+(Noter que dans ce cas les balises html seraient envoyées telles quelles, ce qui serait assez disgracieux.)
+
+## 🔎 FAQ
 
 > Pourquoi j'utiliserais un outil chelou en ligne de commande comme ça plutôt qu'un site tout fait qui s'occupe de tout ?
 
-Bonne question, voilà des pistes de réflexions en vrac :
+Bonne question, voilà des pistes de réflexions en vrac :
 
 - Tu ne donnes pas tes données personnelles ni celles de tes proches à un tiers dont tu en ignores l'usage...
 - Les sites ne gèrent pas (tous) un système de contrainte comme celui proposé qui permet de faire des tirages complexes, s'assurant par exemple que les couples ne se tirent pas entre eux, que les enfant ne puissent pas tirés d'adultes de la famille trop éloignée, tout ça.
@@ -108,66 +354,32 @@ Bonne question, voilà des pistes de réflexions en vrac :
 
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
 
-Il suffit juste de ne pas déclarer de *groupes* et de ne pas mettre d'*allowlist* ou de *denylist* !
+Le format CSV est parfait pour ce genre de cas ;)
 
-> Ah en fait maintenant que j'y pense il y a deux personnes qui peuvent pas se blairer…
+> Je veux faire un tirage pour ma famille de manière à ce que les adultes se tirent entre eux et les enfants entre eux, comment je fais ?
 
-C'est possible de juste les interdire mutuellement, soit en créant un groupe les contenant soit en ajoutant pour chacun⋅e le nom de l'autre dans leur `denylist`.
+Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui passe par toutes les personnes impliquées. Dans le cas proposé là, l'outil ne trouvera aucune solution, et affichera un message d'erreur. En effet la solution serait d'avoir deux cycles, un pour les adultes et un pour les enfants. Dans ce cas, il faudra faire deux tirages. Plus généralement, si il y a *N* sous-groupes qui n'interagissent pas les uns avec les autres, il faudra faire *N* tirages.
 
-> Je veux faire un tirage pour ma famille et que les adultes se tirent entre eux et les enfants entre eux, comment je fais ?
+La possibilité de permettre à l'outil de générer le nombre minimal de cycles hamiltoniens est en cours de réflexion, mais c'est un problème difficile qui n'a peut être pas énormément de cas d'usage réels.
 
-Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui passe par toutes les personnes impliquées. Dans le cas proposé là, l'outil ne trouvera aucune solution, en effet une solution serait une boucle d'adultes et une autre boucle, pour les enfants. Dans ce cas, il faudra faire deux tirages. Plus généralement, si il y a *N* sous-groupes qui n'intéragissent pas les uns avec les autres, il faudra faire *N* tirages.
+## 🤓 Comment contribuer ou aider ?
 
-> On peut contribuer ?
+Déjà il n'y a pas besoin de savoir développer pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contacte-moi par mail ou mieux, si tu as un compte framagit, [crée un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
 
-OUI. Pour des idées de contributions, voir la section suivante.
-
-## Comment contribuer ?
-
-Déjà il n'y a pas besoin d'être dev pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contactez-nous par mail ou mieux, si vous avez un compte framagit, [créez un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
-
-Si vous faites une merge request, n'hésitez pas à créer des tests unitaires pour vous assurer que tout fonctionne. Et il faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
+Si tu veux absolument développer et que tu utilises [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)), un `.vscode/` existe pour simplifier le lancement des tests ou le debug. Si tu fais des merge requests, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
 
 ```sh
-python -m unittest tests/test_xxx.py
+python -m unittest discover -s tests
 ```
 
-Et sinon des pistes de trucs en vrac :
+Des pistes de trucs en vrac qui pourraient être chouette :
 
-- [ ] Au moment de construire le graphe, la liste d'autorisation est d'abord évaluée, et ensuite les gens de la liste d'interdiction sont enlevés. On pourrait imaginer le contraire, un comportement où les gens sur liste d'autorisation sont **forcément** autorisés.
-- [ ] Si plusieurs groupes sont sur liste d'autorisation (resp. d'interdiction), tous les membres de tous les groupes sont inclus (resp. exclus). C'est un OU logique. On pourrait imaginer de laisser le choix à l'utilisateur·ice de faire un OU ou un ET.
-- [ ] De façon plus générale, on pourrait faire quelque chose de plus interactif. En particulier, quand aucune solution n'est trouvée, on pourrait proposer d'abandonner certaines contraintes et de réessayer (la liste d'autorisation, la liste d'interdiction ou le circuit hamiltonien (mais ça ce serait plus relou à implémenter)).
-- [ ] Faire de la GUI, [WIP ici](https://framagit.org/gabuzome/guirlande-de-cadeaux/) :D
+- Résoudre le problème de la couverture minimale du graphe par des cycles hamiltoniens.
+- Traduire le projet dans plus de langues
+- Faire de la GUI
 
-## Motivations
-
-Le but de cet outil est d'attribuer à chaque personne d'un groupe une autre personne à qui faire un cadeau, tout en respectant certaines contraintes. En effet, j'ai bricolé quelque chose qui s'adapte à mon contexte familial. En particulier :
-
-- Pour forcer un peu de mélange, on ne veut pas que des conjoint·es puissent se piocher entre elleux. Des adelphes non plus. Ça veut dire mettre en place un système de liste d'interdiction.
-- Les parents font déjà des cadeaux à leurs enfants hors de la ronde. On ne veut donc pas qu'iels les tirent, pour éviter la redondance. Ça veut dire que le graphe de qui peut tirer qui est orienté.
-- On veut que les plus jeunes ne puissent tirer que des gens de leur génération, pour qui iels trouveront plus facilement des idées de cadeau. Ça veut dire mettre en place un système de liste d'autorisation. (Pas réciproque non plus : on peut être de la plus jeune génération mais avoir plus de 15 ans)
-- On est nombreuxes. Écrire pour chacun·e une liste des personnes autorisées ou interdites, c'est pas gérable. Ça veut dire avoir un mécanisme où on définit des groupes (qui peuvent être des unions de groupes) à un endroit, qui sont réutilisés pour les listes d'interdiction et d'autorisation.
-
-Le système final est assez souple. On peut imaginer par exemple un cas d'usage en entreprise :
-
-- Par défaut, on ne doit pas pouvoir piocher quelqu'un·e de son service, pour forcer le mélange.
-- Les stagiaires, qui sont moins bien intégré·es, peuvent piocher quelqu'un·e de leur service ou bien un·e autre stagiaire.
-
-Il suffit de déclarer la composition de chaque service et la liste des stagiaires et puis hop, deny ou allowlister correctement pour chaque personne et le tour est joué.
-
-Dans les autres features, il y a quelques garde-fous pour éviter certaines erreurs d'interface chaise-clavier :
-
-- En utilisant une première fois Secret-Santa, j'avais oublié de mettre chaque personne dans sa propre denylist et quelqu'une s'était tirée elle-même. Là, au moment de la génération du graphe des tirages potentiels, cette possibilité est bien éliminée.
-- En le relançant pour corriger cette erreur, j'avais mal saisi une adresse mail. Pas moyen ensuite de retrouver l'information de qui avait été tiré et, sans pouvoir redonner l'instruction manuellement, il a fallu faire un troisième tirage. Ça commence à faire beaucoup de confusion (et de la mauvaise pub pour les outils libres). Du coup, entre le tirage au sort et l'envoi des mails, les attributions sont écrites dans un fichier txt pour pouvoir être retrouvées au cas où. Et puis les mails envoyés sont copiés dans le dossier des mails sortants. Ceinture + bretelles.
-
-Enfin, pour toujours plus d'inclusion et de fun au moment de l'ouverture, on veut faire une seule grande chaîne avec tout le monde. Ce qui, en termes compréhensibles par quelqu'un·e qui lit un README, veut dire qu'il nous faut un algorithme pour trouver un circuit hamiltonien.
+Si vraiment tu as envie de donner de la bonne THUNE pour ce projet, déjà incroyable et merci, mais je n'en n'ai pas besoin donc donne plutôt aux associations qui œuvrent pour des causes justes, au hasard la [LPO 🐦](https://www.lpo.fr/), [La Quadrature du Net 🥧](https://www.laquadrature.net/), [Amnesty International 🕯️](https://www.amnesty.org/) ou l'[Association France Palestine Solidarité 🍉](https://www.france-palestine.org/)...
 
 ---
 
-Ce projet s'inspire notamment de l'outil de tirage Secret-Santa, développé par Adrian "Relex12" Bonnet sous licence MIT et que l'on peut retrouver ici : [https://github.com/Relex12/Secret-Santa](https://github.com/Relex12/Secret-Santa)
-
-Contributeurices :
-- Adrien Laporte
-- Bertille Dubosc de Pesquidoux
-- Adrian "Relex12" Bonnet
-- Vincent Menegaux
+Ce projet est la continuation du projet ronde-de-cadeaux originel [disponible ici](https://framagit.org/bertille-ddp/ronde-de-cadeaux).

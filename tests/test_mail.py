@@ -144,11 +144,11 @@ class MailTest(RondeTest):
             {gifter_id}
             {gifter_name}
             {gifter_nickname}
-            {gifter_mail}
+            {gifter_email}
             {giftee_id}
             {giftee_name}
             {giftee_nickname}
-            {giftee_mail}
+            {giftee_email}
             {untouched}
         """)
 

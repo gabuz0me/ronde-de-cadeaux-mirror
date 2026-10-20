@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "charliermarsh.ruff",
+        "detachhead.basedpyright",
+        "shd101wyy.markdown-preview-enhanced",
+        "tyriar.sort-lines"
+    ]
+}

@@ -37,11 +37,11 @@ def format_message_people(gifter: PersonLike, giftee: PersonLike, template_messa
                 "gifter_id": gifter.id,
                 "gifter_name": gifter.name,
                 "gifter_nickname": gifter.nickname,
-                "gifter_mail": gifter.email,
+                "gifter_email": gifter.email,
                 "giftee_id": giftee.id,
                 "giftee_name": giftee.name,
                 "giftee_nickname": giftee.nickname,
-                "giftee_mail": giftee.email,
+                "giftee_email": giftee.email,
             }
         )
     )
@@ -128,7 +128,7 @@ class MailInfo:
     def password(self) -> str:
         """Mot de passe."""
         if not self._password:
-            self._password = getpass.getpass("Mot de passe mail :")
+            self._password = getpass.getpass("Mot de passe mail :")
         return self._password
 
 
@@ -277,7 +277,7 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
                 _add_to_imap_server(imap_server, mail, mail_info.imap.sent_folder)
 
     except Exception as e:
-        logger.error(f"Erreur : {repr(e)}")
+        logger.error(f"Erreur : {repr(e)}")
 
     else:
         logger.info("L'envoi de mail a réussi.")
