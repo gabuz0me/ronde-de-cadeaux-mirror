@@ -4,7 +4,12 @@
 
 ❖ **Français** ❖ [English](https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README-en.md) ❖
 
+[![Version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fframagit.org%2Fgabuzome%2Fronde-de-cadeaux%2F-%2Fraw%2Fmain%2Fpyproject.toml&query=project.version&label=Version&color=green)](pyproject.toml) [![Version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fframagit.org%2Fgabuzome%2Fronde-de-cadeaux%2F-%2Fraw%2Fmain%2Fpyproject.toml&query=project.requires-python&label=Python&color=FFD43B&logo=python&logoColor=FFD43B)](https://www.python.org/) [![PyPI](https://img.shields.io/badge/Download_on-PyPI-3775A9?logo=pypi&color=3775A9&logoSize=auto&logoColor=white)](https://pypi.org/project/ronde-de-cadeaux/)
+
+[![Framagit](https://img.shields.io/badge/Framagit-725794?logo=gitlab&logoColor=FC6D26&logoSize=auto)](https://framagit.org/gabuzome/ronde-de-cadeaux/) [![GitHub](https://img.shields.io/badge/GitHub_mirror-181717?logo=github&logoSize=auto)](https://github.com/gabuz0me/ronde-de-cadeaux-mirror/)
+
 </div>
+
 
 ---
 

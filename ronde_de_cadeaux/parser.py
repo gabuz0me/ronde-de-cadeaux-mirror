@@ -6,13 +6,12 @@ from sys import argv
 from textwrap import dedent
 from typing import Any
 
-from ronde_de_cadeaux.people_graph_generation import create_people_and_groups_info
-from ronde_de_cadeaux.tools import fill_dedent
-
 from . import __version__
 from .logger import logger
 from .mail import MailInfo, create_mail_info
 from .parser_translation import convert_argparse_to_french
+from .people_graph_generation import create_people_and_groups_info
+from .tools import fill_dedent
 
 convert_argparse_to_french()  # À appeler avant l'import de argparse
 import argparse  # noqa
