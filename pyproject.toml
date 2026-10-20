@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ronde-de-cadeaux"
-version = "0.1.0"
+version = "0.0.0dev0"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "README.md"
@@ -26,7 +26,7 @@ dev = ["build", "twine"]
 ronde = "ronde_de_cadeaux.cli:main"
 
 [project.urls]
-Homepage = "https://framagit.org/gabuzome/ronde-de-cadeaux"
+Homepage = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 
 [tool.setuptools]
 packages = ["ronde_de_cadeaux"]

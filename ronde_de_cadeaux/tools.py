@@ -2,6 +2,8 @@
 
 import random
 from random import sample
+from shutil import get_terminal_size
+from textwrap import dedent, fill
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -58,3 +60,8 @@ def compute_hamiltonian_cycle(graph: Graph, current_node: str | None = None, pat
 
     # Si nœud déjà dans chemin ou si pas trouvé de chemin possibles
     return None
+
+
+def fill_dedent(text: str) -> str:
+    """Appelle `textwrap.dedent` sur le texte et `textwrap.fill` en ajustant à la taille du terminal."""
+    return fill(dedent(text), width=get_terminal_size().columns)

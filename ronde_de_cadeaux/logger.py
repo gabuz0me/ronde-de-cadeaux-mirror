@@ -7,6 +7,7 @@ sémantique sur l'information véhiculée.
 
 from __future__ import annotations
 
+import sys
 from enum import Enum
 from typing import Callable
 
@@ -39,6 +40,7 @@ class Logger:
 
 
 def _default_printer(msg: str, type: Logger.Type) -> None:
+    output = sys.stdout
     if type == Logger.Type.DEBUG:
         color = "\033[94m"  # Bleu
     elif type == Logger.Type.INFO:
@@ -47,7 +49,8 @@ def _default_printer(msg: str, type: Logger.Type) -> None:
         color = "\033[92m"  # Vert
     elif type == Logger.Type.ERROR:
         color = "\033[91m"  # Rouge
-    print(f"{color}{msg}\033[0m")
+        output = sys.stderr
+    print(f"{color}{msg}\033[0m", file=output)
 
 
 Printer = Callable[[str, Logger.Type], None]

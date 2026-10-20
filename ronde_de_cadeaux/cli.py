@@ -51,7 +51,7 @@ def main() -> None:
 
         if args.output:
             with open(args.output, "w", encoding="utf-8") as f:
-                f.write(f"Tirage du {datetime.datetime.now().replace(microsecond=0)} :\n")
+                f.write(f"Tirage du {datetime.datetime.now().replace(microsecond=0)} :\n")
                 f.write(text)
                 f.write("\n")
     sys.exit(0)
