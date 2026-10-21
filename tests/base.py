@@ -6,20 +6,24 @@ from pathlib import Path
 from typing import override
 from uuid import uuid4
 
+import email_validator
+
 
 class RondeTest(unittest.TestCase):
     examples: Path = Path(__file__).parent.parent / "examples"
 
     @property
     def example_people_yaml(self) -> str:
+        """Tout le monde a une adresse mail ici."""
         return str(self.examples / "people.yaml")
 
     @property
     def example_people_csv(self) -> str:
+        """Il y a des personnes sans adresse mail."""
         return str(self.examples / "people.csv")
 
     @property
-    def example_mail(self) -> str:
+    def example_mail_config(self) -> str:
         return str(self.examples / "mail.yaml")
 
     @property
@@ -46,6 +50,8 @@ class RondeTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls._tempdir_existing = tempfile.TemporaryDirectory()
         cls._tempdir_non_existing = tempfile.TemporaryDirectory()
+        email_validator.CHECK_DELIVERABILITY = False
+
         return super().setUpClass()
 
     @classmethod

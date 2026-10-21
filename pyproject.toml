@@ -17,7 +17,11 @@ classifiers = [
     "Topic :: Communications :: Email",
     "Topic :: Games/Entertainment",
 ]
-dependencies = ["pyyaml", "pydantic[email]"]
+dependencies = [
+    "pyyaml",          # pour les fichiers de config
+    "dacite",          # dict vers dataclass
+    "email-validator", # syntaxe et dns
+]
 
 [project.optional-dependencies]
 dev = ["build", "twine"]

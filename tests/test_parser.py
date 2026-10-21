@@ -14,7 +14,7 @@ class ParserTest(RondeTest):
 
     def test_auth_no_message(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--auth", self.example_mail])
+            _ = ParserArgs(custom_args=["--auth", self.example_mail_config])
 
     def test_no_input_file(self):
         with self.assertRaises(ValueError):
@@ -31,7 +31,19 @@ class ParserTest(RondeTest):
         with self.assertRaises(ValueError):
             _ = ParserArgs(custom_args=["--people", self.get_non_existing_file(".yaml"), "--show"])
 
-    def test_correct_arguments(self):
+    def test_test_mail_with_people(self):
+        with self.assertRaises(ValueError):
+            _ = ParserArgs(
+                custom_args=[
+                    "--test-mail",
+                    "--auth",
+                    self.example_mail_config,
+                    "--people",
+                    self.example_people_csv,
+                ]
+            )
+
+    def test_correct_arguments_yaml(self):
         output = self.get_existing_file(".txt")
         args = ParserArgs(
             custom_args=[
@@ -41,12 +53,13 @@ class ParserTest(RondeTest):
                 output,
                 "--force",
                 "--auth",
-                self.example_mail,
+                self.example_mail_config,
                 "--message",
                 self.example_message_html,
                 "--show",
                 "--seed",
                 "42",
+                "--no-imap",
             ]
         )
         self.assertEqual(args.seed, "42")
@@ -54,4 +67,21 @@ class ParserTest(RondeTest):
         self.assertEqual(str(args.output), output)
         self.assertIsNotNone(args.mail)
         assert args.mail is not None
-        self.assertTrue(args.mail.copy_to_sent_folder)
+        self.assertFalse(args.mail.copy_to_sent_folder)
+
+    def test_correct_arguments_csv(self):
+        output = self.get_non_existing_file(".txt")
+        args = ParserArgs(
+            custom_args=[
+                "--people",
+                self.example_people_csv,
+                "--output",
+                output,
+                "--message",
+                self.example_message_html,
+                "--show",
+            ]
+        )
+        self.assertTrue(args.show)
+        self.assertEqual(str(args.output), output)
+        self.assertIsNone(args.mail)

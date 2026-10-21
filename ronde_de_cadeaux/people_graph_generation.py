@@ -7,20 +7,23 @@ from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
 import yaml
-from pydantic import BaseModel, EmailStr, ValidationError
+from dacite import from_dict
+from email_validator import EmailNotValidError, EmailUndeliverableError, validate_email
 
 from .tools import Graph, list_as_cyclic_pairs
 
 
-class _PersonModel(BaseModel):
+@dataclass
+class _PersonModel:
     display_name: str | None = None
     nickname: str | None = None
-    email: EmailStr | None = None  # Obligatoire pour envoyer des mails cependant. Vérifié dans `create_people_and_groups_info`
+    email: str | None = None  # Obligatoire pour envoyer des mails cependant. Vérifié dans `create_people_and_groups_info`
     allowlist: list[str] | None = None
     denylist: list[str] | None = None
 
 
-class _PeopleModel(BaseModel):
+@dataclass
+class _PeopleModel:
     people: dict[str, _PersonModel | None]
     groups: dict[str, list[str]] | None = None
 
@@ -178,8 +181,8 @@ def create_people_and_groups_info(people_path: Path, check_mail_address: bool = 
 def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = False) -> PeopleAndGroups:  # noqa: ANN401
     """Version privée, utilisée pour les tests unitaires."""
     try:
-        people = _PeopleModel.model_validate(people_data)
-    except ValidationError:
+        people = from_dict(data_class=_PeopleModel, data=people_data)
+    except Exception:
         raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)")
         # raise ValueError("Invalid people configuration file (Invalid schema)")
 
@@ -188,7 +191,13 @@ def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = 
             if person is None or not person.email:
                 raise ValueError(f"L'envoi de mail est activé mais la personne '{person}' n'a pas d'adresse mail")
                 # raise ValueError(f"Mail sending is enabled, but person '{person}' has no email address")
-
+            try:
+                # valeur par défaut pour `check_deliverability`, True en général, False pour les tests unitaires
+                validate_email(person.email, check_deliverability=None)
+            except EmailUndeliverableError:
+                raise ValueError(f"La vérification DNS de l'adresse mail '{person.email}' n'aboutit pas")
+            except EmailNotValidError:
+                raise ValueError(f"L'adresse mail '{person.display_name}' n'est pas valide")
     return PeopleAndGroups(
         {k: Person(k, v) for k, v in people.people.items()},
         people.groups,

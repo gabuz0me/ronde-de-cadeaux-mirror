@@ -137,6 +137,9 @@ class ParserArgs:
             if not args.auth:
                 raise ValueError("Fichier de configuration mail manquant pour le test de connexion")
                 # raise ValueError("Missing auth file for testing mail configuration")
+            if args.people:
+                create_people_and_groups_info(args.people, check_mail_address=True)
+
         # Tirage
         else:
             # Au moins une action
@@ -159,7 +162,7 @@ class ParserArgs:
                 # raise ValueError("Output file already exist, use `--force` to override")
 
             try:
-                self.people_and_groups = create_people_and_groups_info(args.people, args.test_mail)
+                self.people_and_groups = create_people_and_groups_info(args.people, check_mail_address=args.auth)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e)
 

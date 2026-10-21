@@ -35,7 +35,7 @@ class ExampleTest(RondeTest):
     def test_mail_config(self):
         """Teste si le fichier d'example de configuration mail est valide."""
         try:
-            with open(self.example_mail) as file:
+            with open(self.example_mail_config) as file:
                 data = yaml.safe_load(file)
             _create_mail_info(True, data, None, True)
         except Exception as e:
