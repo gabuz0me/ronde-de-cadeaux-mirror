@@ -13,7 +13,7 @@
 
 ---
 
-**Ronde de Cadeaux** est un outil libre pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne d'en tirer une autre ou faire en sorte qu'elle en tire une dans un groupe donné.
+**Ronde de Cadeaux** est un outil libre en ligne de commande pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa* ou *Noël Canadien*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne de tirer une personne spécifique ou faire en sorte qu'elle en tire une dans un groupe donné.
 
 ---
 
