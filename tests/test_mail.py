@@ -1,8 +1,7 @@
 from pathlib import Path
 from textwrap import dedent
 
-import yaml
-
+from ronde_de_cadeaux._unique_yaml import unique_safe_load
 from ronde_de_cadeaux.mail import MailInfo, Message, _create_mail_info, format_message_people, message_to_subject_body
 from ronde_de_cadeaux.people_graph_generation import _create_people_and_groups_info
 from tests.base import RondeTest
@@ -47,7 +46,7 @@ smtt:
 class MailTest(RondeTest):
     @staticmethod
     def to_mail_info(data_str: str) -> MailInfo:
-        data = yaml.safe_load(data_str)
+        data = unique_safe_load(data_str)
         return _create_mail_info(
             testing=True,  # Pas de demande de message
             mail_data=data,
@@ -134,7 +133,7 @@ class MailTest(RondeTest):
         )
 
     def test_format_message_people(self):
-        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
+        data = unique_safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
 
         gifter = people.id_to_person["Alice"]

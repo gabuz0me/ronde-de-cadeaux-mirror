@@ -14,7 +14,7 @@
                 "./private/message.html",
                 "--text-format",
                 "txt",
-                "--input",
+                "--people",
                 "./private/data.yaml",
                 "--show",
                 "--output",

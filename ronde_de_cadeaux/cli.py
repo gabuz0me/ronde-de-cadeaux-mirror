@@ -4,6 +4,8 @@ import datetime
 import random
 import sys
 
+import email_validator
+
 from .logger import logger
 from .mail import send_mails, test_mail_sending
 from .parser import ParserArgs
@@ -18,6 +20,8 @@ def main() -> None:
     except ValueError as e:
         logger.error(str(e))
         sys.exit(1)
+
+    email_validator.CHECK_DELIVERABILITY = True
 
     if args.mail and args.mail.testing:
         test_mail_sending(args.mail)

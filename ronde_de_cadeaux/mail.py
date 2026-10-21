@@ -8,6 +8,7 @@ import imaplib
 import smtplib
 import sys
 import time
+from dataclasses import dataclass
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -15,9 +16,9 @@ from email.utils import formataddr
 from pathlib import Path
 from typing import Any, ClassVar, NamedTuple, Self
 
-import yaml
-from pydantic import BaseModel, ValidationError
+from dacite import from_dict
 
+from ._unique_yaml import unique_safe_load
 from .logger import logger
 from .people_graph_generation import Draw, PersonLike, PersonTuple
 
@@ -48,12 +49,14 @@ def format_message_people(gifter: PersonLike, giftee: PersonLike, template_messa
     return msg
 
 
-class _SMTPModel(BaseModel):
+@dataclass
+class _SMTPModel:
     hostname: str
     port: int = 587
 
 
-class _IMAPModel(BaseModel):
+@dataclass
+class _IMAPModel:
     DefaultPort: ClassVar[int] = 143
     DefaultSentFolder: ClassVar[str] = "Sent"
 
@@ -62,10 +65,11 @@ class _IMAPModel(BaseModel):
     sent_folder: str = DefaultSentFolder
 
 
-class _MailModel(BaseModel):
+@dataclass
+class _MailModel:
+    username: str
     smtp: _SMTPModel
     imap: _IMAPModel | None = None
-    username: str
     password: str | None = None
     sender_mail: str | None = None
     sender_name: str | None = None
@@ -316,8 +320,8 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path | None
 
     with open(config_path, "r", encoding="utf-8") as f:
         try:
-            mail_data = yaml.safe_load(f)
-        except yaml.YAMLError:
+            mail_data = unique_safe_load(f)
+        except ValueError:
             raise ValueError("Fichier de configuration mail invalide (YAML invalide)")
             # raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
 
@@ -327,8 +331,8 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path | None
 def _create_mail_info(testing: bool, mail_data: Any, message: Message | None, no_imap: bool) -> MailInfo:  # noqa: ANN401
     """Version privée, utilisée pour les tests unitaires."""
     try:
-        config = _MailModel.model_validate(mail_data)
-    except ValidationError:
+        config = from_dict(_MailModel, mail_data)
+    except Exception:
         raise ValueError("Fichier de configuration mail invalide (non conforme au schéma)")
         # raise ValueError("Invalid mail configuration file (Invalid schema)")
 

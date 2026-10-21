@@ -1,7 +1,6 @@
 from pathlib import Path
 
-import yaml
-
+from ronde_de_cadeaux._unique_yaml import unique_safe_load
 from ronde_de_cadeaux.mail import _create_mail_info
 from ronde_de_cadeaux.people_graph_generation import (
     create_people_and_groups_info,
@@ -35,8 +34,8 @@ class ExampleTest(RondeTest):
     def test_mail_config(self):
         """Teste si le fichier d'example de configuration mail est valide."""
         try:
-            with open(self.example_mail) as file:
-                data = yaml.safe_load(file)
+            with open(self.example_mail_config) as file:
+                data = unique_safe_load(file)
             _create_mail_info(True, data, None, True)
         except Exception as e:
             self.fail(e)

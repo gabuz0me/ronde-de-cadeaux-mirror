@@ -1,10 +1,10 @@
+import csv
 import random
 from csv import reader
 from textwrap import dedent
 from typing import Any
 
-import yaml
-
+from ronde_de_cadeaux._unique_yaml import unique_safe_load
 from ronde_de_cadeaux.people_graph_generation import (
     CSV_DELIMITER,
     GraphGenerationException,
@@ -23,6 +23,20 @@ YAML_PEOPLE_MINIMAL = """\
 people:
     Alice:
 """
+
+YAML_PEOPLE_DUPLICATE = """\
+people:
+    Alice:
+        email: "alice1@domain.org"
+    Alice:
+        email: "alice2@domain.org"
+"""
+
+CSV_PEOPLE_DUPLICATE = """\
+Alice ; "alice1@domain.org"
+Alice ; "alice2@domain.org"
+"""
+
 
 YAML_PEOPLE_MAXIMAL = """\
 people:
@@ -59,11 +73,19 @@ class PeopleValidationTest(RondeTest):
     def test_invalid_data(self):
         data_list: list[DataAndBool] = []
         data_list.append(({}, False))  # Vide et incorrect, il manque "people"
-        data_list.append((yaml.safe_load(YAML_PEOPLE_MINIMAL), True))
+        data_list.append((unique_safe_load(YAML_PEOPLE_MINIMAL), True))
 
         for data in data_list:
             with self.assertRaises(ValueError):
                 _create_people_and_groups_info(*data)
+
+    def test_duplicate_value(self):
+        with self.assertRaises(ValueError):
+            unique_safe_load(YAML_PEOPLE_DUPLICATE)
+
+        csv_list = [l.split(CSV_DELIMITER) for l in CSV_PEOPLE_DUPLICATE.split("\n")]
+        with self.assertRaises(ValueError):
+            _csv_list_to_data(csv_list)  # pyright: ignore[reportArgumentType]
 
     def test_valid_data(self):
         data_list: list[DataAndBool] = []
@@ -71,8 +93,8 @@ class PeopleValidationTest(RondeTest):
         # Vide mais correct quant au schéma car contient la clé "people".
         # Ce cas est détecté lors de la génération du graphe.
         data_list.append(({"people": {}}, False))
-        data_list.append((yaml.safe_load(YAML_PEOPLE_MINIMAL), False))
-        data_list.append((yaml.safe_load(YAML_PEOPLE_MAXIMAL), True))
+        data_list.append((unique_safe_load(YAML_PEOPLE_MINIMAL), False))
+        data_list.append((unique_safe_load(YAML_PEOPLE_MAXIMAL), True))
 
         for data in data_list:
             try:
@@ -81,7 +103,7 @@ class PeopleValidationTest(RondeTest):
                 self.fail(e)
 
     def test_valid_fields_minimal(self):
-        data = yaml.safe_load(YAML_PEOPLE_MINIMAL)
+        data = unique_safe_load(YAML_PEOPLE_MINIMAL)
         people = _create_people_and_groups_info(data)
         alice = people.id_to_person.get("Alice")
         assert alice is not None
@@ -94,7 +116,7 @@ class PeopleValidationTest(RondeTest):
         self.assertEqual(alice.denylist, [])
 
     def test_valid_fields_maximal(self):
-        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
+        data = unique_safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
         alice = people.id_to_person.get("Alice")
         assert alice is not None
@@ -165,7 +187,7 @@ class GraphGenerationTesting(RondeTest):
     """Teste la construction du graphe (groupes, allow/denylist, erreurs) à partir de `PeopleAndGroups`."""
 
     def test_valid_data(self):
-        data = yaml.safe_load(YAML_PEOPLE_MAXIMAL)
+        data = unique_safe_load(YAML_PEOPLE_MAXIMAL)
         people = _create_people_and_groups_info(data)
         try:
             # Alice ne peut offrir de cadeau à personne, mais ça n'est pas une erreur à ce stade
