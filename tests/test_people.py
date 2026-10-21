@@ -1,3 +1,4 @@
+import csv
 import random
 from csv import reader
 from textwrap import dedent
@@ -29,6 +30,11 @@ people:
         email: "alice1@domain.org"
     Alice:
         email: "alice2@domain.org"
+"""
+
+CSV_PEOPLE_DUPLICATE = """\
+Alice ; "alice1@domain.org"
+Alice ; "alice2@domain.org"
 """
 
 
@@ -76,6 +82,10 @@ class PeopleValidationTest(RondeTest):
     def test_duplicate_value(self):
         with self.assertRaises(ValueError):
             unique_safe_load(YAML_PEOPLE_DUPLICATE)
+
+        csv_list = [l.split(CSV_DELIMITER) for l in CSV_PEOPLE_DUPLICATE.split("\n")]
+        with self.assertRaises(ValueError):
+            _csv_list_to_data(csv_list)  # pyright: ignore[reportArgumentType]
 
     def test_valid_data(self):
         data_list: list[DataAndBool] = []
