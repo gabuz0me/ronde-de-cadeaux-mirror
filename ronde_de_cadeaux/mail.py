@@ -16,9 +16,9 @@ from email.utils import formataddr
 from pathlib import Path
 from typing import Any, ClassVar, NamedTuple, Self
 
-import yaml
 from dacite import from_dict
 
+from ._unique_yaml import unique_safe_load
 from .logger import logger
 from .people_graph_generation import Draw, PersonLike, PersonTuple
 
@@ -320,8 +320,8 @@ def create_mail_info(testing: bool, config_path: Path, message_path: Path | None
 
     with open(config_path, "r", encoding="utf-8") as f:
         try:
-            mail_data = yaml.safe_load(f)
-        except yaml.YAMLError:
+            mail_data = unique_safe_load(f)
+        except ValueError:
             raise ValueError("Fichier de configuration mail invalide (YAML invalide)")
             # raise ValueError("Invalid mail configuration file (Ill-formed YAML)")
 

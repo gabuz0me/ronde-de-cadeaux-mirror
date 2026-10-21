@@ -6,10 +6,10 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
-import yaml
 from dacite import from_dict
 from email_validator import EmailNotValidError, EmailUndeliverableError, validate_email
 
+from ._unique_yaml import unique_safe_load
 from .tools import Graph, list_as_cyclic_pairs
 
 
@@ -165,8 +165,8 @@ def create_people_and_groups_info(people_path: Path, check_mail_address: bool = 
     with open(people_path, "r", encoding="utf-8") as f:
         if ext in [".yaml", ".yml"]:
             try:
-                people_data = yaml.safe_load(f)
-            except yaml.YAMLError:
+                people_data = unique_safe_load(f)
+            except ValueError:
                 raise ValueError("Fichier de configuration des personnes invalide (YAML invalide)")
                 # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
         elif ext in [".csv", ".txt"]:
