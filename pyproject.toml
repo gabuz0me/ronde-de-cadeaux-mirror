@@ -34,6 +34,7 @@ Homepage = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 Documentation = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README.md"
 GitLab = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 GitHub = "https://github.com/gabuz0me/ronde-de-cadeaux-mirror/"
+Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelog.md"
 
 [tool.setuptools]
 packages = ["ronde_de_cadeaux"]

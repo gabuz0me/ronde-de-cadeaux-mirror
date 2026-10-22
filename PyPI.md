@@ -9,7 +9,7 @@
 ---
 
 <div align="center">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/English_language.svg" height="42" alt="EN" />
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/English_language.svg" height="42" alt="EN"/>
 </div>
 
 **Ronde de Cadeaux** is an open-source command line interface tool to create *Secret Santa* events where participants are notified by email. The draw can be controlled using constraints, like for instance preventing a person to be assigned a specific person or making sure they can only gift to people in a given group.
