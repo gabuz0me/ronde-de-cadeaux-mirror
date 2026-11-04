@@ -51,7 +51,7 @@ def main() -> None:
         text = "\n".join([f"{gifter.name:>{max_name_length}} → {giftee.name}" for gifter, giftee in draw])
 
         if args.show:
-            logger.output(text)
+            logger.info(text)
 
         if args.output:
             with open(args.output, "w", encoding="utf-8") as f:

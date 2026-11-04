@@ -20,7 +20,7 @@ class Logger:
 
         DEBUG = 0
         INFO = 1
-        OUTPUT = 2
+        WARNING = 2
         ERROR = 3
 
     def __init__(self, printer: Printer) -> None:
@@ -32,8 +32,8 @@ class Logger:
     def debug(self, msg: str) -> None:  # noqa
         self.printer(msg, Logger.Type.DEBUG)
 
-    def output(self, msg: str) -> None:  # noqa
-        self.printer(msg, Logger.Type.OUTPUT)
+    def warning(self, msg: str) -> None:  # noqa
+        self.printer(msg, Logger.Type.WARNING)
 
     def error(self, msg: str) -> None:  # noqa
         self.printer(msg, Logger.Type.ERROR)
@@ -45,7 +45,7 @@ def _default_printer(msg: str, type: Logger.Type) -> None:
         color = "\033[94m"  # Bleu
     elif type == Logger.Type.INFO:
         color = ""  # Défaut
-    elif type == Logger.Type.OUTPUT:
+    elif type == Logger.Type.WARNING:
         color = "\033[92m"  # Vert
     elif type == Logger.Type.ERROR:
         color = "\033[91m"  # Rouge
