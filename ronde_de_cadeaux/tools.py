@@ -6,6 +6,27 @@ from shutil import get_terminal_size
 from textwrap import dedent, fill
 from typing import TypeVar
 
+import email_validator
+from email_validator import ValidatedEmail
+from email_validator import validate_email as _validate_email
+
+from .logger import logger
+
+
+# https://www.emailawesome.com/blog/python-email-validation
+def validate_email(email: str) -> ValidatedEmail:
+    """Wrapper de `email_validator.validate_email` avec les bons arguments."""  # noqa
+    # valeur par défaut pour `check_deliverability` (None), ici vaut True en général, False pour les tests unitaires
+    validated = _validate_email(
+        email,
+        check_deliverability=None,
+        allow_smtputf8=False,
+    )
+    if email_validator.CHECK_DELIVERABILITY and getattr(validated, "mx", None) is None:
+        logger.warning(f"La délivrabilité de {email} n'a pas pu être vérifiée. Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯")
+    return validated
+
+
 T = TypeVar("T")
 
 

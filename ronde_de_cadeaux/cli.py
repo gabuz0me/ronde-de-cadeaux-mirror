@@ -15,13 +15,13 @@ from .tools import compute_hamiltonian_cycle
 
 def main() -> None:
     """C'est parti."""
+    email_validator.CHECK_DELIVERABILITY = True
+
     try:
         args = ParserArgs()
     except ValueError as e:
         logger.error(str(e))
         sys.exit(1)
-
-    email_validator.CHECK_DELIVERABILITY = True
 
     if args.mail and args.mail.testing:
         test_mail_sending(args.mail)

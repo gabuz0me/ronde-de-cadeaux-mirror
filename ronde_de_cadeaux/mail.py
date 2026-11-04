@@ -6,6 +6,7 @@ Validation des données et envoi.
 import getpass
 import imaplib
 import smtplib
+import socket
 import sys
 import time
 from dataclasses import dataclass
@@ -17,10 +18,14 @@ from pathlib import Path
 from typing import Any, ClassVar, NamedTuple, Self
 
 from dacite import from_dict
+from email_validator import EmailSyntaxError, EmailUndeliverableError
+
+from ronde_de_cadeaux.tools import shuffled
 
 from ._unique_yaml import unique_safe_load
 from .logger import logger
-from .people_graph_generation import Draw, PersonLike, PersonTuple
+from .people_graph_generation import Draw, DrawPair, PersonLike, PersonTuple
+from .tools import validate_email
 
 
 class _DefaultFormatter(dict[str, Any]):
@@ -128,6 +133,13 @@ class MailInfo:
         self.copy_to_sent_folder = copy_to_imap
         self.testing = testing
 
+        try:
+            self.sender_mail = validate_email(self.sender_mail).normalized
+        except EmailSyntaxError:
+            raise ValueError("L'adresse mail expéditrice n'est pas valide")
+        except EmailUndeliverableError:
+            raise ValueError("La vérification DNS de l'adresse mail expéditrice n'aboutit pas")
+
     @property
     def password(self) -> str:
         """Mot de passe."""
@@ -151,6 +163,9 @@ def create_servers(mail_info: MailInfo) -> tuple[smtplib.SMTP, imaplib.IMAP4 | N
             mail_info.username,
             mail_info.password,
         )
+    except (socket.gaierror, TimeoutError):
+        logger.error("Impossible de joindre le serveur SMTP, vérifiez votre connexion internet ou l'adresse du serveur")
+        sys.exit(1)
     except Exception as e:  # noqa # pyright: ignore[reportUnusedVariable]
         logger.error("Impossible de se connecter au serveur SMTP")
         # print(e)
@@ -168,6 +183,9 @@ def create_servers(mail_info: MailInfo) -> tuple[smtplib.SMTP, imaplib.IMAP4 | N
                 mail_info.username,
                 mail_info.password,
             )
+        except (socket.gaierror, TimeoutError):
+            logger.error("Impossible de joindre le serveur IMAP, vérifiez votre connexion internet ou l'adresse du serveur")
+            sys.exit(1)
         except Exception as e:  # noqa # pyright: ignore[reportUnusedVariable]
             logger.error("Impossible de se connecter au serveur IMAP")
             smtp_server.close()
@@ -258,14 +276,20 @@ def test_mail_sending(mail_info: MailInfo) -> None:
 
 
 def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
-    """Envoi des mails."""
+    """Envoi des mails. Ne quitte pas le programme, même en cas d'erreur."""
     assert mail_info.message
 
+    sent = 0
+    success = False
+
     smtp_server, imap_server = create_servers(mail_info)
+    current_draw: DrawPair | None = None
     try:
         sender = formataddr((_to_header(mail_info.sender_name), mail_info.sender_mail))
 
-        for gifter, giftee in gifter_giftee_tuple:
+        # shuffled, comme ça l'ordre d'envoi des mails ne permet pas d'inférer l'ordre de la ronde depuis la boîte d'envoi ;)
+        for current_draw in shuffled(gifter_giftee_tuple):
+            gifter, giftee = current_draw
             assert gifter.email is not None
             mail = MIMEMultipart()
             mail["From"] = sender
@@ -276,20 +300,37 @@ def send_mails(gifter_giftee_tuple: Draw, mail_info: MailInfo) -> None:
             mail.attach(MIMEText(body, "plain" if mail_info.message.is_plain_text else "html"))
 
             smtp_server.sendmail(mail_info.sender_mail, gifter.email, mail.as_string())
+            sent += 1
+
             if mail_info.copy_to_sent_folder:
                 assert imap_server is not None
                 _add_to_imap_server(imap_server, mail, mail_info.imap.sent_folder)
 
+    except smtplib.SMTPException:
+        assert current_draw
+        logger.error(f"Une erreur est survenue lors de l'envoi du mail à {current_draw.gifter.email}. Peut-être est-ce l'adresse mail ?")
+    except imaplib.IMAP4.error:
+        assert current_draw
+        logger.error(f"Impossible de copier le mail envoyé à {current_draw.gifter.email} dans la boîte d'envoi.")
     except Exception as e:
-        logger.error(f"Erreur : {repr(e)}")
-
+        logger.error(f"Erreur non gérée (contactez le maintainer oupsi) : {repr(e)}")
     else:
         logger.info("L'envoi de mail a réussi.")
+        success = True
 
     finally:
-        if imap_server:
-            imap_server.logout()
-        smtp_server.quit()
+        try:
+            if imap_server:
+                imap_server.logout()
+        except Exception:
+            pass
+        try:
+            smtp_server.quit()
+        except Exception:
+            pass
+
+        if not success and sent > 0:
+            logger.warning(f"{sent} mails ont été envoyés avant l'erreur, prévenez les participant·e·s que ces mails sont caduques.")
 
 
 def create_mail_info(testing: bool, config_path: Path, message_path: Path | None, text_format: str, no_imap: bool) -> MailInfo:

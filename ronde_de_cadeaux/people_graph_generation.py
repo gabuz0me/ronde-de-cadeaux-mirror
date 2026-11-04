@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
 from dacite import from_dict
-from email_validator import EmailNotValidError, EmailUndeliverableError, validate_email
+from email_validator import EmailSyntaxError, EmailUndeliverableError
 
 from ._unique_yaml import unique_safe_load
-from .tools import Graph, list_as_cyclic_pairs
+from .tools import Graph, list_as_cyclic_pairs, validate_email
 
 
 @dataclass
@@ -192,12 +192,12 @@ def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = 
                 raise ValueError(f"L'envoi de mail est activé mais la personne '{person}' n'a pas d'adresse mail")
                 # raise ValueError(f"Mail sending is enabled, but person '{person}' has no email address")
             try:
-                # valeur par défaut pour `check_deliverability`, True en général, False pour les tests unitaires
-                validate_email(person.email, check_deliverability=None)
+                validated = validate_email(person.email)
+            except EmailSyntaxError:
+                raise ValueError(f"L'adresse mail '{person.display_name}' n'est pas valide")
             except EmailUndeliverableError:
                 raise ValueError(f"La vérification DNS de l'adresse mail '{person.email}' n'aboutit pas")
-            except EmailNotValidError:
-                raise ValueError(f"L'adresse mail '{person.display_name}' n'est pas valide")
+            person.email = validated.normalized
     return PeopleAndGroups(
         {k: Person(k, v) for k, v in people.people.items()},
         people.groups,
@@ -372,7 +372,8 @@ def generate_people_graph(data: PeopleAndGroups) -> Graph:
     return graph
 
 
-Draw = list[tuple[Person, Person]]
+DrawPair = NamedTuple("DrawPair", [("gifter", Person), ("giftee", Person)])
+Draw = list[DrawPair]
 
 
 def get_people_cycle(people: PeopleAndGroups, path: list[str]) -> Draw:
@@ -383,4 +384,4 @@ def get_people_cycle(people: PeopleAndGroups, path: list[str]) -> Draw:
     From a given cycle (`path_`), return the draw as a list of pair or `Person` (Gifter, Giftee).
     """
     path_person = [people.id_to_person[id_] for id_ in path]
-    return list_as_cyclic_pairs(path_person)
+    return [DrawPair(*pair) for pair in list_as_cyclic_pairs(path_person)]

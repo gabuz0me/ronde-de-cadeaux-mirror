@@ -33,7 +33,7 @@ imap:
     sent_folder: "custom_sent_folder"
 username: "username@server.abc"
 password: "xxx"
-sender_mail: "custom_mail"
+sender_mail: "username_mail@server.abc"
 sender_name: "custom_name"
 """
 
@@ -83,7 +83,7 @@ class MailTest(RondeTest):
 
         self.assertEqual(mail_info.username, "username@server.abc")
         self.assertEqual(mail_info.password, "xxx")
-        self.assertEqual(mail_info.sender_mail, "custom_mail")
+        self.assertEqual(mail_info.sender_mail, "username_mail@server.abc")
         self.assertEqual(mail_info.sender_name, "custom_name")
 
     def test_invalid(self):

@@ -11,5 +11,5 @@ imap:
   sent_folder: "Sent" # optionnel si on ne copie pas dans la boîte d'envoi, `Sent` par défaut si besoin
 username: "username"
 password: "xxx" # optionnel, le mdp sera alors demandé à chaque utilisation
-sender_mail: "email_address" # optionnel, si non renseigné on utilisera le username
+sender_mail: "username@example.com" # optionnel, si non renseigné on utilisera le username
 sender_name: "The Invisible Hand of the Draw" # optionnel, si non renseigné on utilisera le username 
