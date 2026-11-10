@@ -7,21 +7,22 @@
             "request": "launch",
             "module": "ronde_de_cadeaux.cli",
             "args": [
-                "--test-mail",
+                "--test-email",
                 "--auth",
-                "./private/mail_auth.yaml",
+                "./private/email_auth.yaml",
                 "--message",
                 "./private/message.html",
-                "--text-format",
-                "txt",
                 "--people",
-                "./private/data.yaml",
+                "./private/people.yaml",
                 "--show",
                 "--output",
                 "./private/output.txt",
                 "--force",
             ],
             "cwd": "${workspaceFolder}",
+            "env": {
+                "RONDE_DE_CADEAUX_DEBUG": "1",
+            },
         },
     ]
 }

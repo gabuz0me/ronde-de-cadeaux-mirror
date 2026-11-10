@@ -7,17 +7,17 @@ from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
 from dacite import from_dict
-from email_validator import EmailSyntaxError, EmailUndeliverableError
 
-from ._unique_yaml import unique_safe_load
-from .tools import Graph, list_as_cyclic_pairs, validate_email
+from ._unique_yaml import UniquenessError, unique_safe_load
+from .logger import logger
+from .tools import EmailValidator, Graph, email_address_validator, list_as_cyclic_pairs
 
 
 @dataclass
 class _PersonModel:
     display_name: str | None = None
     nickname: str | None = None
-    email: str | None = None  # Obligatoire pour envoyer des mails cependant. Vérifié dans `create_people_and_groups_info`
+    email: str | None = None  # Obligatoire pour envoyer des courriels cependant. Vérifié dans `create_people_and_groups_info`
     allowlist: list[str] | None = None
     denylist: list[str] | None = None
 
@@ -131,11 +131,11 @@ def _csv_list_to_data(list_: list[list[str]]) -> dict[str, dict[str, Any]]:
         if name not in people_dict:
             people_dict[name] = None if email == "" else {"email": email}
         else:
-            raise ValueError("Deux personnes ont le même nom")
+            raise UniquenessError("Deux personnes ont le même nom")
     return {"people": people_dict}
 
 
-def create_people_and_groups_info(people_path: Path, check_mail_address: bool = False) -> PeopleAndGroups:
+def create_people_and_groups_info(people_path: Path, check_email_address: bool = False) -> PeopleAndGroups:
     """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
 
     Ne fait que valider les données d'un point de vue de la structure, rien n'ai fait quant au graphe.
@@ -175,10 +175,10 @@ def create_people_and_groups_info(people_path: Path, check_mail_address: bool = 
         else:
             raise ValueError("Impossible de déterminer le type de fichier de configuration des personnes")
 
-    return _create_people_and_groups_info(people_data, check_mail_address)
+    return _create_people_and_groups_info(people_data, check_email_address)
 
 
-def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = False) -> PeopleAndGroups:  # noqa: ANN401
+def _create_people_and_groups_info(people_data: Any, check_email_address: bool = False) -> PeopleAndGroups:  # noqa: ANN401
     """Version privée, utilisée pour les tests unitaires."""
     try:
         people = from_dict(data_class=_PeopleModel, data=people_data)
@@ -186,18 +186,26 @@ def _create_people_and_groups_info(people_data: Any, check_mail_address: bool = 
         raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)")
         # raise ValueError("Invalid people configuration file (Invalid schema)")
 
-    if check_mail_address:
+    if check_email_address:
         for person in people.people.values():
             if person is None or not person.email:
-                raise ValueError(f"L'envoi de mail est activé mais la personne '{person}' n'a pas d'adresse mail")
+                raise ValueError(f"L'envoi de courriel est activé mais la personne '{person}' n'a pas d'adresse courriel")
                 # raise ValueError(f"Mail sending is enabled, but person '{person}' has no email address")
-            try:
-                validated = validate_email(person.email)
-            except EmailSyntaxError:
-                raise ValueError(f"L'adresse mail '{person.display_name}' n'est pas valide")
-            except EmailUndeliverableError:
-                raise ValueError(f"La vérification DNS de l'adresse mail '{person.email}' n'aboutit pas")
-            person.email = validated.normalized
+
+            _status, person.email = email_address_validator.validate(person.email)
+            _S = EmailValidator.ValidationStatus
+            match _status:
+                case _S.SYNTAX_ERROR:
+                    raise ValueError(f"L'adresse courriel '{person.display_name}' n'est pas valide")
+                case _S.DNS_ERROR:
+                    raise ValueError(f"La vérification DNS de l'adresse courriel '{person.email}' n'aboutit pas")
+                case _S.UNKNOWN_DELIVERABILITY:
+                    logger.warning(f"""\
+                        La délivrabilité de l'adresse courriel de {person.display_name} ({person.email}) n'a pas pu être vérifiée.
+                        Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯
+                        """)
+                case _S.OK:
+                    pass
     return PeopleAndGroups(
         {k: Person(k, v) for k, v in people.people.items()},
         people.groups,

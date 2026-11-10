@@ -1,6 +1,6 @@
-#############################
-# Connexion au serveur mail #
-#############################
+######################################
+# Connexion au serveur de messagerie #
+######################################
 
 smtp:
   hostname: "mailserver.org"
@@ -11,5 +11,7 @@ imap:
   sent_folder: "Sent" # optionnel si on ne copie pas dans la boîte d'envoi, `Sent` par défaut si besoin
 username: "username"
 password: "xxx" # optionnel, le mdp sera alors demandé à chaque utilisation
-sender_mail: "username@example.com" # optionnel, si non renseigné on utilisera le username
-sender_name: "The Invisible Hand of the Draw" # optionnel, si non renseigné on utilisera le username 
+sender_email: "username@mailserver.com" # optionnel, si non renseigné on utilisera le username
+sender_name: "L'Esprit de Noël" # optionnel, si non renseigné on utilisera le username 
+copy_to_sent_folder: true # optionnel, par défaut vaut true
+body_text_format: "auto" # optionnel, par défaut vaut "auto" et a valeur dans {auto, txt, html}

@@ -4,9 +4,9 @@ from ronde_de_cadeaux.parser import ParserArgs
 
 
 class ParserTest(RondeTest):
-    def test_mail_test_no_auth(self):
+    def test_email_test_no_auth(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args="--test-mail")
+            _ = ParserArgs(custom_args="--test-email")
 
     def test_at_least_one_action(self):
         with self.assertRaises(ValueError):
@@ -14,7 +14,7 @@ class ParserTest(RondeTest):
 
     def test_auth_no_message(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--auth", self.example_mail_config])
+            _ = ParserArgs(custom_args=["--auth", self.example_email_config])
 
     def test_no_input_file(self):
         with self.assertRaises(ValueError):
@@ -26,18 +26,18 @@ class ParserTest(RondeTest):
 
     def test_non_existing_files(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--test-mail", "--auth", self.get_non_existing_file(".yaml")])
+            _ = ParserArgs(custom_args=["--test-email", "--auth", self.get_non_existing_file(".yaml")])
 
         with self.assertRaises(ValueError):
             _ = ParserArgs(custom_args=["--people", self.get_non_existing_file(".yaml"), "--show"])
 
-    def test_test_mail_with_people(self):
+    def test_test_email_with_people(self):
         with self.assertRaises(ValueError):
             _ = ParserArgs(
                 custom_args=[
-                    "--test-mail",
+                    "--test-email",
                     "--auth",
-                    self.example_mail_config,
+                    self.example_email_config,
                     "--people",
                     self.example_people_csv,
                 ]
@@ -53,21 +53,20 @@ class ParserTest(RondeTest):
                 output,
                 "--force",
                 "--auth",
-                self.example_mail_config,
+                self.example_email_config,
                 "--message",
                 self.example_message_html,
                 "--show",
                 "--seed",
                 "42",
-                "--no-imap",
             ]
         )
         self.assertEqual(args.seed, "42")
         self.assertTrue(args.show)
         self.assertEqual(str(args.output), output)
-        self.assertIsNotNone(args.mail)
-        assert args.mail is not None
-        self.assertFalse(args.mail.copy_to_sent_folder)
+        self.assertIsNotNone(args.email)
+        assert args.email is not None
+        self.assertTrue(args.email.config.copy_to_sent_folder)
 
     def test_correct_arguments_csv(self):
         output = self.get_non_existing_file(".txt")
@@ -84,4 +83,4 @@ class ParserTest(RondeTest):
         )
         self.assertTrue(args.show)
         self.assertEqual(str(args.output), output)
-        self.assertIsNone(args.mail)
+        self.assertIsNone(args.email)

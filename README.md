@@ -13,7 +13,7 @@
 
 ---
 
-**Ronde de Cadeaux** est un outil libre en ligne de commande pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa* ou *Noël Canadien*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne de tirer une personne spécifique ou faire en sorte qu'elle en tire une dans un groupe donné.
+**Ronde de Cadeaux** est un outil libre en ligne de commande pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa* ou *Noël Canadien*, envoyant des courriels aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne de tirer une personne spécifique ou faire en sorte qu'elle en tire une dans un groupe donné.
 
 ---
 
@@ -259,7 +259,7 @@ imap: # optionnel, utilise les mêmes paramètres que smtp par défaut
   sent_folder: ... # optionnel "Sent" par défaut
 username: ...
 password: ... # optionnel, demandé si non fourni
-sender_mail: ... # optionnel, `username` par défaut
+sender_email: ... # optionnel, `username` par défaut
 sender_name: ... # optionnel, `username` par défaut
 ```
 
@@ -267,11 +267,11 @@ Un fichier minimal ressemble à :
 
 ```yaml
 smtp:
-  hostname: "my_mail_server.org"
-username: "my_mail@domain.ext"
+  hostname: "my_email_server.org"
+username: "my_email@domain.ext"
 ```
 
-Un fichier plus détaillé est [donné en exemple](examples/mail.yaml).
+Un fichier plus détaillé est [donné en exemple](examples/email.yaml).
 
 **Attention**, ce programme se connecte au serveur mail en *STARTTLS*. Ce protocole n'est pas supporté par tous les serveurs.
 
@@ -300,7 +300,7 @@ Les remplacements par personnes seront fait comme suit, sur la base des informat
 
 | Champ | Valeur |
 |---|---|
-| `{sender_mail}` | Adresse mail expéditrice |
+| `{sender_email}` | Adresse mail expéditrice |
 | `{sender_name}` | Nom associé à l'adresse expéditrice |
 | `{gifter_id}` | Identifiant de la personne qui reçoit le courriel |
 | `{gifter_name}` | Nom de la personne qui reçoit le courriel |

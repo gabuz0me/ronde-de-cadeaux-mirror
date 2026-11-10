@@ -8,10 +8,9 @@ from typing import Any
 
 from . import __version__
 from .logger import logger
-from .mail import MailInfo, create_mail_info
+from .mail import EmailInfo, create_email_info
 from .parser_translation import convert_argparse_to_french
 from .people_graph_generation import create_people_and_groups_info
-from .tools import fill_dedent
 
 convert_argparse_to_french()  # À appeler avant l'import de argparse
 import argparse  # noqa
@@ -35,36 +34,23 @@ def _makeParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "--test-mail",
+        "--test-email",
         action="store_true",
-        help="Tester la configuration de mail",
+        help="Tester la configuration de l'envoi des courriels",
     )
 
     parser.add_argument(
         "-a",
         "--auth",
         type=Path,
-        help="Fichier de configuration mail",
+        help="Fichier de configuration de l'envoi des courriels",
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help="Fichier patron du message envoyé par mail",
-    )
-
-    parser.add_argument(
-        "--no-imap",
-        help="Ne pas copier les mails dans la boîte d'envoi",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "--text-format",
-        choices=["html", "txt", "auto"],
-        default="auto",
-        help="Formatage du corps du mail (par défaut `auto`, essaye de détecter)",
+        help="Fichier patron du message envoyé par courriel",
     )
 
     parser.add_argument(
@@ -128,32 +114,35 @@ class ParserArgs:
             logger.info(__version__)
             sys.exit(0)
 
-        self.mail: MailInfo | None = None
+        self.email: EmailInfo | None = None
         self.show: bool = args.show
         self.output: Path | None = args.output
         self.seed: Any | None = args.seed
 
-        if args.test_mail:
+        if args.test_email:
             if not args.auth:
-                raise ValueError("Fichier de configuration mail manquant pour le test de connexion")
-                # raise ValueError("Missing auth file for testing mail configuration")
+                raise ValueError("Fichier de configuration du serveur de messagerie manquant pour le test de connexion")
+                # raise ValueError("Missing auth file for testing email configuration")
             if args.people:
-                create_people_and_groups_info(args.people, check_mail_address=True)
+                create_people_and_groups_info(args.people, check_email_address=True)
 
         # Tirage
         else:
             # Au moins une action
             if not (args.output or args.show or args.auth):
-                b = fill_dedent("""\
+                raise ValueError("""\
                     Effectuez au moins une action parmi afficher, écrire dans un fichier ou
-                    envoyer par mail le résultat du tirage
+                    envoyer par courriel le résultat du tirage
                     """)
-                raise ValueError(b)
-                # raise ValueError("Please show, write to a file or send by mail the draw")
+                # raise ValueError("Please show, write to a file or send by email the draw")
             # Mail --> Message
             if args.auth and not args.message:
-                raise ValueError("Fichier de message manquant pour l'envoi des mails")
+                raise ValueError("Fichier de message manquant pour l'envoi des courriels")
                 # raise ValueError("Missing message file for email sending")
+            if not args.auth and args.message:
+                logger.warning(
+                    "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
+                )
             if not args.people:
                 raise ValueError("Fichier décrivant les personnes manquant")
                 # raise ValueError("Missing input file for the draw")
@@ -162,12 +151,12 @@ class ParserArgs:
                 # raise ValueError("Output file already exist, use `--force` to override")
 
             try:
-                self.people_and_groups = create_people_and_groups_info(args.people, check_mail_address=args.auth)
+                self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.auth)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e)
 
         if args.auth:
             try:
-                self.mail = create_mail_info(args.test_mail, args.auth, args.message, args.text_format.lower(), args.no_imap)
+                self.email = create_email_info(args.auth, args.message, args.test_email)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e)

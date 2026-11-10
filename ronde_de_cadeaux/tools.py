@@ -1,31 +1,65 @@
 """Boîte à outils."""
 
 import random
+from enum import Enum, auto
 from random import sample
 from shutil import get_terminal_size
 from textwrap import dedent, fill
 from typing import TypeVar
 
+import dns.resolver
 import email_validator
-from email_validator import ValidatedEmail
-from email_validator import validate_email as _validate_email
-
-from .logger import logger
 
 
-# https://www.emailawesome.com/blog/python-email-validation
-def validate_email(email: str) -> ValidatedEmail:
-    """Wrapper de `email_validator.validate_email` avec les bons arguments."""  # noqa
-    # valeur par défaut pour `check_deliverability` (None), ici vaut True en général, False pour les tests unitaires
-    validated = _validate_email(
-        email,
-        check_deliverability=None,
-        allow_smtputf8=False,
-    )
-    if email_validator.CHECK_DELIVERABILITY and getattr(validated, "mx", None) is None:
-        logger.warning(f"La délivrabilité de {email} n'a pas pu être vérifiée. Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯")
-    return validated
+class EmailValidator:
+    """Valide les emails. Ou pas."""
 
+    class ValidationStatus(Enum):
+        """Statut de la validation."""
+
+        OK = auto()
+        UNKNOWN_DELIVERABILITY = auto()
+        DNS_ERROR = auto()
+        SYNTAX_ERROR = auto()
+
+    def __init__(self) -> None:
+        self._resolver = dns.resolver.Resolver(configure=False)
+        self._resolver.nameservers = [
+            "1.1.1.1",  # Cloudflare
+            "8.8.8.8",  # Google
+            "9.9.9.9",  # Quad9
+        ]
+        self._resolver.cache = dns.resolver.LRUCache()
+
+    # https://www.emailawesome.com/blog/python-email-validation
+    def validate(self, email: str) -> tuple[ValidationStatus, str]:
+        """Valide ou pas une adresse mail.
+
+        Retour un tuple contenant le statut de la validation (`MailValidator.ValidationStatus`) et l'adresse mail normalisée.
+        """  # noqa
+
+        status = self.ValidationStatus.OK
+        email_normalized = ""
+        try:
+            # valeur par défaut pour `check_deliverability` (None), ici vaut True en général, False pour les tests unitaires
+            validated = email_validator.validate_email(
+                email,
+                check_deliverability=None,
+                allow_smtputf8=False,
+                dns_resolver=self._resolver,
+            )
+        except email_validator.EmailSyntaxError:
+            status = self.ValidationStatus.SYNTAX_ERROR
+        except email_validator.EmailUndeliverableError:
+            status = self.ValidationStatus.DNS_ERROR
+        else:
+            email_normalized = validated.normalized
+            if email_validator.CHECK_DELIVERABILITY and getattr(validated, "mx", None) is None:
+                status = self.ValidationStatus.UNKNOWN_DELIVERABILITY
+        return (status, email_normalized)
+
+
+email_address_validator = EmailValidator()
 
 T = TypeVar("T")
 

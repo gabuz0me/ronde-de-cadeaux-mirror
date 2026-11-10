@@ -1,10 +1,9 @@
-import csv
 import random
 from csv import reader
 from textwrap import dedent
 from typing import Any
 
-from ronde_de_cadeaux._unique_yaml import unique_safe_load
+from ronde_de_cadeaux._unique_yaml import UniquenessError, unique_safe_load
 from ronde_de_cadeaux.people_graph_generation import (
     CSV_DELIMITER,
     GraphGenerationException,
@@ -16,7 +15,7 @@ from ronde_de_cadeaux.people_graph_generation import (
 from ronde_de_cadeaux.tools import compute_hamiltonian_cycle
 from tests.base import RondeTest
 
-DataAndBool = tuple[dict[str, Any], bool]  # Données des gens associées à un booléen "envoyer les mails ?"
+DataAndBool = tuple[dict[str, Any], bool]  # Données des gens associées à un booléen "envoyer les courriels ?"
 
 
 YAML_PEOPLE_MINIMAL = """\
@@ -80,11 +79,11 @@ class PeopleValidationTest(RondeTest):
                 _create_people_and_groups_info(*data)
 
     def test_duplicate_value(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(UniquenessError):
             unique_safe_load(YAML_PEOPLE_DUPLICATE)
 
         csv_list = [l.split(CSV_DELIMITER) for l in CSV_PEOPLE_DUPLICATE.split("\n")]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(UniquenessError):
             _csv_list_to_data(csv_list)  # pyright: ignore[reportArgumentType]
 
     def test_valid_data(self):
@@ -146,7 +145,7 @@ class PeopleValidationTest(RondeTest):
         """).split("\n")
         data = _csv_list_to_data(list(reader(text, delimiter=CSV_DELIMITER)))
         try:
-            pag = _create_people_and_groups_info(data, check_mail_address=True)
+            pag = _create_people_and_groups_info(data, check_email_address=True)
             bob = pag.id_to_person.get('Robert "Bob" Trebor')
             assert bob is not None
             self.assertEqual(bob.email, "robert@treb.or")
@@ -162,15 +161,15 @@ class PeopleValidationTest(RondeTest):
             dedent("""\
                 A; a@a.a
                 B;
-            """),  # Pas de mail
+            """),  # Pas de courriel
             dedent("""\
                 A; a@a.a
                 B
-            """),  # Pas de mail
+            """),  # Pas de courriel
             dedent("""\
                 A; a@a.a
-                B; mail
-            """),  # mail invalide
+                B; b@b@b.b
+            """),  # Courriel invalide
             dedent("""\
                 A; a1@a1.a1
                 A; a2@a2.a2
@@ -178,9 +177,9 @@ class PeopleValidationTest(RondeTest):
             """),  # Deux personnes ont le même nom
         ]
         for text in invalid_text_list:
-            with self.assertRaises(ValueError):
+            with self.assertRaises((ValueError, UniquenessError)):
                 data = _csv_list_to_data(list(reader(text.split("\n"), delimiter=CSV_DELIMITER)))
-                _create_people_and_groups_info(data, check_mail_address=True)
+                _create_people_and_groups_info(data, check_email_address=True)
 
 
 class GraphGenerationTesting(RondeTest):

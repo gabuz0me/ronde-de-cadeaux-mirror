@@ -9,22 +9,23 @@ from typing import Any, Hashable, override
 import yaml
 
 
+class UniquenessError(Exception):
+    pass
+
+
 # special loader with duplicate key checking
-class UniqueKeyLoader(yaml.SafeLoader):
+class _UniqueKeyLoader(yaml.SafeLoader):
     @override
     def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict[Hashable, Any]:
         mapping = []
         for key_node, _ in node.value:
             key = self.construct_object(key_node, deep=deep)
-            assert key not in mapping
+            if key in mapping:
+                raise UniquenessError(f"La clé {key} n'est pas unique")
             mapping.append(key)
         return super().construct_mapping(node, deep)
 
 
 def unique_safe_load(stream: Any) -> Any:  # noqa: ANN401
     """Appelle `unique_safe_load` en garantissant que les clés d'un dictionnaire sont uniques."""
-    try:
-        res = yaml.load(stream, Loader=UniqueKeyLoader)
-    except Exception:
-        raise ValueError("""Uniqueness of key is broken""")
-    return res
+    return yaml.load(stream, Loader=_UniqueKeyLoader)
