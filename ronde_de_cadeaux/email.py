@@ -1,4 +1,4 @@
-"""Module relatif au courriels.
+"""Module relatif aux courriels.
 
 Validation des données et envoi.
 """
@@ -185,7 +185,7 @@ class EmailInfo:
     testing: bool
 
 
-class Mailer:
+class Emailer:
     """Classe qui gère la création et l'envoi de courriels."""
 
     class BaseError(Exception):  # noqa
@@ -204,7 +204,7 @@ class Mailer:
         self.imap_server: imaplib.IMAP4 | None = None
 
         try:
-            logger.debug("Opening SMTP server...", newline=False)
+            logger.debug("Ouverture du serveur SMTP...", newline=False)
             self.smtp_server = smtplib.SMTP(
                 host=email_config.smtp.hostname,
                 port=email_config.smtp.port,
@@ -225,7 +225,7 @@ class Mailer:
 
         if email_config.copy_to_sent_folder:
             try:
-                logger.debug("Opening IMAP server...", newline=False)
+                logger.debug("Ouverture du serveur IMAP...", newline=False)
                 self.imap_server = imaplib.IMAP4(
                     email_config.imap.hostname,
                     email_config.imap.port,
@@ -253,24 +253,24 @@ class Mailer:
 
     def close_servers(self) -> None:
         """Clôt proprement les serveurs SMTP et IMAP s'ils existent."""
-        logger.debug("Closing servers:")
+        logger.debug("Fermeture des serveurs")
 
         try:
             self.smtp_server.quit()
         except Exception:
-            logger.debug("- Couldn't close SMTP server")
+            logger.debug("- Impossible de fermer le serveur SMTP")
         else:
-            logger.debug("- SMTP server closed")
+            logger.debug("- Serveur SMTP fermé")
 
         if self.imap_server:
             try:
                 self.imap_server.logout()
             except Exception:
-                logger.debug("- Couldn't close IMAP server")
+                logger.debug("- Impossible de fermer le serveur IMAP")
             else:
-                logger.debug("- IMAP server closed")
+                logger.debug("- Serveur IMAP fermé")
         else:
-            logger.debug("- No IMAP server")
+            logger.debug("- Pas de serveur IMAP")
 
     @staticmethod
     def _to_header(msg: str) -> str:
@@ -316,8 +316,8 @@ def _to_person_tuple(name: str) -> PersonTuple:
 
 
 def test_email_sending(email_info: EmailInfo) -> None:
-    """Tester la configuration courriel."""
-    mailer = Mailer(email_info.config)
+    """Tester la configuration de l'envoi des courriels."""
+    emailer = Emailer(email_info.config)
     if not email_info.message:
         message = Message(
             subject="Test de configuration Ronde de Cadeaux",
@@ -327,20 +327,20 @@ def test_email_sending(email_info: EmailInfo) -> None:
         message = email_info.message.formatted(_to_person_tuple("offreureuse"), _to_person_tuple("destinataire"))
 
     try:
-        mailer.create_and_send_email_object(email_info.config.sender_name, email_info.config.sender_email, message)
-    except Mailer.BaseError:
+        emailer.create_and_send_email_object(email_info.config.sender_name, email_info.config.sender_email, message)
+    except Emailer.BaseError:
         pass
     # finally:
-    #     mailer.close_servers()
+    #     emailer.close_servers()
 
 
 def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
     """Envoi des courriels.
 
-    Peut lever une `Mailer.BaseError`.
+    Peut lever une `Emailer.BaseError`.
     """
     assert email_info.message
-    mailer = Mailer(email_info.config)
+    emailer = Emailer(email_info.config)
 
     sent: list[str] = []
     current_draw: DrawPair | None = None
@@ -351,12 +351,12 @@ def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
             assert gifter.email is not None
 
             try:
-                mailer.create_and_send_email_object(
+                emailer.create_and_send_email_object(
                     gifter.name,
                     gifter.email,
                     email_info.message.formatted(gifter, giftee),
                 )
-            except Mailer.IMAPError:
+            except Emailer.IMAPError:
                 sent.append(gifter.email)  # L'envoi du courriel a réussi, mais on échoue après hélas
                 raise
             sent.append(gifter.email)
@@ -367,11 +367,11 @@ def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
                 logger.warning(f" - {address}")
         raise
     # finally:
-    #     mailer.close_servers()
+    #     emailer.close_servers()
 
 
 def create_email_info(config_path: Path, message_path: Path | None, testing: bool) -> EmailInfo:
-    """Convertit les arguments relatifs aux courriels venant du parser en une structure `MailInfo`.
+    """Convertit les arguments relatifs aux courriels venant du parser en une structure `EmailInfo`.
 
     Lève:
       - `ValueError` si des données invalides sont données
@@ -379,7 +379,7 @@ def create_email_info(config_path: Path, message_path: Path | None, testing: boo
 
     ---
 
-    Convert parser email arguments into a proper `MailInfo` structure.
+    Convert parser email arguments into a proper `EmailInfo` structure.
 
     Raise:
       - `ValueError` if invalid data is given.

@@ -33,9 +33,9 @@ class EmailValidator:
 
     # https://www.emailawesome.com/blog/python-email-validation
     def validate(self, email: str) -> tuple[ValidationStatus, str]:
-        """Valide ou pas une adresse mail.
+        """Valide ou pas une adresse courriel.
 
-        Retour un tuple contenant le statut de la validation (`MailValidator.ValidationStatus`) et l'adresse mail normalisée.
+        Retour un tuple contenant le statut de la validation (`EmailValidator.ValidationStatus`) et l'adresse courriel normalisée.
         """  # noqa
 
         status = self.ValidationStatus.OK

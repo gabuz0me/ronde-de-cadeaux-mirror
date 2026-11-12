@@ -7,8 +7,8 @@ from textwrap import dedent
 from typing import Any
 
 from . import __version__
+from .email import EmailInfo, create_email_info
 from .logger import logger
-from .mail import EmailInfo, create_email_info
 from .parser_translation import convert_argparse_to_french
 from .people_graph_generation import create_people_and_groups_info
 
@@ -30,7 +30,7 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--version",
         action="store_true",
-        help="Afficher le numéro de version et quitter",
+        help="Afficher le numéro de version du programme et quitter",
     )
 
     parser.add_argument(
@@ -43,14 +43,14 @@ def _makeParser() -> argparse.ArgumentParser:
         "-a",
         "--auth",
         type=Path,
-        help="Fichier de configuration de l'envoi des courriels",
+        help="Fichier de configuration de l'envoi des courriels, voir la documentation pour le schéma",
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help="Fichier patron du message envoyé par courriel",
+        help="Fichier patron du message envoyé par courriel, voir la documentation pour le schéma",
     )
 
     parser.add_argument(
@@ -82,7 +82,7 @@ def _makeParser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "--seed",
-        help="Utilise cette graine aléatoire pour le tirage",
+        help="Graine aléatoire pour le tirage",
     )
 
     return parser
@@ -135,7 +135,7 @@ class ParserArgs:
                     envoyer par courriel le résultat du tirage
                     """)
                 # raise ValueError("Please show, write to a file or send by email the draw")
-            # Mail --> Message
+            # Courriel --> Message
             if args.auth and not args.message:
                 raise ValueError("Fichier de message manquant pour l'envoi des courriels")
                 # raise ValueError("Missing message file for email sending")

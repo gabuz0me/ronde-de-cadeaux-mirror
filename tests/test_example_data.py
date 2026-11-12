@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from ronde_de_cadeaux._unique_yaml import unique_safe_load
-from ronde_de_cadeaux.mail import EmailInfo, _create_email_config_from_raw_data
+from ronde_de_cadeaux.email import EmailInfo, _create_email_config_from_raw_data
 from ronde_de_cadeaux.people_graph_generation import (
     create_people_and_groups_info,
     generate_people_graph,

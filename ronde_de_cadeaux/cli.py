@@ -6,8 +6,8 @@ import sys
 
 import email_validator
 
+from .email import Emailer, send_emails, test_email_sending
 from .logger import logger
-from .mail import Mailer, send_emails, test_email_sending
 from .parser import ParserArgs
 from .people_graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
 from .tools import compute_hamiltonian_cycle
@@ -18,7 +18,7 @@ def main() -> None:
     email_validator.CHECK_DELIVERABILITY = True
 
     try:
-        logger.debug("Parsing args...", newline=False)
+        logger.debug("Analyse des arguments...", newline=False)
         args = ParserArgs()
         logger.debug("OK")
     except Exception as e:
@@ -27,10 +27,10 @@ def main() -> None:
 
     if args.email and args.email.testing:
         try:
-            logger.debug("Testing email config")
+            logger.debug("Test de la configuration des courriels...")
             test_email_sending(args.email)
             logger.debug("OK")
-        except Mailer.BaseError as e:
+        except Emailer.BaseError as e:
             logger.error(f"Erreur lors du test de l'envoi des courriels : {e}")
             sys.exit(1)
         else:
@@ -41,14 +41,14 @@ def main() -> None:
         random.seed(args.seed)
 
     try:
-        logger.debug("Generating people graph...", newline=False)
+        logger.debug("Génération du graphe des gens...", newline=False)
         people_graph = generate_people_graph(args.people_and_groups)
         logger.debug("OK")
     except GraphGenerationException as e:
         logger.error(f"Erreur dans la génération du graphe : {e.message}.")
         sys.exit(1)
 
-    logger.debug("Computing hamiltonian cycle...", newline=False)
+    logger.debug("Calcul d'un cycle hamiltonien..", newline=False)
     path = compute_hamiltonian_cycle(people_graph)
     logger.debug("OK")
 
@@ -73,15 +73,15 @@ def main() -> None:
 
     if args.email:
         try:
-            logger.debug("Sending emails...")
+            logger.debug("Envoi des courriels...")
             send_emails(draw, args.email)
-            logger.debug("Sending emails OK")
+            logger.debug("Envoi des courriels OK")
 
-        except Mailer.BaseError as e:
+        except Emailer.BaseError as e:
             logger.error(f"Erreur lors de l'envoi des courriels aux participant·e·s : {e}")
             sys.exit(1)
         else:
-            logger.info("Tirage bien envoyé par mail :D")
+            logger.info("Tirage bien envoyé par courriel \\o/")
 
 
 if __name__ == "__main__":

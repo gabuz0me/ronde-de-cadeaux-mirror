@@ -1,5 +1,3 @@
-"""Allow access to `examples` folder."""
-
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +8,8 @@ import email_validator
 
 
 class RondeTest(unittest.TestCase):
+    """Classe de base ayant accès au contenu du dossier contenant les exemples."""
+
     examples: Path = Path(__file__).parent.parent / "examples"
 
     @property

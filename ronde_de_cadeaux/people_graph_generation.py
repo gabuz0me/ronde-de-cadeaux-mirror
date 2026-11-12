@@ -190,7 +190,7 @@ def _create_people_and_groups_info(people_data: Any, check_email_address: bool =
         for person in people.people.values():
             if person is None or not person.email:
                 raise ValueError(f"L'envoi de courriel est activé mais la personne '{person}' n'a pas d'adresse courriel")
-                # raise ValueError(f"Mail sending is enabled, but person '{person}' has no email address")
+                # raise ValueError(f"Email sending is enabled, but person '{person}' has no email address")
 
             _status, person.email = email_address_validator.validate(person.email)
             _S = EmailValidator.ValidationStatus

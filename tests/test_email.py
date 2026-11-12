@@ -2,7 +2,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from ronde_de_cadeaux._unique_yaml import unique_safe_load
-from ronde_de_cadeaux.mail import EmailInfo, Message, _create_email_config_from_raw_data, format_message_people
+from ronde_de_cadeaux.email import EmailInfo, Message, _create_email_config_from_raw_data, format_message_people
 from ronde_de_cadeaux.people_graph_generation import _create_people_and_groups_info
 from tests.base import RondeTest
 from tests.test_people import YAML_PEOPLE_MAXIMAL
@@ -43,7 +43,7 @@ smtt:
 """
 
 
-class MailTest(RondeTest):
+class EmailTest(RondeTest):
     @staticmethod
     def to_email_info(data_str: str) -> EmailInfo:
         data = unique_safe_load(data_str)

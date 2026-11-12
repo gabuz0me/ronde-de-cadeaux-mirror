@@ -24,7 +24,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["build", "twine"]
+dev = [
+    "build",
+    "twine", # construction et téléversement sur PyPI
+    "cogapp", # création de la partie --help du readme
+]
 
 [project.scripts]
 ronde = "ronde_de_cadeaux.cli:main"

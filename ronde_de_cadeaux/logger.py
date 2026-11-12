@@ -11,7 +11,7 @@ import os
 import sys
 from enum import Enum
 
-from ronde_de_cadeaux.tools import fill_dedent
+from .tools import fill_dedent
 
 
 class Logger:
