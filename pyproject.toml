@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ronde-de-cadeaux"
-version = "0.0.0dev1"
+version = "0.0.0dev2"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "PyPI.md"
@@ -26,7 +26,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "build",
-    "twine", # construction et téléversement sur PyPI
+    "twine",  # construction et téléversement sur PyPI
     "cogapp", # création de la partie --help du readme
 ]
 
