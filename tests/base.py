@@ -1,5 +1,3 @@
-"""Allow access to `examples` folder."""
-
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,21 +8,23 @@ import email_validator
 
 
 class RondeTest(unittest.TestCase):
+    """Classe de base ayant accès au contenu du dossier contenant les exemples."""
+
     examples: Path = Path(__file__).parent.parent / "examples"
 
     @property
     def example_people_yaml(self) -> str:
-        """Tout le monde a une adresse mail ici."""
+        """Tout le monde a une adresse courriel ici."""
         return str(self.examples / "people.yaml")
 
     @property
     def example_people_csv(self) -> str:
-        """Il y a des personnes sans adresse mail."""
+        """Il y a des personnes sans adresse courriel."""
         return str(self.examples / "people.csv")
 
     @property
-    def example_mail_config(self) -> str:
-        return str(self.examples / "mail.yaml")
+    def example_email_config(self) -> str:
+        return str(self.examples / "email.yaml")
 
     @property
     def example_message_html(self) -> str:

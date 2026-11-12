@@ -2,6 +2,20 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Cog the readmes!",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "cog",
+                "-r",
+                "-P",
+                "-c",
+                "./README*",
+            ],
+            "problemMatcher": [],
+        },
+        {
             "label": "Build package",
             "type": "shell",
             "command": "${command:python.interpreterPath}",

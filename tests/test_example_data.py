@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from ronde_de_cadeaux._unique_yaml import unique_safe_load
-from ronde_de_cadeaux.mail import _create_mail_info
+from ronde_de_cadeaux.email import EmailInfo, _create_email_config_from_raw_data
 from ronde_de_cadeaux.people_graph_generation import (
     create_people_and_groups_info,
     generate_people_graph,
@@ -31,11 +31,11 @@ class ExampleTest(RondeTest):
         except Exception as e:
             self.fail(e)
 
-    def test_mail_config(self):
-        """Teste si le fichier d'example de configuration mail est valide."""
+    def test_email_config(self):
+        """Teste si le fichier d'example de configuration du serveur de messagerie est valide."""
         try:
-            with open(self.example_mail_config) as file:
+            with open(self.example_email_config) as file:
                 data = unique_safe_load(file)
-            _create_mail_info(True, data, None, True)
+            EmailInfo(_create_email_config_from_raw_data(data), None, True)
         except Exception as e:
             self.fail(e)

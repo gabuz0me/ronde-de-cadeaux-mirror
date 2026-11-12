@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ronde-de-cadeaux"
-version = "0.0.0dev1"
+version = "0.0.0dev2"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "PyPI.md"
@@ -24,7 +24,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["build", "twine"]
+dev = [
+    "build",
+    "twine",  # construction et téléversement sur PyPI
+    "cogapp", # création de la partie --help du readme
+]
 
 [project.scripts]
 ronde = "ronde_de_cadeaux.cli:main"
@@ -34,6 +38,7 @@ Homepage = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 Documentation = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/README.md"
 GitLab = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 GitHub = "https://github.com/gabuz0me/ronde-de-cadeaux-mirror/"
+Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelog.md"
 
 [tool.setuptools]
 packages = ["ronde_de_cadeaux"]

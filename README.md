@@ -13,7 +13,7 @@
 
 ---
 
-**Ronde de Cadeaux** est un outil libre en ligne de commande pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa* ou *Noël Canadien*, envoyant des mails aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne de tirer une personne spécifique ou faire en sorte qu'elle en tire une dans un groupe donné.
+**Ronde de Cadeaux** est un outil libre en ligne de commande pour tirer au sort des gens à qui faire des cadeaux façon *Secret Santa* ou *Noël Canadien*, envoyant des courriels aux participant⋅e⋅s pour leur indiquer la personne à régaler. Le tirage peut également être contrôlé par différents mécanismes de contraintes, comme par exemple empêcher une personne de tirer une personne spécifique ou faire en sorte qu'elle en tire une dans un groupe donné.
 
 ---
 
@@ -27,11 +27,11 @@
   - [📥 Installation](#-installation)
   - [🧑‍💻 Utilisation](#-utilisation)
     - [🎁 Effectuer un tirage](#-effectuer-un-tirage)
-    - [⚙️ Tester la configuration mail](#️-tester-la-configuration-mail)
+    - [⚙️ Tester la configuration de l'envoi des courriels](#️-tester-la-configuration-de-lenvoi-des-courriels)
   - [📃 Format des différents fichiers d'entrée](#-format-des-différents-fichiers-dentrée)
     - [😎 Le fichier contenant les informations sur les gens](#-le-fichier-contenant-les-informations-sur-les-gens)
-    - [📧 Le fichier de configuration mail](#-le-fichier-de-configuration-mail)
-    - [💬 Le fichier type de message](#-le-fichier-type-de-message)
+    - [📧 Le fichier de configuration de l'envoi des courriels](#-le-fichier-de-configuration-de-lenvoi-des-courriels)
+    - [💬 Le fichier patron du message envoyé par courriel](#-le-fichier-patron-du-message-envoyé-par-courriel)
 - [🥳 Exemples d'utilisation](#-exemples-dutilisation)
 - [🔎 FAQ](#-faq)
 - [🤓 Comment contribuer ou aider ?](#-comment-contribuer-ou-aider-)
@@ -44,7 +44,7 @@
 
 ### 📥 Installation
 
-Cet outil est écrit en [Python](https://python.org/) 3.12, assure-toi d'avoir installé une version supérieure ou égale à la 3.12. Ronde-de-cadeaux s'installe en ligne de commande avec [*pip*](https://pypi.org/project/pip/) ou [*uv*](https://docs.astral.sh/uv/getting-started/installation/).
+Cet outil est écrit en [Python](https://python.org/), assure-toi d'avoir installé une version **supérieure ou égale à la 3.12**. `ronde-de-cadeaux` s'installe en ligne de commande avec [*pip*](https://pypi.org/project/pip/) ou [*uv*](https://docs.astral.sh/uv/getting-started/installation/).
 
 **Installation avec pip :**
 
@@ -58,77 +58,105 @@ pip install ronde-de-cadeaux
 uv tool install ronde-de-cadeaux
 ```
 
+> [!tip] Astuce
+> Utiliser une version de Python supérieure ou égale à la 3.14 permet d'avoir de la [couleur dans les messages d'aide](https://docs.python.org/3.14/library/argparse.html#color) 😎
 ### 🧑‍💻 Utilisation
 
 Cet outil installe un seul exécutable, `ronde`. Voilà son message d'aide :
-<!-- Terminal size: 100 -->
-``` 
-Utilisation : ronde [-h] [--version] [--test-mail] [-a AUTH] [-m MESSAGE] [--no-imap]
-                    [--text-format {html,txt,auto}] [-p PEOPLE] [-s] [-o OUTPUT] [--force]
-                    [--seed SEED]
+
+<!-- uv run cog -r -P  .\README* -->
+<!--[[[cog
+import os;os.environ["COLUMNS"]="100"
+from ronde_de_cadeaux.parser import _makeParser as mp
+print(f"```\n{mp().format_help().strip()}\n```")
+]]]-->
+```
+Utilisation : ronde [-h] [--version] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE] [-s]
+                    [-o OUTPUT] [--force] [--seed SEED]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
 système de contraintes complexes.
 
 Arguments:
   -h, --help            Afficher ce message et quitter
-  --version             Afficher le numéro de version et quitter
-  --test-mail           Tester la configuration de mail
-  -a AUTH, --auth AUTH  Fichier de configuration mail
+  --version             Afficher le numéro de version du programme et quitter
+  --test-email          Tester la configuration de l'envoi des courriels
+  -a AUTH, --auth AUTH  Fichier de configuration de l'envoi des courriels, voir la documentation
+                        pour le schéma
   -m MESSAGE, --message MESSAGE
-                        Fichier patron du message envoyé par mail
-  --no-imap             Ne pas copier les mails dans la boîte d'envoi
-  --text-format {html,txt,auto}
-                        Formatage du corps du mail (par défaut `auto`, essaye de détecter)
+                        Fichier patron du message envoyé par courriel, voir la documentation pour
+                        le schéma
   -p PEOPLE, --people PEOPLE
                         Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
   -s, --show            Afficher la ronde calculée
   -o OUTPUT, --output OUTPUT
                         Fichier dans lequel exporter le tirage
   --force               Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
-  --seed SEED           Utilise cette graine aléatoire pour le tirage
+  --seed SEED           Graine aléatoire pour le tirage
 ```
+<!--[[[end]]] (sum: YDk364SQno) -->
 
-L'outil permet deux actions principales, [effectuer un tirage](#-effectuer-un-tirage) et [tester la configuration mail](#️-tester-la-configuration-mail).
+> [!important] Utilisation
+> L'outil permet deux actions principales :
+> - [Effectuer un tirage](#-effectuer-un-tirage).
+> - [Tester la configuration de l'envoi des courriels](#️-tester-la-configuration-de-lenvoi-des-courriels).
 
 #### 🎁 Effectuer un tirage
 
-Pour effectuer un tirage il faut fournir un fichier d'entrée contenant les informations sur les personnes participant au tirage, à minima leurs noms (et leur mails si on envoie le tirage par mail aux participant·e·s). Ce fichier est passé avec l'option `--people` et est au format CSV ou YAML. La structure de ce fichier est [discutée plus bas](#-le-fichier-contenant-les-informations-sur-les-gens).
+Pour effectuer un tirage il faut fournir un fichier d'entrée contenant les informations sur les personnes participant au tirage, à minima leurs noms (et leurs adresses courriel si on envoie le tirage par courriel aux participant·e·s). Ce fichier est passé avec l'option `--people` et est au format CSV ou YAML. La structure de ce fichier est [discutée plus bas](#-le-fichier-contenant-les-informations-sur-les-gens).
 
-Ensuite il faut effectuer au moins une des actions suivantes:
+Ensuite il faut effectuer au moins une des *actions* suivantes:
 
-1. Envoyer un mail aux participant·e·s en utilisant les options `--auth` suivi du fichier de configuration mail et `--message` suivi message type à envoyer aux participant·e·s. Le détail de ces fichiers est [discuté plus bas](#-le-fichier-de-configuration-mail), ainsi que des options supplémentaires à l'action d'envoi de mail.
+1. Envoyer un courriel aux participant·e·s en utilisant les options `--auth` suivi du *fichier de configuration de l'envoi des courriels* et `--message` suivi du *fichier patron du message envoyé par courriel* aux participant·e·s. Le détail de ces fichiers est [discuté plus bas](#-le-fichier-de-configuration-de-lenvoi-des-courriels), ainsi que les options supplémentaires relatives à cette action.
 2. Afficher le tirage dans la console avec l'option `--show`.
 3. Écrire le résultat du tirage dans un fichier avec l'option `--output` suivie d'un nom de fichier. Si le fichier existe déjà, une erreur survient mais il est possible de forcer le programme à écraser le fichier avec `--force`
 
-Pour forcer un tirage aléatoire donnant systématiquement les mêmes résultats, il est possible de passer une *graine aléatoire* avec l'argument `--seed`. Cela permet par exemple de ne stocker en clair aucune information sur le tirage, mais d'être capable de le reproduire à l'identique dans le futur, si besoin il est.
+> [!tip] Astuce
+> Pour forcer un tirage aléatoire donnant systématiquement les mêmes résultats, il est possible de passer une *graine aléatoire* avec l'argument `--seed`. Cela permet par exemple de ne stocker en clair aucune information sur le tirage, mais d'être capable de le reproduire à l'identique dans le futur, si besoin est.
 
-#### ⚙️ Tester la configuration mail
+#### ⚙️ Tester la configuration de l'envoi des courriels
 
-Avant d'envoyer un mail à tout le monde, on peut vouloir s'assurer que 1. l’authentification mail est correcte et que 2. le message type est correctement formaté. Pour ce faire on utilise l'option `--test-mail` en plus de l'option `--auth` vue plus haut. Cela se connecte aux serveurs mail et envoie un mail à l'adresse mail utilisée pour envoyer les mails. Si `--message` est passée, le message envoyé est formaté avec des valeurs de test.
+Avant d'envoyer un courriel à tout le monde, on peut vouloir s'assurer que 1. l’authentification au serveur de messagerie est correcte et que 2. le *fichier patron du message envoyé par courriel* est correct. Pour ce faire on utilise l'option `--test-email` en plus de l'option `--auth` vue plus haut. Cela se connecte aux serveurs de messagerie et envoie un courriel à l'adresse expéditrice utilisée pour envoyer les courriels. Si `--message` est passée, le message envoyé est celui du *fichier patron du message envoyé par courriel*, formaté avec des valeurs de test.
+
+> [!warning] Attention
+> Dans ce mode, le programme ne teste que la connexion au serveur de messagerie et si l'envoi de courriels est possible. Si le programme teste systématiquement si les adresses courriel sont valides et si les serveurs existent, il **n'envoie pas de courriel aux participant·e·s**. Il est recommandé de vérifier manuellement que les adresses courriels de tout le monde sont correctes et reçoivent bien les messages avant de procéder à un tirage.
 
 ### 📃 Format des différents fichiers d'entrée
 
 #### 😎 Le fichier contenant les informations sur les gens
 
-Ce fichier peut être écrit au format [YAML](https://yaml.org/) ou [CSV](https://fr.wikipedia.org/wiki/Comma-separated_values). Il est passé en argument avec `--people`.
+> [!note] Note
+> Ce fichier peut être écrit au format [YAML](https://yaml.org/) ou [CSV](https://fr.wikipedia.org/wiki/Comma-separated_values). Il est passé en argument avec `--people`.
 
-##### Format CSV
+##### Le format CSV
+
+> [!tip] Astuce
+> Ce fichier est la façon la plus simple de réaliser un tirage où tout le monde peut piocher tout le monde, mais il n'offre aucune possibilité de contraintes ni de créer des champs personnalisés pour les personnes (ex. surnom). 
 
 Ce type de fichier **doit** se terminer par l'extension `.csv` ou `.txt`, le séparateur est `;`. Voilà un exemple contenu d'un tel fichier (ou voir le [fichier d'exemple](examples/people.csv)) :
 
 ```
-Alice Ecila  ; alice@eci.la ; Alice la pote de Ève
-Bœbélius            ;
+Alice Ecila ; alice@eci.la ; Alice la pote de Ève
+Bœbélius    ;
 Caroline
-Ève ; ; Ève la pote d'Alice
+Ève         ;              ; Ève la pote d'Alice
 ```
 
-Ici un tirage au sort sera effectué entre *Alice Ecila*, *Ben*, *Bœbélius* et *Caroline*. Chaque ligne représente une personne, commence par l'appellation de la personne et son (éventuelle) adresse mail est indiquée après un points virgules `;`. D'éventuels commentaires sont insérés après le deuxième `;`. Les commentaires n'ont aucune influence sur le tirage. Les espaces intermédiaires non plus et si la personne n'a pas d'adresse mail, un `;` peut être inséré après son nom ou pas. Il va sans dire que chaque personne doit avoir un nom différent.
+Ici un tirage au sort sera effectué entre *Alice Ecila*, *Bœbélius*, *Caroline* et *Ève*. Chaque ligne représente une personne, commence par l'appellation de la personne, son (éventuelle) adresse courriel est indiquée après un points virgules `;`. D'éventuels commentaires sont insérés après le deuxième `;`. Les commentaires n'ont aucune influence sur le tirage.
 
-Ce fichier est la façon la plus simple de réaliser un tirage mais n'offre aucune possibilité de contraintes ni de créer des champs personnalisés pour les personnes (ex. surnom).
+Le fichier donné en exemple, s'il est valide pour les options `--show` et `--output` ne le sera évidemment pas pour l'option `--auth` puisque seule *Alice Ecila* possède une adresse courriel.
 
-Le fichier donné en exemple, s'il est valide pour les options `--show` et `--output` ne le sera évidemment pas pour l'option `--auth` puisque seule *Alice Ecila* possède une adresse mail.
+> [!note] Note
+> Les espaces intermédiaires n'ont aucune influence sur les champs. Si la personne n'a pas d'adresse courriel, un `;` peut être inséré après son nom ou pas. Le fichier suivant est donc strictement équivalent à celui ci dessus :
+> ```
+> Alice Ecila; alice@eci.la; Alice la pote de Ève
+> Bœbélius
+> Caroline;
+> Ève;;Ève la pote d'Alice
+> ```
+
+> [!warning] Attention
+> Chaque personne doit avoir un nom différent...
 
 ##### Le format YAML
 
@@ -136,9 +164,7 @@ Ce type de fichier **doit** se terminer par l'extension `.yaml` ou `.yml`.
 
 Ce type de fichier permet de personnaliser les champs ainsi que de créer des contraintes de tirage via les mécanismes de listes d'autorisation (*allowlist*) et de listes de rejet (*denylist*).
 
-Un exemple de fichier est [donné en exemple](/examples/people.yaml).
-
-Un fichier yaml de description consiste en deux dictionnaires (notés avec des deux-points `:`), `people` et `groups` permettant de définir respectivement qui participe et les groupes de gens. Le second dictionnaire est optionnel et son utilité est [décrite plus bas](#les-groupes).
+Un fichier YAML de description consiste en deux dictionnaires (notés avec des deux-points `:`), `people` et `groups` permettant de définir respectivement qui participe et les groupes de gens. Le second dictionnaire est optionnel et son utilité est [décrite plus bas](#les-groupes).
 
 ```yaml
 # Structure de base de la configuration en YAML
@@ -161,7 +187,7 @@ people:
     email: "robert@trev.or"
 ```
 
-Les champs `display_name` et `nickname` décrivent respectivement le nom à afficher et le surnom de la personne. Ils sont optionnels et valent par défaut l'identifiant de la personne, ici "Robert T". Ces champs servent essentiellement à mettre en forme le message type pour l'envoi des mails. Le champ `email`, lui aussi optionnel désigne l'adresse mail de la personne.
+Les champs `display_name` et `nickname` décrivent respectivement le nom à afficher et le surnom de la personne. Ils sont optionnels et valent par défaut l'identifiant de la personne, ici "Robert T". Ces champs servent essentiellement à mettre en forme le message type pour l'envoi des courriels. Le champ `email`, lui aussi optionnel désigne l'adresse courriel de la personne.
 
 Le fichier de configuration YAML suivant est similaire à celui au format CSV vu plus haut :
 
@@ -174,7 +200,8 @@ people:
   Ève: # Ève la pote d'Alice
 ```
 
-Notons que *Bœbélius*, *Caroline* et *Ève* n'ont pas de champs mais sont toujours des clés de dictionnaire et donc doivent avoir des `:` à la fin.
+> [!warning] Attention
+> Notons que *Bœbélius*, *Caroline* et *Ève* n'ont pas de champs mais sont toujours des clés du dictionnaire `people`. Ils donc doivent avoir des `:` à la fin.
 
 Le format YAML permet d'ajouter des contraintes via les mécanismes de listes d'autorisation via le champ `allowlist` et de listes de rejet via le champ `denylist`. Dans l'exemple suivant :
 
@@ -233,53 +260,54 @@ groups:
 
 En effet ici, dans `groups` on définit deux groupes, les familles *Trebor* et *Ecila*, et dans les `allowlist` et `denylist` des personnes on ajoute ces contraintes.
 
-Notons qu'en YAML les listes peuvent être définies avec la syntaxe de liste à puce et celle utilisant des crochets, voir les deux précédents exemples.
+> [!tip] Astuce
+> Notons qu'en YAML les listes peuvent être définies avec la syntaxe de liste à puce et celle utilisant des crochets, voir les deux précédents exemples.
 
-###### Résumé des contraintes
+> [!important] Résumé des contraintes
+> - Les **personnes** définies dans `people` peuvent avoir des champs `allowlist` et `denylist`.
+> - Chacun de ces champs est une liste contenant les identifiants de **personnes** ou de **groupe**.
+> - Les **groupes** définis dans `groups` contiennent une liste de **personnes** ou de **groupes** .
+> - Par défaut, si une **personne** n'a pas de `allowlist`, on considère qu'elle peut tirer tout le monde.
+> - L'ensemble des **personnes** qu'une **personne** peut tirer est définie comme l'ensemble des gens contenus dans sa `allowlist` (ou voir règle précédente) moins l'ensemble des gens contenus dans sa `denylist`.
 
-- Les **personnes** définies dans `people` peuvent avoir des champs `allowlist` et `denylist`.
-- Chacun de ces champs est une liste contenant les identifiants de **personnes** ou de **groupe**.
-- Les **groupes** définis dans `groups` contiennent une liste de **personnes** ou de **groupes** .
-- Par défaut, si une **personne** n'a pas de `allowlist`, on considère qu'elle peut tirer tout le monde.
-- L'ensemble des **personnes** qu'une **personne** peut tirer est définie comme l'ensemble des gens contenus dans sa `allowlist` (ou voir règle précédente) moins l'ensemble des gens contenus dans sa `denylist`.
+> [!note] Note
+> Voir le [fichier donné en exemple](examples/people.yaml) pour un exemple complexe d'architecture de groupes et de personnes.
 
-Voir le [fichier donné en exemple](examples/people.yaml) pour un exemple complexe d'architecture de groupes et de personnes.
+#### 📧 Le fichier de configuration de l'envoi des courriels
 
-#### 📧 Le fichier de configuration mail
+Le *fichier de configuration de l'envoi des courriels* est un fichier au format YAML. Il est passé avec l'argument `--auth`. Il est structuré comme suit:
 
-Le fichier de configuration de mail est un fichier au format YAML. Il est passé avec l'argument `--auth`. Il est structuré comme suit:
-
-```yaml
-smtp:
-  hostname: ...
-  port: ... # optionnel, 587 par défaut
-imap: # optionnel, utilise les mêmes paramètres que smtp par défaut
-  hostname: ... # optionnel, `smtp.hostname` par défaut
-  port: ... # optionnel, 143 par défaut
-  sent_folder: ... # optionnel "Sent" par défaut
-username: ...
-password: ... # optionnel, demandé si non fourni
-sender_mail: ... # optionnel, `username` par défaut
-sender_name: ... # optionnel, `username` par défaut
-```
+- `smtp`: (Paramètres du serveur SMTP)
+  - `hostname`: Adresse du serveur SMTP, obligatoire.
+  - `port`: Port du serveur SMTP, optionnel et vaut `587` par défaut.
+- `imap`: (Paramètres du serveur IMAP, optionnel)
+  - `hostname`: Adresse du serveur IMAP, optionnelle et vaut `smtp.hostname` par défaut.
+  - `port`: Port du serveur IMAP, optionnel et vaut `143` par défaut.
+  - `sent_folder`: Nom du dossier des courriels envoyés, optionnel et vaut `Sent` par défaut.
+- `username`: Identifiant de connexion, obligatoire.
+- `password`: Mot de passe pour la connexion, demandé lors de l'exécution du programme si non fourni.
+- `sender_email`: Adresse courriel expéditrice, optionnelle et vaut `username` par défaut.
+- `sender_name`: Nom associé à l'adresse courriel expéditrice, optionnel et vaut `username` par défaut.
+- `copy_to_sent_folder`: Est-ce que le courriel envoyé doit également être copié dans le dossier des courriels envoyés, optionnel, `true` par défaut.
+- `body_text_format`: Formatage du *fichier de configuration de l'envoi des courriels*, à valeur dans {`auto`, `txt` ou `html`}. Un courriel peut en effet être un texte pur ou bien un document au format HTML. Par défaut vaut `auto`, ce qui laisse le programme déduire le formatage à utiliser selon l'extension du fichier. (Il y a très peu de raisons de vouloir toucher à ce paramètre)
 
 Un fichier minimal ressemble à :
 
 ```yaml
 smtp:
-  hostname: "my_mail_server.org"
-username: "my_mail@domain.ext"
+  hostname: "my_email_server.org"
+username: "my_email@domain.ext"
 ```
 
-Un fichier plus détaillé est [donné en exemple](examples/mail.yaml).
+> [!tip] Astuce
+> Un fichier plus détaillé est [donné en exemple](examples/email.yaml).
 
-**Attention**, ce programme se connecte au serveur mail en *STARTTLS*. Ce protocole n'est pas supporté par tous les serveurs.
+> [!warning] Attention
+> Ce programme se connecte au serveur de messagerie en *STARTTLS*. Ce protocole n'est pas supporté par tous les serveurs.
 
-Par défaut, lorsqu'un tirage est effectué, les personnes reçoivent un mail de la part de l'adresse expéditrice et ces mails sont copiés dans la boîte d'envoi. Il est possible de désactiver la copie en passant en argument `--no-imap`.
+#### 💬 Le fichier patron du message envoyé par courriel
 
-#### 💬 Le fichier type de message
-
-Ce fichier est obligatoirement utilisé pour l'envoi des courriels. Il est passé en argument avec `--message`. C'est un modèle ou patron de conception (*template*) dont certains champs vont être remplacés par les informations concernant cellui qui offre et cellui qui reçoit.
+Ce fichier est obligatoirement utilisé pour l'envoi des courriels. Il est passé en argument avec `--message`. C'est un modèle ou patron de conception (*template*) dont certains champs vont être automatiquement remplacés par les informations concernant cellui qui offre et cellui qui reçoit.
 
 Ce message peut être au format texte brut ou HTML. Le format est déduit par défaut via l'extension du fichier (`.txt` ou `.html`).
 
@@ -300,22 +328,22 @@ Les remplacements par personnes seront fait comme suit, sur la base des informat
 
 | Champ | Valeur |
 |---|---|
-| `{sender_mail}` | Adresse mail expéditrice |
+| `{sender_email}` | Adresse courriel expéditrice |
 | `{sender_name}` | Nom associé à l'adresse expéditrice |
 | `{gifter_id}` | Identifiant de la personne qui reçoit le courriel |
 | `{gifter_name}` | Nom de la personne qui reçoit le courriel |
 | `{gifter_nickname}` | Surnom de la personne qui reçoit le message |
-| `{gifter_email}` | Adresse mail de la personne qui reçoit le courriel |
+| `{gifter_email}` | Adresse courriel de la personne qui reçoit le courriel |
 | `{giftee_id}` | Identifiant de la personne tirée au sort |
 | `{giftee_name}` | Nom de la personne tirée au sort |
 | `{giftee_nickname}` | Surnom de la personne qui reçoit le message |
-| `{giftee_email}` | Adresse mail de la personne tirée au sort |
+| `{giftee_email}` | Adresse courriel de la personne tirée au sort |
 
-En pratique, seuls les champs `gifter_name`, `gifter_nickname`, `giftee_name` et `giftee_nickname` sont utiles, mais le reste est disponible si besoin.
+> [!note] Note
+> En pratique, seuls les champs `gifter_name`, `gifter_nickname`, `giftee_name` et `giftee_nickname` sont utiles, mais le reste est disponible si besoin.
 
-Si ce fichier est passé en option lors du test de l'envoi des courriels (avec `--test-mail`), un mail est envoyé à l'adresse d'envoi avec des valeurs de test pour les champs à remplacer.
-
-Il est possible de forcer le format d'envoi en passant `--text-format <value>` en argument. `<value>` peut être `txt`, `html` ou `auto`, par défaut `auto` qui essaie de déduire le format de l'extension.
+> [!important] Important
+> Si ce fichier est passé en option lors du test de l'envoi des courriels (avec `--test-email`), un courriel est envoyé à l'adresse d'envoi avec des valeurs de test pour les champs à remplacer.
 
 ## 🥳 Exemples d'utilisation
 
@@ -338,13 +366,11 @@ Alice-Andréa-Alexia Foo → Isöbel Bar
                Mark Qux → Alice-Andréa-Alexia Foo
 ```
 
-Tester la connection au serveur mail avec un message type et en forçant le format texte brut malgré l'extension :
+Tester la connection au serveur de messagerie avec un message type :
 
 ```sh
-$ ronde --test-mail -a examples/mail.yaml -m examples/message.html --text-format=txt
+$ ronde --test-email -a examples/email.yaml -m examples/message.html
 ```
-
-(Noter que dans ce cas les balises html seraient envoyées telles quelles, ce qui serait assez disgracieux.)
 
 ## 🔎 FAQ
 
@@ -359,7 +385,7 @@ Bonne question, voilà des pistes de réflexions en vrac :
 
 > C'est un peu une usine à gaz ton truc. Moi j'ai juste un groupe de potes sans contraintes particulières.
 
-Le format CSV est parfait pour ce genre de cas ;)
+Le [format CSV](#le-format-csv) est parfait pour ce genre de cas 😉
 
 > Je veux faire un tirage pour ma famille de manière à ce que les adultes se tirent entre eux et les enfants entre eux, comment je fais ?
 
@@ -367,9 +393,12 @@ Cet outil génère un cycle hamiltonien, c'est à dire une boucle unique qui pas
 
 La possibilité de permettre à l'outil de générer le nombre minimal de cycles hamiltoniens est en cours de réflexion, mais c'est un problème difficile qui n'a peut être pas énormément de cas d'usage réels.
 
+> [!warning] Attention
+> Pour résumer, le programme ne peut pas (encore ?) générer un tirage qui engendrerait plusieurs boucles entre les gens.
+
 ## 🤓 Comment contribuer ou aider ?
 
-Déjà il n'y a pas besoin de savoir développer pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contacte-moi par mail ou mieux, si tu as un compte framagit, [crée un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
+Déjà il n'y a pas besoin de savoir développer pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contacte-moi par courriel ou mieux, si tu as un compte framagit, [crée un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
 
 Si tu veux absolument développer et que tu utilises [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)), un `.vscode/` existe pour simplifier le lancement des tests ou le debug. Si tu fais des merge requests, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
 

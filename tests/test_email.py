@@ -2,7 +2,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from ronde_de_cadeaux._unique_yaml import unique_safe_load
-from ronde_de_cadeaux.mail import MailInfo, Message, _create_mail_info, format_message_people, message_to_subject_body
+from ronde_de_cadeaux.email import EmailInfo, Message, _create_email_config_from_raw_data, format_message_people
 from ronde_de_cadeaux.people_graph_generation import _create_people_and_groups_info
 from tests.base import RondeTest
 from tests.test_people import YAML_PEOPLE_MAXIMAL
@@ -33,7 +33,7 @@ imap:
     sent_folder: "custom_sent_folder"
 username: "username@server.abc"
 password: "xxx"
-sender_mail: "custom_mail"
+sender_email: "username_email@server.abc"
 sender_name: "custom_name"
 """
 
@@ -43,52 +43,51 @@ smtt:
 """
 
 
-class MailTest(RondeTest):
+class EmailTest(RondeTest):
     @staticmethod
-    def to_mail_info(data_str: str) -> MailInfo:
+    def to_email_info(data_str: str) -> EmailInfo:
         data = unique_safe_load(data_str)
-        return _create_mail_info(
-            testing=True,  # Pas de demande de message
-            mail_data=data,
+        return EmailInfo(
+            config=_create_email_config_from_raw_data(data),
             message=None,
-            no_imap=False,
+            testing=True,  # Pas de demande de message
         )
 
     def test_minimal(self):
-        mail_info = self.to_mail_info(MINIMAL)
-        self.assertEqual(mail_info.testing, True)
-        self.assertEqual(mail_info.copy_to_sent_folder, True)
+        email_info = self.to_email_info(MINIMAL)
+        self.assertEqual(email_info.testing, True)
+        self.assertEqual(email_info.config.copy_to_sent_folder, True)
 
-        self.assertEqual(mail_info.smtp.hostname, "server.abc")
-        self.assertEqual(mail_info.smtp.port, 587)
-        self.assertEqual(mail_info.imap.hostname, "server.abc")
-        self.assertEqual(mail_info.imap.port, 143)
-        self.assertEqual(mail_info.imap.sent_folder, "Sent")
+        self.assertEqual(email_info.config.smtp.hostname, "server.abc")
+        self.assertEqual(email_info.config.smtp.port, 587)
+        self.assertEqual(email_info.config.imap.hostname, "server.abc")
+        self.assertEqual(email_info.config.imap.port, 143)
+        self.assertEqual(email_info.config.imap.sent_folder, "Sent")
 
-        self.assertEqual(mail_info.username, "username@server.abc")
-        self.assertEqual(mail_info.password, "xxx")
-        self.assertEqual(mail_info.sender_mail, "username@server.abc")
-        self.assertEqual(mail_info.sender_name, "username@server.abc")
+        self.assertEqual(email_info.config.username, "username@server.abc")
+        self.assertEqual(email_info.config.password, "xxx")
+        self.assertEqual(email_info.config.sender_email, "username@server.abc")
+        self.assertEqual(email_info.config.sender_name, "username@server.abc")
 
     def test_maximal(self):
-        mail_info = self.to_mail_info(MAXIMAL)
-        self.assertEqual(mail_info.testing, True)
-        self.assertEqual(mail_info.copy_to_sent_folder, True)
+        email_info = self.to_email_info(MAXIMAL)
+        self.assertEqual(email_info.testing, True)
+        self.assertEqual(email_info.config.copy_to_sent_folder, True)
 
-        self.assertEqual(mail_info.smtp.hostname, "smtp.server.abc")
-        self.assertEqual(mail_info.smtp.port, 123)
-        self.assertEqual(mail_info.imap.hostname, "imap.server.abc")
-        self.assertEqual(mail_info.imap.port, 456)
-        self.assertEqual(mail_info.imap.sent_folder, "custom_sent_folder")
+        self.assertEqual(email_info.config.smtp.hostname, "smtp.server.abc")
+        self.assertEqual(email_info.config.smtp.port, 123)
+        self.assertEqual(email_info.config.imap.hostname, "imap.server.abc")
+        self.assertEqual(email_info.config.imap.port, 456)
+        self.assertEqual(email_info.config.imap.sent_folder, "custom_sent_folder")
 
-        self.assertEqual(mail_info.username, "username@server.abc")
-        self.assertEqual(mail_info.password, "xxx")
-        self.assertEqual(mail_info.sender_mail, "custom_mail")
-        self.assertEqual(mail_info.sender_name, "custom_name")
+        self.assertEqual(email_info.config.username, "username@server.abc")
+        self.assertEqual(email_info.config.password, "xxx")
+        self.assertEqual(email_info.config.sender_email, "username_email@server.abc")
+        self.assertEqual(email_info.config.sender_name, "custom_name")
 
     def test_invalid(self):
         with self.assertRaises(ValueError):
-            self.to_mail_info(INVALID)
+            self.to_email_info(INVALID)
 
     def test_text_format(self):
         file_txt = Path(self.get_existing_file(".txt", "Text File"))
@@ -119,8 +118,8 @@ class MailTest(RondeTest):
         with self.assertRaises(ValueError):
             Message.FromMessagePath(file_pdf, "other")
 
-    def test_mail_subject_body(self):
-        subject, body = message_to_subject_body(MESSAGE)
+    def test_email_subject_body(self):
+        subject, body = Message.message_to_subject_body(MESSAGE)
         self.assertEqual(subject, "SUBJECT IS HERE")
         self.assertEqual(
             body,
