@@ -16,9 +16,10 @@ from email.utils import formataddr
 from pathlib import Path
 from typing import Any, ClassVar, NamedTuple, Self
 
+import yaml
 from dacite import from_dict
 
-from ._unique_yaml import unique_safe_load
+from ._unique_yaml import UniquenessError, unique_safe_load
 from .logger import logger
 from .people_graph_generation import Draw, DrawPair, PersonLike, PersonTuple
 from .tools import EmailValidator, email_address_validator, shuffled
@@ -216,12 +217,12 @@ class Emailer:
             )
             logger.debug("OK")
 
-        except (socket.gaierror, TimeoutError):
+        except (socket.gaierror, TimeoutError) as e:
             raise self.SMTPError("""\
                 Impossible de joindre le serveur SMTP, vérifiez votre connexion internet
-                ou vos paramètres de connexion""")
-        except Exception:
-            raise self.SMTPError("Impossible de se connecter au serveur SMTP")
+                ou vos paramètres de connexion""") from e
+        except Exception as e:
+            raise self.SMTPError("Impossible de se connecter au serveur SMTP") from e
 
         if email_config.copy_to_sent_folder:
             try:
@@ -236,12 +237,12 @@ class Emailer:
                     email_config.password,
                 )
                 logger.debug("OK")
-            except (socket.gaierror, TimeoutError):
+            except (socket.gaierror, TimeoutError) as e:
                 raise self.IMAPError("""\
                     Impossible de joindre le serveur IMAP, vérifiez votre connexion internet
-                    ou vos paramètres de connexion""")
-            except Exception:
-                raise self.IMAPError("Impossible de se connecter au serveur IMAP")
+                    ou vos paramètres de connexion""") from e
+            except Exception as e:
+                raise self.IMAPError("Impossible de se connecter au serveur IMAP") from e
 
         self.copy_to_sent_folder = email_config.copy_to_sent_folder
         self.sender_email = email_config.sender_email
@@ -284,13 +285,13 @@ class Emailer:
             email["To"] = formataddr((self._to_header(receiver_name), receiver_email))
             email["Subject"] = self._to_header(message.subject)
             email.attach(MIMEText(message.body, "plain" if message.is_plain_text else "html"))
-        except UnicodeError:
-            raise self.MessageError("Erreur d'encodage dans le courriel")
+        except UnicodeError as e:
+            raise self.MessageError("Erreur d'encodage dans le courriel") from e
 
         try:
             self.smtp_server.sendmail(self.sender_email, receiver_email, email.as_string())
-        except smtplib.SMTPException:
-            raise self.SMTPError(f"Impossible d'envoyer le courriel à {receiver_email}")
+        except smtplib.SMTPException as e:
+            raise self.SMTPError(f"Impossible d'envoyer le courriel à {receiver_email}") from e
 
         if self.imap_server:
             try:
@@ -300,8 +301,8 @@ class Emailer:
                     date_time=imaplib.Time2Internaldate(time.time()),
                     message=email.as_bytes(),
                 )
-            except imaplib.IMAP4.error:
-                raise self.IMAPError("Impossible de copier le courriel dans la boîte d'envoi")
+            except imaplib.IMAP4.error as e:
+                raise self.IMAPError("Impossible de copier le courriel dans la boîte d'envoi") from e
 
 
 def _to_person_tuple(name: str) -> PersonTuple:
@@ -317,7 +318,6 @@ def _to_person_tuple(name: str) -> PersonTuple:
 
 def test_email_sending(email_info: EmailInfo) -> None:
     """Tester la configuration de l'envoi des courriels."""
-    emailer = Emailer(email_info.config)
     if not email_info.message:
         message = Message(
             subject="Test de configuration Ronde de Cadeaux",
@@ -326,12 +326,11 @@ def test_email_sending(email_info: EmailInfo) -> None:
     else:
         message = email_info.message.formatted(_to_person_tuple("offreureuse"), _to_person_tuple("destinataire"))
 
+    emailer = Emailer(email_info.config)
     try:
         emailer.create_and_send_email_object(email_info.config.sender_name, email_info.config.sender_email, message)
-    except Emailer.BaseError:
-        pass
-    # finally:
-    #     emailer.close_servers()
+    finally:
+        emailer.close_servers()
 
 
 def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
@@ -366,8 +365,8 @@ def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
             for address in sent:
                 logger.warning(f" - {address}")
         raise
-    # finally:
-    #     emailer.close_servers()
+    finally:
+        emailer.close_servers()
 
 
 def create_email_info(config_path: Path, message_path: Path | None, testing: bool) -> EmailInfo:
@@ -393,9 +392,8 @@ def create_email_info(config_path: Path, message_path: Path | None, testing: boo
     with open(config_path, "r", encoding="utf-8") as f:
         try:
             email_data = unique_safe_load(f)
-        except ValueError:
-            raise ValueError("Fichier de configuration du serveur de messagerie invalide (YAML invalide)")
-            # raise ValueError("Invalid email configuration file (Ill-formed YAML)")
+        except (yaml.YAMLError, UniquenessError) as e:
+            raise ValueError(f"Fichier de configuration du serveur de messagerie invalide ({e})") from e
 
     config = _create_email_config_from_raw_data(email_data)
     message = Message.FromMessagePath(message_path, config.body_text_format)
@@ -405,6 +403,6 @@ def create_email_info(config_path: Path, message_path: Path | None, testing: boo
 def _create_email_config_from_raw_data(email_data: Any) -> EmailConfig:  # noqa: ANN401
     try:
         config = from_dict(_EmailModel, email_data)
-    except Exception:
-        raise ValueError("Fichier de configuration du serveur de messagerie invalide (non conforme au schéma)")
+    except Exception as e:
+        raise ValueError("Fichier de configuration du serveur de messagerie invalide (non conforme au schéma)") from e
     return EmailConfig(config)

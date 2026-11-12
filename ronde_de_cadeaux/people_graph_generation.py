@@ -6,6 +6,7 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
+import yaml
 from dacite import from_dict
 
 from ._unique_yaml import UniquenessError, unique_safe_load
@@ -29,7 +30,7 @@ class _PeopleModel:
 
 
 class PersonLike(Protocol):
-    """Has the fields of a `Person`."""
+    """Possède les champs d'une `Person`."""
 
     @property
     def id(self) -> str: ...  # noqa
@@ -131,14 +132,14 @@ def _csv_list_to_data(list_: list[list[str]]) -> dict[str, dict[str, Any]]:
         if name not in people_dict:
             people_dict[name] = None if email == "" else {"email": email}
         else:
-            raise UniquenessError("Deux personnes ont le même nom")
+            raise UniquenessError(f"Deux personnes ({name}) ont le même nom")
     return {"people": people_dict}
 
 
 def create_people_and_groups_info(people_path: Path, check_email_address: bool = False) -> PeopleAndGroups:
     """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
 
-    Ne fait que valider les données d'un point de vue de la structure, rien n'ai fait quant au graphe.
+    Ne fait que valider les données d'un point de vue de la structure, rien n'est fait quant au graphe.
 
     Délègue à `_create_people_and_groups_info`.
 
@@ -159,16 +160,15 @@ def create_people_and_groups_info(people_path: Path, check_email_address: bool =
       - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not people_path.exists():
-        raise FileNotFoundError(f"File {people_path} doesn't exist")
+        raise FileNotFoundError(f"Le fichier {people_path} n'existe pas")
 
     ext = people_path.suffix
     with open(people_path, "r", encoding="utf-8") as f:
         if ext in [".yaml", ".yml"]:
             try:
                 people_data = unique_safe_load(f)
-            except ValueError:
-                raise ValueError("Fichier de configuration des personnes invalide (YAML invalide)")
-                # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
+            except (yaml.YAMLError, UniquenessError) as e:
+                raise ValueError(f"Fichier de configuration des personnes invalide ({e})") from e
         elif ext in [".csv", ".txt"]:
             r = csv.reader(f, delimiter=CSV_DELIMITER)
             people_data = _csv_list_to_data(list(r))
@@ -182,15 +182,13 @@ def _create_people_and_groups_info(people_data: Any, check_email_address: bool =
     """Version privée, utilisée pour les tests unitaires."""
     try:
         people = from_dict(data_class=_PeopleModel, data=people_data)
-    except Exception:
-        raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)")
-        # raise ValueError("Invalid people configuration file (Invalid schema)")
+    except Exception as e:
+        raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)") from e
 
     if check_email_address:
         for person in people.people.values():
             if person is None or not person.email:
                 raise ValueError(f"L'envoi de courriel est activé mais la personne '{person}' n'a pas d'adresse courriel")
-                # raise ValueError(f"Email sending is enabled, but person '{person}' has no email address")
 
             _status, person.email = email_address_validator.validate(person.email)
             _S = EmailValidator.ValidationStatus
@@ -223,7 +221,7 @@ class GraphGenerationExceptionType(Enum):
     GROUP_IS_ALSO_PERSON = auto()
     UNDEFINED_CONSTRUCTING_CLUSTERS = auto()
     UNDEFINED_CONSTRUCTING_LISTS = auto()
-    PEOPLE_EMPTY = auto()
+    NOT_ENOUGH_PEOPLE = auto()
 
 
 class GraphGenerationException(Exception):
@@ -346,10 +344,10 @@ def generate_people_graph(data: PeopleAndGroups) -> Graph:
     Crée un dictionnaire dont les clés sont les participant⋅e⋅s de la ronde
     et les valeurs des listes de personnes pouvant être tirées par læ participant⋅e.
     """
-    if len(data.people) == 0:
+    if len(data.people) < 2:
         raise GraphGenerationException(
-            "Il n'y a aucune personne à tirer.",
-            GraphGenerationExceptionType.PEOPLE_EMPTY,
+            "Il n'y a pas assez de personnes à tirer.",
+            GraphGenerationExceptionType.NOT_ENOUGH_PEOPLE,
         )
 
     people_name_set = {p.id for p in data.people}  # Helps to know if a given str is a group or a person. Created once, used multiple time.

@@ -122,41 +122,37 @@ class ParserArgs:
         if args.test_email:
             if not args.auth:
                 raise ValueError("Fichier de configuration du serveur de messagerie manquant pour le test de connexion")
-                # raise ValueError("Missing auth file for testing email configuration")
             if args.people:
                 create_people_and_groups_info(args.people, check_email_address=True)
 
         # Tirage
         else:
-            # Au moins une action
             if not (args.output or args.show or args.auth):
                 raise ValueError("""\
                     Effectuez au moins une action parmi afficher, écrire dans un fichier ou
                     envoyer par courriel le résultat du tirage
                     """)
-                # raise ValueError("Please show, write to a file or send by email the draw")
-            # Courriel --> Message
+
             if args.auth and not args.message:
                 raise ValueError("Fichier de message manquant pour l'envoi des courriels")
-                # raise ValueError("Missing message file for email sending")
             if not args.auth and args.message:
                 logger.warning(
                     "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
                 )
+
             if not args.people:
                 raise ValueError("Fichier décrivant les personnes manquant")
-                # raise ValueError("Missing input file for the draw")
+
             if self.output and self.output.exists() and not args.force:
                 raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
-                # raise ValueError("Output file already exist, use `--force` to override")
 
             try:
                 self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.auth)
             except (ValueError, FileNotFoundError) as e:
-                raise ValueError(e)
+                raise ValueError(e) from e
 
         if args.auth:
             try:
                 self.email = create_email_info(args.auth, args.message, args.test_email)
             except (ValueError, FileNotFoundError) as e:
-                raise ValueError(e)
+                raise ValueError(e) from e

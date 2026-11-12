@@ -21,6 +21,7 @@ DataAndBool = tuple[dict[str, Any], bool]  # Données des gens associées à un 
 YAML_PEOPLE_MINIMAL = """\
 people:
     Alice:
+    Bob:
 """
 
 YAML_PEOPLE_DUPLICATE = """\
@@ -35,7 +36,6 @@ CSV_PEOPLE_DUPLICATE = """\
 Alice ; "alice1@domain.org"
 Alice ; "alice2@domain.org"
 """
-
 
 YAML_PEOPLE_MAXIMAL = """\
 people:
@@ -264,16 +264,13 @@ class GraphGenerationTesting(RondeTest):
             },
         }
         data_B = {"people": {}}
+        data_C = {"people": {"Alice": {}}}
 
-        people_A = _create_people_and_groups_info(data_A)
-        with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph(people_A)
-        self.assertEqual(context.exception.type, GraphGenerationExceptionType.PEOPLE_EMPTY)
-
-        people_B = _create_people_and_groups_info(data_B)
-        with self.assertRaises(GraphGenerationException) as context:
-            generate_people_graph(people_B)
-        self.assertEqual(context.exception.type, GraphGenerationExceptionType.PEOPLE_EMPTY)
+        for data in [data_A, data_B, data_C]:
+            people = _create_people_and_groups_info(data)
+            with self.assertRaises(GraphGenerationException) as context:
+                generate_people_graph(people)
+            self.assertEqual(context.exception.type, GraphGenerationExceptionType.NOT_ENOUGH_PEOPLE)
 
     def test_random_seed(self):
         """Bon c'est pas opti.
