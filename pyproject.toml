@@ -24,13 +24,15 @@ dependencies = [
     "colorlog",        # de la couleur dans le logger
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
+    "build",  # construction du whl tout ça
+    "cogapp", # création de la partie --help du readme
+    "twine",  # téléversement sur PyPI
+]
+quality = [
     "basedpyright", # static type checker ( mais basé 8-) )
-    "build",        # construction du whl tout ça
-    "cogapp",       # création de la partie --help du readme
     "ruff",         # formatter
-    "twine",        # téléversement sur PyPI
 ]
 
 [project.scripts]

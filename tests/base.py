@@ -6,6 +6,8 @@ from uuid import uuid4
 
 import email_validator
 
+from ronde_de_cadeaux import logger
+
 
 class RondeTest(unittest.TestCase):
     """Classe de base ayant accès au contenu du dossier contenant les exemples."""
@@ -51,7 +53,7 @@ class RondeTest(unittest.TestCase):
         cls._tempdir_existing = tempfile.TemporaryDirectory()
         cls._tempdir_non_existing = tempfile.TemporaryDirectory()
         email_validator.CHECK_DELIVERABILITY = False
-
+        logger.logger.disabled = True
         return super().setUpClass()
 
     @classmethod
