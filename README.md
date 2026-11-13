@@ -71,8 +71,8 @@ from ronde_de_cadeaux.parser import _makeParser as mp
 print(f"```\n{mp().format_help().strip()}\n```")
 ]]]-->
 ```
-Utilisation : ronde [-h] [--version] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE] [-s]
-                    [-o OUTPUT] [--force] [--seed SEED]
+Utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
+                    [-s] [-o OUTPUT] [--force] [--seed SEED]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
 système de contraintes complexes.
@@ -80,6 +80,8 @@ système de contraintes complexes.
 Arguments:
   -h, --help            Afficher ce message et quitter
   --version             Afficher le numéro de version du programme et quitter
+  -v, --verbose         Active le mode verbeux
+  -q, --quiet           Réduit les messages affichés
   --test-email          Tester la configuration de l'envoi des courriels
   -a AUTH, --auth AUTH  Fichier de configuration de l'envoi des courriels, voir la documentation
                         pour le schéma
@@ -94,12 +96,15 @@ Arguments:
   --force               Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
   --seed SEED           Graine aléatoire pour le tirage
 ```
-<!--[[[end]]] (sum: YDk364SQno) -->
+<!--[[[end]]] (sum: 0uA+gNPm7E) -->
 
 > [!important] Utilisation
 > L'outil permet deux actions principales :
 > - [Effectuer un tirage](#-effectuer-un-tirage).
 > - [Tester la configuration de l'envoi des courriels](#️-tester-la-configuration-de-lenvoi-des-courriels).
+
+> [!tip] Mode verbeux ou silencieux
+> Le programme peut afficher plus ou moins de détail sur son fonctionnement, selon qu'on passe `--quiet` ou `--verbose`.
 
 #### 🎁 Effectuer un tirage
 

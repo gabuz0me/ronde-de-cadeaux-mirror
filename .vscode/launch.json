@@ -18,6 +18,8 @@
                 "--output",
                 "./private/output.txt",
                 "--force",
+                "-vvv",
+                "--quiet",
             ],
             "cwd": "${workspaceFolder}",
             "env": {

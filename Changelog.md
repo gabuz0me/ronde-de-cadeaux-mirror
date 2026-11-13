@@ -15,6 +15,9 @@
 
 </div>
 
+- `0.0.0dev3`:
+    - Using a real logger and adding a verbose/quiet mechanism
+
 - `0.0.0dev2`:
     - Creating the changelog
     - Better email-related error handling
@@ -34,6 +37,9 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_French_language.svg" height="30" alt="FR"/>
 
 </div>
+
+- `0.0.0dev3`:
+    - Utilisation d'un réel logger et ajout d'un mécanisme de mode verbeux ou silencieux
 
 - `0.0.0dev2`:
     - Création du journal des modifications

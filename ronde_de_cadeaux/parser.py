@@ -8,7 +8,7 @@ from typing import Any
 
 from . import __version__
 from .email import EmailInfo, create_email_info
-from .logger import logger
+from .logger import logger, set_logger_level
 from .parser_translation import convert_argparse_to_french
 from .people_graph_generation import create_people_and_groups_info
 from .tools import ErrorCode
@@ -32,6 +32,22 @@ def _makeParser() -> argparse.ArgumentParser:
         "--version",
         action="store_true",
         help="Afficher le numéro de version du programme et quitter",
+    )
+
+    verbose_quiet = parser.add_mutually_exclusive_group()
+    verbose_quiet.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Active le mode verbeux",
+    )
+
+    verbose_quiet.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="Réduit les messages affichés",
     )
 
     parser.add_argument(
@@ -101,19 +117,28 @@ class ParserArgs:
     Raise `ValueError` if anything is wrong.
     """
 
+    class NormalExit(Exception):
+        """Le programme doit s'arrêter, sans que cela ne soit véritablement une erreur qui implique cet arrêt."""
+
+        def __init__(self, code: ErrorCode, *args: object) -> None:
+            self.code = code
+            super().__init__(*args)
+
     def __init__(self, *, custom_args: str | list[str] | None = None) -> None:
         parser = _makeParser()
         if isinstance(custom_args, str):
             custom_args = custom_args.split()
         args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
 
+        set_logger_level(args.verbose, args.quiet)
+
         if len(argv) == 1:
             parser.print_help(sys.stderr)
-            sys.exit(ErrorCode.ERROR_ARGPARSE)
+            raise self.NormalExit(ErrorCode.ERROR_ARGPARSE)
 
         if args.version:
-            logger.info(__version__)
-            sys.exit(ErrorCode.OK)
+            print(__version__)
+            raise self.NormalExit(ErrorCode.OK)
 
         self.email: EmailInfo | None = None
         self.show: bool = args.show

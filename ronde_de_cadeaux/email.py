@@ -205,7 +205,7 @@ class Emailer:
         self.imap_server: imaplib.IMAP4 | None = None
 
         try:
-            logger.debug("Ouverture du serveur SMTP...", newline=False)
+            logger.debug("Ouverture du serveur SMTP...")
             self.smtp_server = smtplib.SMTP(
                 host=email_config.smtp.hostname,
                 port=email_config.smtp.port,
@@ -215,7 +215,6 @@ class Emailer:
                 email_config.username,
                 email_config.password,
             )
-            logger.debug("OK")
 
         except (socket.gaierror, TimeoutError) as e:
             raise self.SMTPError("""\
@@ -226,7 +225,7 @@ class Emailer:
 
         if email_config.copy_to_sent_folder:
             try:
-                logger.debug("Ouverture du serveur IMAP...", newline=False)
+                logger.debug("Ouverture du serveur IMAP...")
                 self.imap_server = imaplib.IMAP4(
                     email_config.imap.hostname,
                     email_config.imap.port,
@@ -236,7 +235,6 @@ class Emailer:
                     email_config.username,
                     email_config.password,
                 )
-                logger.debug("OK")
             except (socket.gaierror, TimeoutError) as e:
                 raise self.IMAPError("""\
                     Impossible de joindre le serveur IMAP, vérifiez votre connexion internet
@@ -248,9 +246,6 @@ class Emailer:
         self.sender_email = email_config.sender_email
         self.sender = formataddr((self._to_header(email_config.sender_name), email_config.sender_email))
         self.sent_folder = email_config.imap.sent_folder
-
-    def __del__(self) -> None:
-        self.close_servers()
 
     def close_servers(self) -> None:
         """Clôt proprement les serveurs SMTP et IMAP s'ils existent."""

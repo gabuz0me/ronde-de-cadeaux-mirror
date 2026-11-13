@@ -21,6 +21,7 @@ dependencies = [
     "pyyaml",          # pour les fichiers de config
     "dacite",          # dict vers dataclass
     "email-validator", # syntaxe et dns
+    "colorlog",        # de la couleur dans le logger
 ]
 
 [project.optional-dependencies]
