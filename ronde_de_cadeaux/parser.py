@@ -11,6 +11,7 @@ from .email import EmailInfo, create_email_info
 from .logger import logger
 from .parser_translation import convert_argparse_to_french
 from .people_graph_generation import create_people_and_groups_info
+from .tools import ErrorCode
 
 convert_argparse_to_french()  # À appeler avant l'import de argparse
 import argparse  # noqa
@@ -108,11 +109,11 @@ class ParserArgs:
 
         if len(argv) == 1:
             parser.print_help(sys.stderr)
-            sys.exit(1)
+            sys.exit(ErrorCode.ERROR_ARGPARSE)
 
         if args.version:
             logger.info(__version__)
-            sys.exit(0)
+            sys.exit(ErrorCode.OK)
 
         self.email: EmailInfo | None = None
         self.show: bool = args.show

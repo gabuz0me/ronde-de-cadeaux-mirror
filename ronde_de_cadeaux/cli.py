@@ -10,7 +10,7 @@ from .email import Emailer, send_emails, test_email_sending
 from .logger import logger
 from .parser import ParserArgs
 from .people_graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
-from .tools import compute_hamiltonian_cycle
+from .tools import ErrorCode, compute_hamiltonian_cycle
 
 
 def main() -> None:
@@ -23,7 +23,7 @@ def main() -> None:
         logger.debug("OK")
     except Exception as e:
         logger.error(str(e))
-        sys.exit(1)
+        sys.exit(ErrorCode.ERROR_ARGPARSE)
 
     if args.email and args.email.testing:
         try:
@@ -32,10 +32,10 @@ def main() -> None:
             logger.debug("OK")
         except Emailer.BaseError as e:
             logger.error(f"Erreur lors du test de l'envoi des courriels : {e}")
-            sys.exit(1)
+            sys.exit(ErrorCode.ERROR)
         else:
             logger.info("Test de l'envoi des courriels : Tout à l'air de fonctionner :D")
-        sys.exit(0)
+        sys.exit(ErrorCode.OK)
 
     if args.seed:
         random.seed(args.seed)
@@ -46,7 +46,7 @@ def main() -> None:
         logger.debug("OK")
     except GraphGenerationException as e:
         logger.error(f"Erreur dans la génération du graphe : {e.message}.")
-        sys.exit(1)
+        sys.exit(ErrorCode.ERROR)
 
     logger.debug("Calcul d'un cycle hamiltonien..", newline=False)
     path = compute_hamiltonian_cycle(people_graph)
@@ -54,7 +54,7 @@ def main() -> None:
 
     if not path:
         logger.error("Pas de circuits trouvés, essayez d'amoindrir les contraintes.")
-        sys.exit(1)
+        sys.exit(ErrorCode.ERROR)
 
     draw = get_people_cycle(args.people_and_groups, path)
 
@@ -79,7 +79,7 @@ def main() -> None:
 
         except Emailer.BaseError as e:
             logger.error(f"Erreur lors de l'envoi des courriels aux participant·e·s : {e}")
-            sys.exit(1)
+            sys.exit(ErrorCode.ERROR)
         else:
             logger.info("Tirage bien envoyé par courriel \\o/")
 
