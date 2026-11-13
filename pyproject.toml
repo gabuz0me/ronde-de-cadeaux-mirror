@@ -26,9 +26,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "build",
-    "twine",  # construction et téléversement sur PyPI
-    "cogapp", # création de la partie --help du readme
+    "basedpyright", # static type checker ( mais basé 8-) )
+    "build",        # construction du whl tout ça
+    "cogapp",       # création de la partie --help du readme
+    "ruff",         # formatter
+    "twine",        # téléversement sur PyPI
 ]
 
 [project.scripts]

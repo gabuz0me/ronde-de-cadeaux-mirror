@@ -405,11 +405,21 @@ La possibilité de permettre à l'outil de générer le nombre minimal de cycles
 
 Déjà il n'y a pas besoin de savoir développer pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contacte-moi par courriel ou mieux, si tu as un compte framagit, [crée un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
 
-Si tu veux absolument développer et que tu utilises [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)), un `.vscode/` existe pour simplifier le lancement des tests ou le debug. Si tu fais des merge requests, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
+Si tu veux absolument développer et tu fais des merge requests, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
 
 ```sh
 python -m unittest discover -s tests
 ```
+
+Il faudra aussi valider le code avec `basedpyright` et `ruff` :
+
+```sh
+ruff check --select I --fix # S'assurer que tous les imports sont triés alphabétiquement
+ruff format # Formatter le code
+basedpyright # S'assurer que le static type checker ne détecte aucune anomalie
+```
+> [!tip] Astuce
+> Le plus simple est d'utiliser [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)) : un `.vscode/` existe pour simplifier le lancement des tests et le debug, et cela permet d'automatiser `ruff` et `basedpyright` en proposant les modules adéquats.
 
 Des pistes de trucs en vrac qui pourraient être chouette :
 
