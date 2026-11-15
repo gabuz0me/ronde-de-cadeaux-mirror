@@ -66,7 +66,9 @@ Cet outil installe un seul exécutable, `ronde`. Voilà son message d'aide :
 
 <!-- uv run cog -r -P  .\README* -->
 <!--[[[cog
-import os;os.environ["COLUMNS"]="100"
+import os,sys;os.environ["COLUMNS"]="100";v=sys.version_info
+if int(f"{v[0]}{v[1]}") < 314:
+    raise Exception("cog Python>=3.14")
 from ronde_de_cadeaux.parser import _makeParser as mp
 print(f"```\n{mp().format_help().strip()}\n```")
 ]]]-->
@@ -78,25 +80,22 @@ Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en 
 système de contraintes complexes.
 
 Arguments:
-  -h, --help            Afficher ce message et quitter
-  --version             Afficher le numéro de version du programme et quitter
-  -v, --verbose         Active le mode verbeux
-  -q, --quiet           Réduit les messages affichés
-  --test-email          Tester la configuration de l'envoi des courriels
-  -a AUTH, --auth AUTH  Fichier de configuration de l'envoi des courriels, voir la documentation
-                        pour le schéma
-  -m MESSAGE, --message MESSAGE
-                        Fichier patron du message envoyé par courriel, voir la documentation pour
-                        le schéma
-  -p PEOPLE, --people PEOPLE
-                        Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
-  -s, --show            Afficher la ronde calculée
-  -o OUTPUT, --output OUTPUT
-                        Fichier dans lequel exporter le tirage
-  --force               Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
-  --seed SEED           Graine aléatoire pour le tirage
+  -h, --help             Afficher ce message et quitter
+  --version              Afficher le numéro de version du programme et quitter
+  -v, --verbose          Active le mode verbeux
+  -q, --quiet            Réduit les messages affichés
+  --test-email           Tester la configuration de l'envoi des courriels
+  -a, --auth AUTH        Fichier de configuration de l'envoi des courriels, voir la documentation
+                         pour le schéma
+  -m, --message MESSAGE  Fichier patron du message envoyé par courriel, voir la documentation pour
+                         le schéma
+  -p, --people PEOPLE    Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
+  -s, --show             Afficher la ronde calculée
+  -o, --output OUTPUT    Fichier dans lequel exporter le tirage
+  --force                Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
+  --seed SEED            Graine aléatoire pour le tirage
 ```
-<!--[[[end]]] (sum: 0uA+gNPm7E) -->
+<!--[[[end]]] (sum: k9zY32XuBx)-->
 
 > [!important] Utilisation
 > L'outil permet deux actions principales :

@@ -20,6 +20,7 @@ import argparse  # noqa
 def _makeParser() -> argparse.ArgumentParser:
     """Fabrique et retourne le parser des arguments."""
     parser = argparse.ArgumentParser(
+        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=30),  # Décale le texte vers la droite
         prog="ronde",
         description=dedent("""\
             Ce programme permet de générer un tirage de gens à qui offrir
