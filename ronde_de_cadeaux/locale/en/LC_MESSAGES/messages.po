@@ -1,0 +1,402 @@
+# English translations for .
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the  project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-16 17:18+0100\n"
+"PO-Revision-Date: 2026-11-16 16:34+0100\n"
+"Last-Translator: \n"
+"Language: en\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ronde_de_cadeaux/_unique_yaml.py:26
+#, python-format
+msgid "La clé '%(key)s' n'est pas unique"
+msgstr "Key '%(key)s' is not unique"
+
+#: ronde_de_cadeaux/_unique_yaml.py:42
+#, python-format
+msgid "YAML invalide : erreur à la ligne %(line)s"
+msgstr "Invalid YAML: error at line %(line)s"
+
+#: ronde_de_cadeaux/_unique_yaml.py:43
+msgid "YAML invalide"
+msgstr "Invalid YAML"
+
+#: ronde_de_cadeaux/cli.py:32
+msgid "Test de la configuration des courriels..."
+msgstr "Testing email configuration..."
+
+#: ronde_de_cadeaux/cli.py:35
+#, python-format
+msgid "Erreur lors du test de l'envoi des courriels : %(error)s"
+msgstr "Error when testing email sending: %(error)s"
+
+#: ronde_de_cadeaux/cli.py:38
+msgid "Test de l'envoi des courriels : Tout à l'air de fonctionner :D"
+msgstr "Testing email sending: Everything seems to work :D"
+
+#: ronde_de_cadeaux/cli.py:45
+msgid "Génération du graphe des gens..."
+msgstr "Generating people graph..."
+
+#: ronde_de_cadeaux/cli.py:48
+#, python-format
+msgid "Erreur dans la génération du graphe : %(error)s"
+msgstr "Error in people graph generation: %(error)s"
+
+#: ronde_de_cadeaux/cli.py:51
+msgid "Calcul d'un cycle hamiltonien..."
+msgstr "Computing a hamiltonian cycle..."
+
+#: ronde_de_cadeaux/cli.py:55
+msgid "Pas de circuits trouvés, essayez d'amoindrir les contraintes"
+msgstr "No cycle found, please reduce the constraints"
+
+#: ronde_de_cadeaux/cli.py:69
+#, python-format
+msgid "Tirage du %(datetime)s :"
+msgstr "Draw: %(datetime)s:"
+
+#: ronde_de_cadeaux/cli.py:76
+msgid "Envoi des courriels..."
+msgstr "Sending emails..."
+
+#: ronde_de_cadeaux/cli.py:78
+msgid "Envoi des courriels OK"
+msgstr "Sending emails OK"
+
+#: ronde_de_cadeaux/cli.py:81
+#, python-format
+msgid "Erreur lors de l'envoi des courriels aux participant·e·s : %(error)s"
+msgstr "Error when sending emails to participants: %(error)s"
+
+#: ronde_de_cadeaux/cli.py:84
+msgid "Tirage bien envoyé par courriel \\o/"
+msgstr "Draw successfully sent by email \\o/"
+
+#: ronde_de_cadeaux/email.py:107
+#, python-format
+msgid "Le format de texte '%(text_format)s' n'est pas contenu dans %(text_format_list)s"
+msgstr "Text format '%(text_format)s' is not contained in %(text_format_list)s"
+
+#: ronde_de_cadeaux/email.py:122
+msgid "Format de texte invalide"
+msgstr "Invalid text format"
+
+#: ronde_de_cadeaux/email.py:160
+#, python-format
+msgid "Le champ 'body_text_format' doit avoir une valeur dans %(text_format_list)s"
+msgstr "Field 'body_text_format' must have a value in %(text_format_list)s"
+
+#: ronde_de_cadeaux/email.py:167
+msgid "L'adresse courriel expéditrice n'est pas valide"
+msgstr "Invalid sending email address"
+
+#: ronde_de_cadeaux/email.py:169
+msgid "La vérification DNS de l'adresse courriel expéditrice n'aboutit pas"
+msgstr "DNS check of the sending email address failed"
+
+#: ronde_de_cadeaux/email.py:172
+#, python-format
+msgid "La délivrabilité de l'adresse courriel expéditrice '%(email)s' n'a pas pu être vérifiée. %(maybe_errors)s"
+msgstr "Deliverability of the sending email address '%(email)s' couldn't be verified. %(maybe_errors)s"
+
+#: ronde_de_cadeaux/email.py:173
+#: ronde_de_cadeaux/people_graph_generation.py:213
+msgid "Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯"
+msgstr "Maybe errors will happen ¯\\_(ツ)_/¯"
+
+#: ronde_de_cadeaux/email.py:182
+msgid "Mot de passe courriel :"
+msgstr "Email password:"
+
+#: ronde_de_cadeaux/email.py:213
+#, python-format
+msgid ""
+"            Impossible de joindre le serveur %(server)s, vérifiez votre connexion internet\n"
+"            ou vos paramètres de connexion"
+msgstr "Impossible to join %(server)s server, check your internet connection or the connexion settings"
+
+#: ronde_de_cadeaux/email.py:218 ronde_de_cadeaux/email.py:236
+#, python-format
+msgid "Ouverture du serveur %(server)s..."
+msgstr "Opening %(server)s server..."
+
+#: ronde_de_cadeaux/email.py:232 ronde_de_cadeaux/email.py:249
+#, python-format
+msgid "Impossible de se connecter au serveur %(server)s"
+msgstr "Couldn't connect to %(server)s server"
+
+#: ronde_de_cadeaux/email.py:258
+msgid "Fermeture des serveurs"
+msgstr "Closing servers"
+
+#: ronde_de_cadeaux/email.py:263 ronde_de_cadeaux/email.py:271
+#, python-format
+msgid "- Impossible de fermer le serveur %(server)s"
+msgstr "- Couldn't close %(server)s server"
+
+#: ronde_de_cadeaux/email.py:265 ronde_de_cadeaux/email.py:273
+#, python-format
+msgid "- Serveur %(server)s fermé"
+msgstr "- %(server)s server closed"
+
+#: ronde_de_cadeaux/email.py:275
+#, python-format
+msgid "- Pas de serveur %(server)s"
+msgstr "- No %(server)s server"
+
+#: ronde_de_cadeaux/email.py:290
+msgid "Erreur d'encodage dans le courriel"
+msgstr "Encoding error in the email"
+
+#: ronde_de_cadeaux/email.py:296
+#, python-format
+msgid "Impossible d'envoyer le courriel à %(name)s (%(email)s)"
+msgstr "Couldn't send email to %(name)s (%(email)s)"
+
+#: ronde_de_cadeaux/email.py:309
+msgid "Impossible de copier le courriel dans la boîte d'envoi"
+msgstr "Impossible to copy the email in the outbox"
+
+#: ronde_de_cadeaux/email.py:315
+msgid "nom"
+msgstr "name"
+
+#: ronde_de_cadeaux/email.py:316
+msgid "surnom"
+msgstr "nickname"
+
+#: ronde_de_cadeaux/email.py:317
+msgid "adresse courriel"
+msgstr "email address"
+
+#: ronde_de_cadeaux/email.py:318
+#: ronde_de_cadeaux/people_graph_generation.py:346
+msgid "liste d'autorisation"
+msgstr "allowlist"
+
+#: ronde_de_cadeaux/email.py:319
+#: ronde_de_cadeaux/people_graph_generation.py:346
+msgid "liste de rejet"
+msgstr "denylist"
+
+#: ronde_de_cadeaux/email.py:327
+msgid "Test de configuration Ronde de Cadeaux"
+msgstr "Testing Ronde de Cadeaux configuration"
+
+#: ronde_de_cadeaux/email.py:328
+msgid "Ça a l'air de marcher :D"
+msgstr "Looks like it's working :D"
+
+#: ronde_de_cadeaux/email.py:331
+msgid "offreureuse"
+msgstr "gifter"
+
+#: ronde_de_cadeaux/email.py:331
+msgid "destinataire"
+msgstr "giftee"
+
+#: ronde_de_cadeaux/email.py:369
+#, python-format
+msgid "%(nb)s courriel a été envoyé avant l'erreur :/"
+msgid_plural "%(nb)s courriels ont été envoyés avant l'erreur :/"
+msgstr[0] "%(nb)s email has been sent before the error :/"
+msgstr[1] "%(nb)s emails have been sent before the error :/"
+
+#: ronde_de_cadeaux/email.py:395
+#, python-format
+msgid "Le fichier de configuration du serveur de messagerie '%(path)s' n'existe pas"
+msgstr "Email server configuration file '%(path)s' doesn't exist"
+
+#: ronde_de_cadeaux/email.py:397
+#, python-format
+msgid "Le fichier de message '%(path)s' n'existe pas"
+msgstr "Message file '%(path)s' doesn't exist"
+
+#: ronde_de_cadeaux/email.py:403 ronde_de_cadeaux/email.py:415
+#, python-format
+msgid "Fichier de configuration du serveur de messagerie invalide (%(error)s)"
+msgstr "Invalid email server configuration file (%(error)s)"
+
+#: ronde_de_cadeaux/email.py:415
+#: ronde_de_cadeaux/people_graph_generation.py:187
+msgid "non conforme au schéma"
+msgstr "doesn't conform to the schema"
+
+#: ronde_de_cadeaux/logger.py:58
+msgid "La verbosité ne va pas plus loin que -vv"
+msgstr "Verbosity doesn't go above -vv"
+
+#: ronde_de_cadeaux/parser.py:17
+msgid "voir la documentation pour le schéma"
+msgstr "see the documentation for the schema"
+
+#: ronde_de_cadeaux/parser.py:26
+msgid ""
+"            Ce programme permet de générer un tirage de gens à qui offrir\n"
+"            des cadeaux en prenant en compte un système de contraintes\n"
+"            complexes.\n"
+"            "
+msgstr "This program generates random draws for secret gifting cycles, allowing complex constraints"
+
+#: ronde_de_cadeaux/parser.py:37
+#, fuzzy
+msgid "afficher le numéro de version du programme et quitter"
+msgstr "Show program version and quit"
+
+#: ronde_de_cadeaux/parser.py:46
+#, fuzzy
+msgid "active le mode verbeux"
+msgstr "Verbose mode"
+
+#: ronde_de_cadeaux/parser.py:53
+#, fuzzy
+msgid "réduit les messages affichés"
+msgstr "Quiet mode"
+
+#: ronde_de_cadeaux/parser.py:59
+#, fuzzy
+msgid "tester la configuration du serveur de messagerie"
+msgstr "Test email server configuration"
+
+#: ronde_de_cadeaux/parser.py:66
+#, fuzzy, python-format
+msgid "fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s"
+msgstr "Mail server configuration file, %(see_schema)s"
+
+#: ronde_de_cadeaux/parser.py:74
+#, fuzzy, python-format
+msgid "fichier patron du message envoyé par courriel, %(see_schema)s"
+msgstr "Template message for the email, %(see_schema)s"
+
+#: ronde_de_cadeaux/parser.py:81
+#, fuzzy, python-format
+msgid "fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)"
+msgstr "People configuration file, (YAML or CSV, %(see_schema)s)"
+
+#: ronde_de_cadeaux/parser.py:87
+#, fuzzy
+msgid "afficher la ronde calculée"
+msgstr "Show the computed cycle"
+
+#: ronde_de_cadeaux/parser.py:95
+#, fuzzy
+msgid "fichier dans lequel exporter le tirage"
+msgstr "Output file to export the draw"
+
+#: ronde_de_cadeaux/parser.py:101
+#, fuzzy
+msgid "forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"
+msgstr "Overwrite the output file if it already exists"
+
+#: ronde_de_cadeaux/parser.py:106
+#, fuzzy
+msgid "graine aléatoire pour le tirage"
+msgstr "Random seed for the draw"
+
+#: ronde_de_cadeaux/parser.py:154
+msgid "Fichier de configuration du serveur de messagerie manquant pour le test de connexion"
+msgstr "Missing email server configuration file for testing the connexion"
+
+#: ronde_de_cadeaux/parser.py:162
+msgid ""
+"                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou\n"
+"                    envoyer par courriel le résultat du tirage\n"
+"                    "
+msgstr "Do at least one action between showing, writing to a file or sending by email the draw"
+
+#: ronde_de_cadeaux/parser.py:169
+msgid "Fichier de message manquant pour l'envoi des courriels"
+msgstr "Missing template message file for email sending"
+
+#: ronde_de_cadeaux/parser.py:172
+msgid "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
+msgstr "A template message file was provided, that's useless since no action would use it"
+
+#: ronde_de_cadeaux/parser.py:176
+msgid "Fichier décrivant les personnes manquant"
+msgstr "Missing people file"
+
+#: ronde_de_cadeaux/parser.py:179
+msgid "Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"
+msgstr "Output file already exists, use '--force' to overwrite it"
+
+#: ronde_de_cadeaux/people_graph_generation.py:132
+#, python-format
+msgid "La ligne %(n)s n'a pas d'identifiant"
+msgstr "Line %(n)s has no ID"
+
+#: ronde_de_cadeaux/people_graph_generation.py:136
+#, python-format
+msgid "Deux personnes (%(name)s) ont le même nom"
+msgstr "Two people (%(name)s) have the same name"
+
+#: ronde_de_cadeaux/people_graph_generation.py:164
+#, python-format
+msgid "Le fichier de configuration des personnes '%(path)s' n'existe pas"
+msgstr "People configuration file '%(path)s' doesn't exist"
+
+#: ronde_de_cadeaux/people_graph_generation.py:172
+#: ronde_de_cadeaux/people_graph_generation.py:187
+#, python-format
+msgid "Fichier de configuration des personnes invalide (%(error)s)"
+msgstr "Invalid people configuration file (%(error)s)"
+
+#: ronde_de_cadeaux/people_graph_generation.py:177
+msgid "Impossible de déterminer le type du fichier de configuration des personnes"
+msgstr "Impossible to infer the format of the people configuration file"
+
+#: ronde_de_cadeaux/people_graph_generation.py:192
+#, python-format
+msgid "L'envoi de courriel est activé mais '%(person)s' n'a pas d'adresse courriel"
+msgstr "Email sending is on but '%(person)s' has no email address"
+
+#: ronde_de_cadeaux/people_graph_generation.py:199
+#, python-format
+msgid "L'adresse courriel de %(name)s (%(email)s) n'est pas valide"
+msgstr "The email address of %(name)s (%(email)s) is invalid"
+
+#: ronde_de_cadeaux/people_graph_generation.py:204
+#, python-format
+msgid "La vérification DNS de l'adresse courriel de %(name)s (%(email)s) n'aboutit pas"
+msgstr "DNS check of the email address of %(name)s (%(email)s) failed"
+
+#: ronde_de_cadeaux/people_graph_generation.py:209
+#, python-format
+msgid "La délivrabilité de l'adresse courriel de %(name)s (%(email)s) n'a pas pu être vérifiée. %(maybe_errors)s"
+msgstr "Deliverability of the email address of %(name)s (%(email)s) couldn't be verified. %(maybe_errors)s"
+
+#: ronde_de_cadeaux/people_graph_generation.py:272
+msgid "Boucle infinie dans les groupes"
+msgstr "Infinite recursion in the groups"
+
+#: ronde_de_cadeaux/people_graph_generation.py:278
+#, python-format
+msgid "Le groupe '%(group)s' est aussi l'identifiant unique d'une personne"
+msgstr "Group '%(group)s' is also the ID of someone"
+
+#: ronde_de_cadeaux/people_graph_generation.py:295
+#, python-format
+msgid "Le groupe ou la personne '%(element)s' présent·e dans le groupe '%(current_group_key)s' n'est pas défini·e"
+msgstr "Group or person '%(element)s' present in group '%(current_group_key)s' is not defined"
+
+#: ronde_de_cadeaux/people_graph_generation.py:345
+#, python-format
+msgid "Le groupe ou la personne '%(element)s' présent·e dans la %(list)s de %(gifter)s n'est pas défini·e"
+msgstr "Group or person '%(element)s' present in %(gifter)s %(list)s is not defined"
+
+#: ronde_de_cadeaux/people_graph_generation.py:361
+msgid "Il n'y a pas assez de personnes à tirer"
+msgstr "There is not enough people to draw"
+

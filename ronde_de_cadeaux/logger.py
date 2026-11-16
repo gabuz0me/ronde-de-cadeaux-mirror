@@ -11,6 +11,7 @@ from typing import override
 
 import colorlog
 
+from .i18n import _
 from .tools import fill_dedent
 
 
@@ -54,4 +55,4 @@ def set_logger_level(verbosity: int, quiet: bool) -> None:
             logger.setLevel(logging.DEBUG)
 
     if verbosity > 2:
-        logger.warning("La verbosité ne va pas plus loin que -vv.")
+        logger.warning(_("La verbosité ne va pas plus loin que -vv"))

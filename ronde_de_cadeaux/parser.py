@@ -1,5 +1,6 @@
 """Module de création du parser."""
 
+import argparse
 import sys
 from pathlib import Path
 from sys import argv
@@ -8,13 +9,13 @@ from typing import Any
 
 from . import __version__
 from .email import EmailInfo, create_email_info
+from .i18n import _
 from .logger import logger, set_logger_level
-from .parser_translation import convert_argparse_to_french
 from .people_graph_generation import create_people_and_groups_info
 from .tools import ErrorCode
 
-convert_argparse_to_french()  # À appeler avant l'import de argparse
-import argparse  # noqa
+# Évaluation paresseuse
+_SEE_SCHEMA = lambda: _("voir la documentation pour le schéma")  # noqa
 
 
 def _makeParser() -> argparse.ArgumentParser:
@@ -22,17 +23,19 @@ def _makeParser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=30),  # Décale le texte vers la droite
         prog="ronde",
-        description=dedent("""\
+        description=dedent(
+            _("""\
             Ce programme permet de générer un tirage de gens à qui offrir
             des cadeaux en prenant en compte un système de contraintes
             complexes.
-            """),
+            """)
+        ),
     )
 
     parser.add_argument(
         "--version",
         action="store_true",
-        help="Afficher le numéro de version du programme et quitter",
+        help=_("afficher le numéro de version du programme et quitter"),
     )
 
     verbose_quiet = parser.add_mutually_exclusive_group()
@@ -41,47 +44,48 @@ def _makeParser() -> argparse.ArgumentParser:
         "--verbose",
         action="count",
         default=0,
-        help="Active le mode verbeux",
+        help=_("active le mode verbeux"),
     )
 
     verbose_quiet.add_argument(
         "-q",
         "--quiet",
         action="store_true",
-        help="Réduit les messages affichés",
+        help=_("réduit les messages affichés"),
     )
 
     parser.add_argument(
         "--test-email",
         action="store_true",
-        help="Tester la configuration de l'envoi des courriels",
+        help=_("tester la configuration du serveur de messagerie"),
     )
 
     parser.add_argument(
         "-a",
         "--auth",
         type=Path,
-        help="Fichier de configuration de l'envoi des courriels, voir la documentation pour le schéma",
+        help=_("fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s")
+        % {"see_schema": _SEE_SCHEMA()},
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help="Fichier patron du message envoyé par courriel, voir la documentation pour le schéma",
+        help=_("fichier patron du message envoyé par courriel, %(see_schema)s") % {"see_schema": _SEE_SCHEMA()},
     )
 
     parser.add_argument(
         "-p",
         "--people",
         type=Path,
-        help="Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)",
+        help=_("fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)") % {"see_schema": _SEE_SCHEMA()},
     )
 
     parser.add_argument(
         "-s",
         "--show",
-        help="Afficher la ronde calculée",
+        help=_("afficher la ronde calculée"),
         action="store_true",
     )
 
@@ -89,18 +93,18 @@ def _makeParser() -> argparse.ArgumentParser:
         "-o",
         "--output",
         type=Path,
-        help="Fichier dans lequel exporter le tirage",
+        help=_("fichier dans lequel exporter le tirage"),
     )
 
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà",
+        help=_("forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"),
     )
 
     parser.add_argument(
         "--seed",
-        help="Graine aléatoire pour le tirage",
+        help=_("graine aléatoire pour le tirage"),
     )
 
     return parser
@@ -148,30 +152,32 @@ class ParserArgs:
 
         if args.test_email:
             if not args.auth:
-                raise ValueError("Fichier de configuration du serveur de messagerie manquant pour le test de connexion")
+                raise ValueError(_("Fichier de configuration du serveur de messagerie manquant pour le test de connexion"))
             if args.people:
                 create_people_and_groups_info(args.people, check_email_address=True)
 
         # Tirage
         else:
             if not (args.output or args.show or args.auth):
-                raise ValueError("""\
+                raise ValueError(
+                    _("""\
                     Effectuez au moins une action parmi afficher, écrire dans un fichier ou
                     envoyer par courriel le résultat du tirage
                     """)
+                )
 
             if args.auth and not args.message:
-                raise ValueError("Fichier de message manquant pour l'envoi des courriels")
+                raise ValueError(_("Fichier de message manquant pour l'envoi des courriels"))
             if not args.auth and args.message:
                 logger.warning(
-                    "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
+                    _("Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée")
                 )
 
             if not args.people:
-                raise ValueError("Fichier décrivant les personnes manquant")
+                raise ValueError(_("Fichier décrivant les personnes manquant"))
 
             if self.output and self.output.exists() and not args.force:
-                raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
+                raise ValueError(_("Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"))
 
             try:
                 self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.auth)

@@ -13,6 +13,9 @@
                 "-c",
                 "./README*",
             ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [],
         },
         {
@@ -23,6 +26,9 @@
                 "-m",
                 "build",
             ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [],
         },
         {
@@ -33,19 +39,107 @@
                 "-m",
                 "twine",
                 "upload",
-                // "--repository",
-                // "testpypi",
                 "--password",
-                "${input:token}",
+                "${input:pypi_token}",
                 "dist/*",
             ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Upload to Test PyPI",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "twine",
+                "upload",
+                "--repository",
+                "testpypi",
+                "--password",
+                "${input:test_pypi_token}",
+                "dist/*",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Extract i18n (pybabel)",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "pybabel",
+                "extract",
+                "--input-dirs",
+                "ronde_de_cadeaux/",
+                "--output-file",
+                "ronde_de_cadeaux/locale/ronde.pot",
+                "--no-wrap",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Update i18n (pybabel)",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "pybabel",
+                "update",
+                "--input-file",
+                "ronde_de_cadeaux/locale/ronde.pot",
+                "--output-dir",
+                "ronde_de_cadeaux/locale/",
+                // "--locale",
+                // "${input:locale}",
+                "--no-wrap",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Compile i18n (pybabel)",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "pybabel",
+                "compile",
+                "--directory",
+                "ronde_de_cadeaux/locale/",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [],
         },
     ],
     "inputs": [
         {
-            "id": "token",
+            "id": "pypi_token",
             "description": "API token",
+            "type": "promptString",
+            "password": true,
+        },
+        {
+            "id": "test_pypi_token",
+            "description": "API token",
+            "type": "promptString",
+            "password": true,
+        },
+        {
+            "id": "locale",
+            "description": "2-letter code",
             "type": "promptString"
         }
     ]

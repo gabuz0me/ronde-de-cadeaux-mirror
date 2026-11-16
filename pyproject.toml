@@ -18,14 +18,17 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "pyyaml",          # pour les fichiers de config
-    "dacite",          # dict vers dataclass
-    "email-validator", # syntaxe et dns
-    "colorlog",        # de la couleur dans le logger
+    "pyyaml",                                              # pour les fichiers de config
+    "dacite",                                              # dict vers dataclass
+    "email-validator",                                     # syntaxe et dns
+    "colorlog",                                            # de la couleur dans le logger
+    "i18nparse@git+https://github.com/gabuz0me/i18nparse", # argparse traduit
 ]
+
 
 [dependency-groups]
 dev = [
+    "babel",  # i18n
     "build",  # construction du whl tout ça
     "cogapp", # création de la partie --help du readme
     "twine",  # téléversement sur PyPI
@@ -47,6 +50,8 @@ Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelo
 
 [tool.setuptools]
 packages = ["ronde_de_cadeaux"]
+[tool.setuptools.package-data]
+ronde_de_cadeaux = ["locale/**/*.mo"]
 
 # Ruff
 
@@ -67,6 +72,7 @@ select = [
     "E",   # pycodestyle
     "F",   # Pyflakes
     "I",   # isort
+    "INT",
 ]
 ignore = [
     "ANN204", # Missing return type annotation for special method `__init__`
