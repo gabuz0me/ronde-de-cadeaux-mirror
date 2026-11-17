@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-17 10:26+0100\n"
+"POT-Creation-Date: 2026-11-17 17:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,55 +31,55 @@ msgstr ""
 msgid "YAML invalide"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:34
+#: ronde_de_cadeaux/cli.py:33
 msgid "Test de la configuration des courriels..."
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:37
+#: ronde_de_cadeaux/cli.py:36
 #, python-format
 msgid "Erreur lors du test de l'envoi des courriels : %(error)s"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:40
+#: ronde_de_cadeaux/cli.py:39
 msgid "Test de l'envoi des courriels : Tout à l'air de fonctionner :D"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:47
+#: ronde_de_cadeaux/cli.py:46
 msgid "Génération du graphe des gens..."
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:50
+#: ronde_de_cadeaux/cli.py:49
 #, python-format
 msgid "Erreur dans la génération du graphe : %(error)s"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:53
+#: ronde_de_cadeaux/cli.py:52
 msgid "Calcul d'un cycle hamiltonien..."
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:57
+#: ronde_de_cadeaux/cli.py:56
 msgid "Pas de circuits trouvés, essayez d'amoindrir les contraintes"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:71
+#: ronde_de_cadeaux/cli.py:70
 #, python-format
 msgid "Tirage du %(datetime)s :"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:78
+#: ronde_de_cadeaux/cli.py:77
 msgid "Envoi des courriels..."
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:80
+#: ronde_de_cadeaux/cli.py:79
 msgid "Envoi des courriels OK"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:83
+#: ronde_de_cadeaux/cli.py:82
 #, python-format
 msgid "Erreur lors de l'envoi des courriels aux participant·e·s : %(error)s"
 msgstr ""
 
-#: ronde_de_cadeaux/cli.py:86
+#: ronde_de_cadeaux/cli.py:85
 msgid "Tirage bien envoyé par courriel \\o/"
 msgstr ""
 
@@ -233,15 +233,11 @@ msgstr ""
 msgid "non conforme au schéma"
 msgstr ""
 
-#: ronde_de_cadeaux/logger.py:58
-msgid "La verbosité ne va pas plus loin que -vv"
-msgstr ""
-
-#: ronde_de_cadeaux/parser.py:18
+#: ronde_de_cadeaux/parser.py:20
 msgid "voir la documentation pour le schéma"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:27
+#: ronde_de_cadeaux/parser.py:26
 msgid ""
 "            Ce programme permet de générer un tirage de gens à qui offrir\n"
 "            des cadeaux en prenant en compte un système de contraintes\n"
@@ -249,77 +245,77 @@ msgid ""
 "            "
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:38
+#: ronde_de_cadeaux/parser.py:37
 msgid "afficher le numéro de version du programme et quitter"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:47
+#: ronde_de_cadeaux/parser.py:45
 msgid "active le mode verbeux"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:54
+#: ronde_de_cadeaux/parser.py:52
 msgid "réduit les messages affichés"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:60
+#: ronde_de_cadeaux/parser.py:58
 msgid "tester la configuration du serveur de messagerie"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:67
+#: ronde_de_cadeaux/parser.py:65
 #, python-format
 msgid "fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:75
+#: ronde_de_cadeaux/parser.py:73
 #, python-format
 msgid "fichier patron du message envoyé par courriel, %(see_schema)s"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:82
+#: ronde_de_cadeaux/parser.py:80
 #, python-format
 msgid "fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:88
+#: ronde_de_cadeaux/parser.py:86
 msgid "afficher la ronde calculée"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:96
+#: ronde_de_cadeaux/parser.py:94
 msgid "fichier dans lequel exporter le tirage"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:102
+#: ronde_de_cadeaux/parser.py:100
 msgid "forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:107
+#: ronde_de_cadeaux/parser.py:105
 msgid "graine aléatoire pour le tirage"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:155
+#: ronde_de_cadeaux/parser.py:153
 msgid "Fichier de configuration du serveur de messagerie manquant pour le test de connexion"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:163
+#: ronde_de_cadeaux/parser.py:161
 msgid ""
 "                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou\n"
 "                    envoyer par courriel le résultat du tirage\n"
 "                    "
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:170
+#: ronde_de_cadeaux/parser.py:168
 msgid "Fichier de message manquant pour l'envoi des courriels"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:173
+#: ronde_de_cadeaux/parser.py:171
 msgid "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:177
+#: ronde_de_cadeaux/parser.py:175
 msgid "Fichier décrivant les personnes manquant"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:180
+#: ronde_de_cadeaux/parser.py:178
 msgid "Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"
 msgstr ""
 
