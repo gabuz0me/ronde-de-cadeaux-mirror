@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-16 17:18+0100\n"
+"POT-Creation-Date: 2026-11-17 10:26+0100\n"
 "PO-Revision-Date: 2026-11-16 16:34+0100\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -32,55 +32,55 @@ msgstr "Invalid YAML: error at line %(line)s"
 msgid "YAML invalide"
 msgstr "Invalid YAML"
 
-#: ronde_de_cadeaux/cli.py:32
+#: ronde_de_cadeaux/cli.py:34
 msgid "Test de la configuration des courriels..."
 msgstr "Testing email configuration..."
 
-#: ronde_de_cadeaux/cli.py:35
+#: ronde_de_cadeaux/cli.py:37
 #, python-format
 msgid "Erreur lors du test de l'envoi des courriels : %(error)s"
 msgstr "Error when testing email sending: %(error)s"
 
-#: ronde_de_cadeaux/cli.py:38
+#: ronde_de_cadeaux/cli.py:40
 msgid "Test de l'envoi des courriels : Tout à l'air de fonctionner :D"
 msgstr "Testing email sending: Everything seems to work :D"
 
-#: ronde_de_cadeaux/cli.py:45
+#: ronde_de_cadeaux/cli.py:47
 msgid "Génération du graphe des gens..."
 msgstr "Generating people graph..."
 
-#: ronde_de_cadeaux/cli.py:48
+#: ronde_de_cadeaux/cli.py:50
 #, python-format
 msgid "Erreur dans la génération du graphe : %(error)s"
 msgstr "Error in people graph generation: %(error)s"
 
-#: ronde_de_cadeaux/cli.py:51
+#: ronde_de_cadeaux/cli.py:53
 msgid "Calcul d'un cycle hamiltonien..."
 msgstr "Computing a hamiltonian cycle..."
 
-#: ronde_de_cadeaux/cli.py:55
+#: ronde_de_cadeaux/cli.py:57
 msgid "Pas de circuits trouvés, essayez d'amoindrir les contraintes"
 msgstr "No cycle found, please reduce the constraints"
 
-#: ronde_de_cadeaux/cli.py:69
+#: ronde_de_cadeaux/cli.py:71
 #, python-format
 msgid "Tirage du %(datetime)s :"
 msgstr "Draw: %(datetime)s:"
 
-#: ronde_de_cadeaux/cli.py:76
+#: ronde_de_cadeaux/cli.py:78
 msgid "Envoi des courriels..."
 msgstr "Sending emails..."
 
-#: ronde_de_cadeaux/cli.py:78
+#: ronde_de_cadeaux/cli.py:80
 msgid "Envoi des courriels OK"
 msgstr "Sending emails OK"
 
-#: ronde_de_cadeaux/cli.py:81
+#: ronde_de_cadeaux/cli.py:83
 #, python-format
 msgid "Erreur lors de l'envoi des courriels aux participant·e·s : %(error)s"
 msgstr "Error when sending emails to participants: %(error)s"
 
-#: ronde_de_cadeaux/cli.py:84
+#: ronde_de_cadeaux/cli.py:86
 msgid "Tirage bien envoyé par courriel \\o/"
 msgstr "Draw successfully sent by email \\o/"
 
@@ -238,11 +238,11 @@ msgstr "doesn't conform to the schema"
 msgid "La verbosité ne va pas plus loin que -vv"
 msgstr "Verbosity doesn't go above -vv"
 
-#: ronde_de_cadeaux/parser.py:17
+#: ronde_de_cadeaux/parser.py:18
 msgid "voir la documentation pour le schéma"
 msgstr "see the documentation for the schema"
 
-#: ronde_de_cadeaux/parser.py:26
+#: ronde_de_cadeaux/parser.py:27
 msgid ""
 "            Ce programme permet de générer un tirage de gens à qui offrir\n"
 "            des cadeaux en prenant en compte un système de contraintes\n"
@@ -250,85 +250,77 @@ msgid ""
 "            "
 msgstr "This program generates random draws for secret gifting cycles, allowing complex constraints"
 
-#: ronde_de_cadeaux/parser.py:37
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:38
 msgid "afficher le numéro de version du programme et quitter"
-msgstr "Show program version and quit"
+msgstr "show program version and quit"
 
-#: ronde_de_cadeaux/parser.py:46
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:47
 msgid "active le mode verbeux"
-msgstr "Verbose mode"
+msgstr "verbose mode"
 
-#: ronde_de_cadeaux/parser.py:53
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:54
 msgid "réduit les messages affichés"
-msgstr "Quiet mode"
+msgstr "quiet mode"
 
-#: ronde_de_cadeaux/parser.py:59
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:60
 msgid "tester la configuration du serveur de messagerie"
-msgstr "Test email server configuration"
+msgstr "test email server configuration"
 
-#: ronde_de_cadeaux/parser.py:66
-#, fuzzy, python-format
+#: ronde_de_cadeaux/parser.py:67
+#, python-format
 msgid "fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s"
-msgstr "Mail server configuration file, %(see_schema)s"
+msgstr "mail server configuration file, %(see_schema)s"
 
-#: ronde_de_cadeaux/parser.py:74
-#, fuzzy, python-format
+#: ronde_de_cadeaux/parser.py:75
+#, python-format
 msgid "fichier patron du message envoyé par courriel, %(see_schema)s"
-msgstr "Template message for the email, %(see_schema)s"
+msgstr "template message for the email, %(see_schema)s"
 
-#: ronde_de_cadeaux/parser.py:81
-#, fuzzy, python-format
+#: ronde_de_cadeaux/parser.py:82
+#, python-format
 msgid "fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)"
-msgstr "People configuration file, (YAML or CSV, %(see_schema)s)"
+msgstr "people configuration file, (YAML or CSV, %(see_schema)s)"
 
-#: ronde_de_cadeaux/parser.py:87
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:88
 msgid "afficher la ronde calculée"
-msgstr "Show the computed cycle"
+msgstr "show the computed cycle"
 
-#: ronde_de_cadeaux/parser.py:95
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:96
 msgid "fichier dans lequel exporter le tirage"
-msgstr "Output file to export the draw"
+msgstr "output file to export the draw"
 
-#: ronde_de_cadeaux/parser.py:101
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:102
 msgid "forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"
-msgstr "Overwrite the output file if it already exists"
+msgstr "overwrite the output file if it already exists"
 
-#: ronde_de_cadeaux/parser.py:106
-#, fuzzy
+#: ronde_de_cadeaux/parser.py:107
 msgid "graine aléatoire pour le tirage"
-msgstr "Random seed for the draw"
+msgstr "random seed for the draw"
 
-#: ronde_de_cadeaux/parser.py:154
+#: ronde_de_cadeaux/parser.py:155
 msgid "Fichier de configuration du serveur de messagerie manquant pour le test de connexion"
 msgstr "Missing email server configuration file for testing the connexion"
 
-#: ronde_de_cadeaux/parser.py:162
+#: ronde_de_cadeaux/parser.py:163
 msgid ""
 "                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou\n"
 "                    envoyer par courriel le résultat du tirage\n"
 "                    "
 msgstr "Do at least one action between showing, writing to a file or sending by email the draw"
 
-#: ronde_de_cadeaux/parser.py:169
+#: ronde_de_cadeaux/parser.py:170
 msgid "Fichier de message manquant pour l'envoi des courriels"
 msgstr "Missing template message file for email sending"
 
-#: ronde_de_cadeaux/parser.py:172
+#: ronde_de_cadeaux/parser.py:173
 msgid "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
 msgstr "A template message file was provided, that's useless since no action would use it"
 
-#: ronde_de_cadeaux/parser.py:176
+#: ronde_de_cadeaux/parser.py:177
 msgid "Fichier décrivant les personnes manquant"
 msgstr "Missing people file"
 
-#: ronde_de_cadeaux/parser.py:179
+#: ronde_de_cadeaux/parser.py:180
 msgid "Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"
 msgstr "Output file already exists, use '--force' to overwrite it"
 

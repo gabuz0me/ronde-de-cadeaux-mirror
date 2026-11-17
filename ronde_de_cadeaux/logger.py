@@ -6,12 +6,12 @@ sémantique sur l'information véhiculée.
 """
 
 import logging
+import os
 import sys
-from typing import override
+from typing import NamedTuple, override
 
 import colorlog
 
-from .i18n import _
 from .tools import fill_dedent
 
 
@@ -38,21 +38,19 @@ handler.setFormatter(
 
 logger.addHandler(handler)
 
+VerboseQuiet = NamedTuple("VerboseQuiet", [("verbose", bool), ("quiet", bool)])
 
-def set_logger_level(verbosity: int, quiet: bool) -> None:
-    """En fonction des arguments du parser, ajuste le niveau du logger."""
-    assert not (verbosity and quiet)
-    if quiet:
-        logger.setLevel(logging.ERROR)
-        return
 
-    match verbosity:
-        case 0:
-            logger.setLevel(logging.WARNING)  # Cas par défaut
-        case 1:
+def set_logger_level(verbose_quiet: VerboseQuiet | None = None) -> None:
+    """En fonction des arguments du parser et de la variable d'environnement `RONDE_DEBUG`, ajuste le niveau du logger."""
+    global logger
+    if os.environ.get("RONDE_DEBUG") == "1":
+        logger.setLevel(logging.DEBUG)
+    elif verbose_quiet:
+        assert not (verbose_quiet.verbose and verbose_quiet.quiet)
+        if verbose_quiet.verbose:
             logger.setLevel(logging.INFO)
-        case _:
-            logger.setLevel(logging.DEBUG)
-
-    if verbosity > 2:
-        logger.warning(_("La verbosité ne va pas plus loin que -vv"))
+        elif verbose_quiet.quiet:
+            logger.setLevel(logging.ERROR)
+        else:
+            logger.setLevel(logging.WARNING)  # Cas par défaut

@@ -10,16 +10,15 @@ from typing import Any
 from . import __version__
 from .email import EmailInfo, create_email_info
 from .i18n import _
-from .logger import logger, set_logger_level
+from .logger import VerboseQuiet, logger, set_logger_level
 from .people_graph_generation import create_people_and_groups_info
 from .tools import ErrorCode
-
-# Évaluation paresseuse
-_SEE_SCHEMA = lambda: _("voir la documentation pour le schéma")  # noqa
 
 
 def _makeParser() -> argparse.ArgumentParser:
     """Fabrique et retourne le parser des arguments."""
+    _SEE_SCHEMA = _("voir la documentation pour le schéma")
+
     parser = argparse.ArgumentParser(
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=30),  # Décale le texte vers la droite
         prog="ronde",
@@ -42,8 +41,7 @@ def _makeParser() -> argparse.ArgumentParser:
     verbose_quiet.add_argument(
         "-v",
         "--verbose",
-        action="count",
-        default=0,
+        action="store_true",
         help=_("active le mode verbeux"),
     )
 
@@ -65,21 +63,21 @@ def _makeParser() -> argparse.ArgumentParser:
         "--auth",
         type=Path,
         help=_("fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s")
-        % {"see_schema": _SEE_SCHEMA()},
+        % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help=_("fichier patron du message envoyé par courriel, %(see_schema)s") % {"see_schema": _SEE_SCHEMA()},
+        help=_("fichier patron du message envoyé par courriel, %(see_schema)s") % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
         "-p",
         "--people",
         type=Path,
-        help=_("fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)") % {"see_schema": _SEE_SCHEMA()},
+        help=_("fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)") % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
@@ -135,7 +133,7 @@ class ParserArgs:
             custom_args = custom_args.split()
         args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
 
-        set_logger_level(args.verbose, args.quiet)
+        set_logger_level(VerboseQuiet(args.verbose, args.quiet))
 
         if len(argv) == 1:
             parser.print_help(sys.stderr)

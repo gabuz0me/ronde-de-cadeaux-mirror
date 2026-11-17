@@ -7,8 +7,8 @@ import sys
 import email_validator
 
 from .email import Emailer, send_emails, test_email_sending
-from .i18n import _, set_language
-from .logger import logger
+from .i18n import _, find_user_language, set_app_language
+from .logger import logger, set_logger_level
 from .parser import ParserArgs
 from .people_graph_generation import GraphGenerationException, generate_people_graph, get_people_cycle
 from .tools import ErrorCode, compute_hamiltonian_cycle
@@ -16,8 +16,9 @@ from .tools import ErrorCode, compute_hamiltonian_cycle
 
 def main() -> ErrorCode:
     """C'est parti."""
-    set_language("fr")
     email_validator.CHECK_DELIVERABILITY = True
+    set_logger_level()  # Initialise le niveau du logger avec DEBUG si la variable `RONDE_DEBUG` vaut 1
+    set_app_language(find_user_language())
 
     try:
         args = ParserArgs()

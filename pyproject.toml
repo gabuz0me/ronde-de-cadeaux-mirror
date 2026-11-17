@@ -33,6 +33,7 @@ dev = [
     "cogapp", # création de la partie --help du readme
     "twine",  # téléversement sur PyPI
 ]
+jupyter = ["ipykernel"]
 quality = [
     "basedpyright", # static type checker ( mais basé 8-) )
     "ruff",         # formatter
