@@ -12,8 +12,10 @@ import i18nparse
 from .logger import logger
 
 _translation: gettext.NullTranslations = gettext.NullTranslations()
+
 _SUPPORTED_LANGUAGES = ["en", "fr"]  # le premier élément EST LA LANGUE PAR DÉFAUT
 _DEFAULT_LANGUAGE = _SUPPORTED_LANGUAGES[0]
+_LOCALEDIR = Path(__file__).parent / "locale/"
 
 
 def set_app_language(lang: str) -> None:
@@ -21,11 +23,33 @@ def set_app_language(lang: str) -> None:
     global _translation
     _translation = gettext.translation(
         "messages",
-        localedir=Path(__file__).parent / "locale/",
+        localedir=_LOCALEDIR,
         languages=[lang] if lang else None,
         fallback=True,
     )
     i18nparse.activate(lang)
+    if lang == "fr":
+        _patch_i18nparse_translation()
+
+
+def _patch_i18nparse_translation() -> None:
+    """Remplace 'usage:' -> 'utilisation :'.
+
+    On crée une fonction de traduction plus haut niveau qui s'occupe du cas "usage:"
+    et délègue à la fonction qu'on remplace ici tous les autres cas.
+
+    À supprimer quand il n'y en aura plus besoin.
+    """
+    import argparse
+
+    patch = gettext.translation(
+        "i18nparse_patch",
+        localedir=_LOCALEDIR,
+        languages=["fr"],
+        fallback=True,
+    )
+    patch.add_fallback(argparse._.__self__)  # Pour le reste
+    argparse._ = patch.gettext
 
 
 def _process_language(lang: str) -> str:

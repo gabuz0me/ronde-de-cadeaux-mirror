@@ -70,7 +70,7 @@ from ronde_de_cadeaux import main; os.environ["RONDE_LANG"]="fr";
 print("```");main(["--help"]);print("```")
 ]]]-->
 ```
-utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
+utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
                     [-s] [-o OUTPUT] [--force] [--seed SEED]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
@@ -93,7 +93,7 @@ options :
   --force                force l'écriture dans le fichier de sortie, même si celui-ci existe déjà
   --seed SEED            graine aléatoire pour le tirage
 ```
-<!--[[[end]]] (sum: 3rpk+mdz+n)-->
+<!--[[[end]]] (sum: 0DDLPef/b9)-->
 
 > [!important] Utilisation
 > L'outil permet deux actions principales :

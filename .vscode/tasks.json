@@ -44,6 +44,7 @@
                 "--password",
                 "${input:pypi_token}",
                 "dist/*",
+                "--verbose",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
@@ -119,6 +120,8 @@
                 "compile",
                 "--directory",
                 "ronde_de_cadeaux/locale/",
+                "--domain",
+                "messages i18nparse_patch",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
