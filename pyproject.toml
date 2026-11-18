@@ -18,11 +18,11 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "pyyaml",                                              # pour les fichiers de config
-    "dacite",                                              # dict vers dataclass
-    "email-validator",                                     # syntaxe et dns
-    "colorlog",                                            # de la couleur dans le logger
-    "i18nparse@git+https://github.com/gabuz0me/i18nparse", # argparse traduit
+    "pyyaml",          # pour les fichiers de config
+    "dacite",          # dict vers dataclass
+    "email-validator", # syntaxe et dns
+    "colorlog",        # de la couleur dans le logger
+    "i18nparse",       # argparse traduit
 ]
 
 
