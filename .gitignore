@@ -11,7 +11,7 @@ dist/
 
 private/
 
-# *.mo
+*.mo
 
 # for now
 uv.lock

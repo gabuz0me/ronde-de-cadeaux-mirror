@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ronde-de-cadeaux"
-version = "0.0.0dev2"
+version = "0.0.0dev3"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "PyPI.md"

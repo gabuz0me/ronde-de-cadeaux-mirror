@@ -24,9 +24,8 @@
         {
             "label": "Build package",
             "type": "shell",
-            "command": "${command:python.interpreterPath}",
+            "command": "uv",
             "args": [
-                "-m",
                 "build",
             ],
             "options": {
