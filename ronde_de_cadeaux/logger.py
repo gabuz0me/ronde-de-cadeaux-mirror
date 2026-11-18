@@ -5,60 +5,52 @@ afin d'en faire quelque chose, sans avoir à écouter stdout et tout en ajoutant
 sémantique sur l'information véhiculée.
 """
 
-from __future__ import annotations
-
+import logging
 import os
 import sys
-from enum import Enum
+from typing import NamedTuple, override
+
+import colorlog
 
 from .tools import fill_dedent
 
 
-class Logger:
-    """Objet de base."""
-
-    class Type(Enum):
-        """Type de logging."""
-
-        DEBUG = 0
-        INFO = 1
-        WARNING = 2
-        ERROR = 3
-
-    def __init__(self) -> None:
-        self.show_debug = os.environ.get("RONDE_DE_CADEAUX_DEBUG") == "1"
-        self.debug("!! Mode de débogage activé !!")
-
-    def debug(self, msg: str, *, dedent: bool = True, newline: bool = True) -> None:  # noqa
-        if self.show_debug:
-            self._log(msg, Logger.Type.DEBUG, dedent=dedent, newline=newline)
-
-    def info(self, msg: str, *, dedent: bool = True, newline: bool = True) -> None:  # noqa
-        self._log(msg, Logger.Type.INFO, dedent=dedent, newline=newline)
-
-    def warning(self, msg: str, *, dedent: bool = True, newline: bool = True) -> None:  # noqa
-        self._log(msg, Logger.Type.WARNING, dedent=dedent, newline=newline)
-
-    def error(self, msg: str, *, dedent: bool = True, newline: bool = True) -> None:  # noqa
-        self._log(msg, Logger.Type.ERROR, dedent=dedent, newline=newline)
-
-    def _log(self, msg: str, _type: Type, dedent: bool = True, newline: bool = True) -> None:
-        color = ""
-        output = sys.stdout
-        _T = self.Type
-        match _type:
-            case _T.DEBUG:
-                color = "\033[94m"  # Bleu
-            case _T.INFO:
-                color = ""  # Défaut
-            case _T.WARNING:
-                color = "\033[93m"  # Jaune
-            case _T.ERROR:
-                color = "\033[91m"  # Rouge
-                output = sys.stderr
-        if dedent:
-            msg = fill_dedent(msg)
-        print(f"{color}{msg}\033[0m", file=output, end="\n" if newline else "")
+class _FillDedentFormatter(colorlog.ColoredFormatter):
+    @override
+    def formatMessage(self, record: logging.LogRecord) -> str:
+        record.message = fill_dedent(record.message)
+        return super().formatMessage(record)
 
 
-logger = Logger()
+logger = colorlog.getLogger("ronde")
+handler = colorlog.StreamHandler(sys.stderr)
+handler.setFormatter(
+    _FillDedentFormatter(
+        "%(log_color)s%(message)s%(reset)s",
+        log_colors={
+            "DEBUG": "cyan",
+            "INFO": "green",
+            "WARNING": "yellow",
+            "ERROR": "red",
+        },
+    )
+)
+
+logger.addHandler(handler)
+
+VerboseQuiet = NamedTuple("VerboseQuiet", [("verbose", bool), ("quiet", bool)])
+
+
+def set_logger_level(verbose_quiet: VerboseQuiet | None = None) -> None:
+    """En fonction des arguments du parser et de la variable d'environnement `RONDE_DEBUG`, ajuste le niveau du logger."""
+    global logger
+    if os.environ.get("RONDE_DEBUG") == "1":
+        logger.setLevel(logging.DEBUG)
+    elif verbose_quiet:
+        assert not (verbose_quiet.verbose and verbose_quiet.quiet)
+        if verbose_quiet.verbose:
+            logger.setLevel(logging.INFO)
+        elif verbose_quiet.quiet:
+            logger.setLevel(logging.ERROR)
+        else:
+            logger.setLevel(logging.WARNING)  # Cas par défaut

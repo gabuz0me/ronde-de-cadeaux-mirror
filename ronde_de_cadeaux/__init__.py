@@ -5,6 +5,7 @@
 Random draw for your Secret Santa.
 """
 
-from importlib.metadata import version
+from ._version import __version__
+from .cli import main
 
-__version__ = version("ronde-de-cadeaux")
+__all__ = ["main", "__version__"]

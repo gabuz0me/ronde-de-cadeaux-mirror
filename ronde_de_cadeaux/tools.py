@@ -1,7 +1,7 @@
 """Boîte à outils."""
 
 import random
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 from random import sample
 from shutil import get_terminal_size
 from textwrap import dedent, fill
@@ -9,6 +9,14 @@ from typing import TypeVar
 
 import dns.resolver
 import email_validator
+
+
+class ErrorCode(IntEnum):
+    """Code d'erreur standard."""
+
+    OK = 0
+    ERROR = 1
+    ERROR_ARGPARSE = 2
 
 
 class EmailValidator:

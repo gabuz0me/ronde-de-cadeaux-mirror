@@ -18,10 +18,13 @@
                 "--output",
                 "./private/output.txt",
                 "--force",
+                "--verbose",
+                "--quiet",
             ],
             "cwd": "${workspaceFolder}",
             "env": {
-                "RONDE_DE_CADEAUX_DEBUG": "1",
+                "RONDE_DEBUG": "1",
+                "RONDE_LANG": "de",
             },
         },
     ]

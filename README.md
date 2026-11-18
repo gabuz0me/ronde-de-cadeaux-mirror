@@ -48,13 +48,13 @@ Cet outil est écrit en [Python](https://python.org/), assure-toi d'avoir instal
 
 **Installation avec pip :**
 
-```bash
+```sh
 pip install ronde-de-cadeaux
 ```
 
 **Installation avec uv :**
 
-```bash
+```sh
 uv tool install ronde-de-cadeaux
 ```
 
@@ -64,42 +64,44 @@ uv tool install ronde-de-cadeaux
 
 Cet outil installe un seul exécutable, `ronde`. Voilà son message d'aide :
 
-<!-- uv run cog -r -P  .\README* -->
 <!--[[[cog
-import os;os.environ["COLUMNS"]="100"
-from ronde_de_cadeaux.parser import _makeParser as mp
-print(f"```\n{mp().format_help().strip()}\n```")
+import os,sys; os.environ["COLUMNS"]="100"; assert sys.version_info>=(3,14), "cog Python>=3.14"
+from ronde_de_cadeaux import main; os.environ["RONDE_LANG"]="fr";
+print("```");main(["--help"]);print("```")
 ]]]-->
 ```
-Utilisation : ronde [-h] [--version] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE] [-s]
-                    [-o OUTPUT] [--force] [--seed SEED]
+utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
+                    [-s] [-o OUTPUT] [--force] [--seed SEED]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
 système de contraintes complexes.
 
-Arguments:
-  -h, --help            Afficher ce message et quitter
-  --version             Afficher le numéro de version du programme et quitter
-  --test-email          Tester la configuration de l'envoi des courriels
-  -a AUTH, --auth AUTH  Fichier de configuration de l'envoi des courriels, voir la documentation
-                        pour le schéma
-  -m MESSAGE, --message MESSAGE
-                        Fichier patron du message envoyé par courriel, voir la documentation pour
-                        le schéma
-  -p PEOPLE, --people PEOPLE
-                        Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
-  -s, --show            Afficher la ronde calculée
-  -o OUTPUT, --output OUTPUT
-                        Fichier dans lequel exporter le tirage
-  --force               Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
-  --seed SEED           Graine aléatoire pour le tirage
+options :
+  -h, --help             affiche ce message et termine le programme
+  --version              affiche le numéro de version et termine le programme
+  -v, --verbose          active le mode verbeux
+  -q, --quiet            réduit les messages affichés
+  --test-email           teste la configuration du serveur de messagerie
+  -a, --auth AUTH        fichier de configuration du serveur de messagerie pour l'envoi des
+                         courriels, voir la documentation pour le schéma
+  -m, --message MESSAGE  fichier patron du message envoyé par courriel, voir la documentation pour
+                         le schéma
+  -p, --people PEOPLE    fichier de configuration des personnes (YAML ou CSV, voir la
+                         documentation pour le schéma)
+  -s, --show             affiche la ronde calculée
+  -o, --output OUTPUT    fichier dans lequel exporter le tirage
+  --force                force l'écriture dans le fichier de sortie, même si celui-ci existe déjà
+  --seed SEED            graine aléatoire pour le tirage
 ```
-<!--[[[end]]] (sum: YDk364SQno) -->
+<!--[[[end]]] (sum: 3rpk+mdz+n)-->
 
 > [!important] Utilisation
 > L'outil permet deux actions principales :
 > - [Effectuer un tirage](#-effectuer-un-tirage).
 > - [Tester la configuration de l'envoi des courriels](#️-tester-la-configuration-de-lenvoi-des-courriels).
+
+> [!tip] Mode verbeux ou silencieux
+> Le programme peut afficher plus ou moins de détail sur son fonctionnement, selon qu'on passe `--quiet` ou `--verbose`.
 
 #### 🎁 Effectuer un tirage
 
@@ -349,8 +351,13 @@ Les remplacements par personnes seront fait comme suit, sur la base des informat
 
 Effectuer un tirage avec les données fournies en exemple avec la graine aléatoire `jaaj42`, les exporter dans un fichier `tirage.txt` qui existait déjà et afficher ce tirage dans la console :
 
+<!--[[[cog
+from ronde_de_cadeaux import main
+cmd = "--seed jaaj42 -p examples/people.yaml -s"
+print(f"```sh\nronde {cmd} -o tirage.txt --force");main(cmd.split());print("```")
+]]]-->
 ```sh
-$ ronde -p examples/people.yaml -o tirage.txt --force -s --seed jaaj42
+ronde --seed jaaj42 -p examples/people.yaml -s -o tirage.txt --force
 Alice-Andréa-Alexia Foo → Isöbel Bar
              Isöbel Bar → Dave Foo
                Dave Foo → Henry Bar
@@ -365,11 +372,12 @@ Alice-Andréa-Alexia Foo → Isöbel Bar
            Bœbélius Foo → Mark Qux
                Mark Qux → Alice-Andréa-Alexia Foo
 ```
+<!--[[[end]]] (sum: IDZnhb72Ce)-->
 
 Tester la connection au serveur de messagerie avec un message type :
 
 ```sh
-$ ronde --test-email -a examples/email.yaml -m examples/message.html
+ronde --test-email -a examples/email.yaml -m examples/message.html
 ```
 
 ## 🔎 FAQ
@@ -398,13 +406,68 @@ La possibilité de permettre à l'outil de générer le nombre minimal de cycles
 
 ## 🤓 Comment contribuer ou aider ?
 
+##### Aider le projet
+
 Déjà il n'y a pas besoin de savoir développer pour contribuer : tous les retours sont les bienvenus, que ce soient les problèmes ou les idées d'améliorations. Pour faire un retour, contacte-moi par courriel ou mieux, si tu as un compte framagit, [crée un ticket](https://framagit.org/gabuzome/ronde-de-cadeaux/-/issues/new).
 
-Si tu veux absolument développer et que tu utilises [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)), un `.vscode/` existe pour simplifier le lancement des tests ou le debug. Si tu fais des merge requests, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
+##### Développer
+
+###### Installation en mode développement
+
+Si tu veux absolument développer il te faudra cloner le projet avec [`git`](https://git-scm.com/) :
+
+```sh
+git clone git@framagit.org:gabuzome/ronde-de-cadeaux.git ronde_de_cadeaux/
+cd ronde_de_cadeaux/
+```
+
+Dans le dossier du projet, tu installes le packet avec `pip` ou `uv` dans un [environnement virtuel](https://docs.python.org/3/library/venv.html) :
+
+Avec `pip` :
+```sh
+# 1. Création de l'environnement virtuel
+python -m venv .venv
+
+# 2. Activation dudit environnement virtuel
+    # Sous Windows :
+.venv/Scripts/Activate.ps1
+    # Sous Gnunux :
+source .venv/bin/activate
+
+# 3. Installation en mode éditable avec le groupe `dev` dans l'environnement
+pip install -e . --group dev
+```
+
+Avec `uv` :
+
+```sh
+uv sync
+```
+
+Une fois l'environnement activé dans le terminal, l'exécutable `ronde` prend en compte les modifications en temps réel.
+
+###### Modifier le code
+
+Avant de faire une merge request, n'hésite pas à créer des tests unitaires pour t'assurer que tout fonctionne. Et il te faudra lancer tous les autres tests unitaires pour s'assurer de n'avoir rien cassé :
 
 ```sh
 python -m unittest discover -s tests
 ```
+
+Il faudra aussi valider le code avec [`basedpyright`](https://docs.basedpyright.com/latest/) et [`ruff`](https://docs.astral.sh/ruff/), qu'on peut facilement installer avec :
+
+```sh
+# Installation avec pip ou uv
+pip install -e . --group quality
+uv sync --group quality
+
+# Formatage et validation
+ruff check --select I --fix # S'assurer que tous les imports sont triés alphabétiquement
+ruff format # Formatter le code
+basedpyright # S'assurer que le static type checker ne détecte aucune anomalie
+```
+> [!tip] Astuce
+> Le plus simple est d'utiliser [Visual Studio Code](https://code.visualstudio.com/) (ou mieux [VSCodium](https://vscodium.com/)) : un `.vscode/` existe pour simplifier le lancement des tests et le debug, et cela permet d'automatiser `ruff` et `basedpyright` en proposant les modules adéquats.
 
 Des pistes de trucs en vrac qui pourraient être chouette :
 
@@ -412,8 +475,9 @@ Des pistes de trucs en vrac qui pourraient être chouette :
 - Traduire le projet dans plus de langues
 - Faire de la GUI
 
-Si vraiment tu as envie de donner de la bonne THUNE pour ce projet, déjà incroyable et merci, mais je n'en n'ai pas besoin donc donne plutôt aux associations qui œuvrent pour des causes justes, au hasard la [LPO 🐦](https://www.lpo.fr/), [La Quadrature du Net 🥧](https://www.laquadrature.net/), [Amnesty International 🕯️](https://www.amnesty.org/) ou l'[Association France Palestine Solidarité 🍉](https://www.france-palestine.org/)...
+> [!important] ❤️
+> Si vraiment tu as envie de donner de la bonne THUNE pour ce projet, déjà incroyable et merci, mais je n'en n'ai pas besoin donc donne plutôt aux associations qui œuvrent pour des causes justes, au hasard la [LPO 🐦](https://www.lpo.fr/), [La Quadrature du Net 🥧](https://www.laquadrature.net/), [Amnesty International 🕯️](https://www.amnesty.org/) ou l'[Association France Palestine Solidarité 🍉](https://www.france-palestine.org/)...
 
 ---
 
-Ce projet est la continuation du projet ronde-de-cadeaux originel [disponible ici](https://framagit.org/bertille-ddp/ronde-de-cadeaux).
+Ce projet est la continuation du projet [ronde-de-cadeaux originel](https://framagit.org/bertille-ddp/ronde-de-cadeaux).

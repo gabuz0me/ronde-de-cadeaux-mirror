@@ -16,9 +16,11 @@ from email.utils import formataddr
 from pathlib import Path
 from typing import Any, ClassVar, NamedTuple, Self
 
+import yaml
 from dacite import from_dict
 
-from ._unique_yaml import unique_safe_load
+from ._unique_yaml import UniquenessError, unique_safe_load
+from .i18n import _, ngettext
 from .logger import logger
 from .people_graph_generation import Draw, DrawPair, PersonLike, PersonTuple
 from .tools import EmailValidator, email_address_validator, shuffled
@@ -92,7 +94,7 @@ class Message(NamedTuple):
         """À partir d'une chaîne de caractères multiligne, extrait l'objet et le corps de texte."""
         as_list = message.split("\n")
         subject = as_list[0]
-        body = "\n".join(as_list[1:]).strip()  # HTML n'a que faire des \n mais le mode --plain-text en a besoin
+        body = "\n".join(as_list[1:]).strip()  # HTML n'a que faire des \n mais le format plain text en a besoin
 
         return subject, body
 
@@ -101,7 +103,10 @@ class Message(NamedTuple):
         """Crée un message ou pas selon le chemin et le format précisé."""
         if message_path:
             if text_format not in _BODY_TEXT_FORMAT:
-                raise ValueError(f"Le format de texte '{text_format}' n'est pas contenu dans {_BODY_TEXT_FORMAT}")
+                raise ValueError(
+                    _("Le format de texte '%(text_format)s' n'est pas contenu dans %(text_format_list)s")
+                    % {"text_format": text_format, "text_format_list": _BODY_TEXT_FORMAT}
+                )
             with open(message_path, "r", encoding="utf-8") as f:
                 message_text = f.read()
             if text_format == "auto":
@@ -114,7 +119,7 @@ class Message(NamedTuple):
                 case "html":
                     plain_text = False
                 case _:
-                    raise ValueError("Format de texte invalide")
+                    raise ValueError(_("Format de texte invalide"))
             return cls(*cls.message_to_subject_body(message_text), plain_text)
         else:
             return None
@@ -151,20 +156,22 @@ class EmailConfig:
         self.copy_to_sent_folder = config.copy_to_sent_folder
         self.body_text_format = config.body_text_format
         if self.body_text_format not in _BODY_TEXT_FORMAT:
-            raise ValueError(f"body_text_format doit avoir une valeur dans {_BODY_TEXT_FORMAT}.")
+            raise ValueError(
+                _("Le champ 'body_text_format' doit avoir une valeur dans %(text_format_list)s") % {"text_format_list": _BODY_TEXT_FORMAT}
+            )
 
         _status, self.sender_email = email_address_validator.validate(sender_email)
         _S = EmailValidator.ValidationStatus
         match _status:
             case _S.SYNTAX_ERROR:
-                raise ValueError("L'adresse courriel expéditrice n'est pas valide")
+                raise ValueError(_("L'adresse courriel expéditrice n'est pas valide"))
             case _S.DNS_ERROR:
-                raise ValueError("La vérification DNS de l'adresse courriel expéditrice n'aboutit pas")
+                raise ValueError(_("La vérification DNS de l'adresse courriel expéditrice n'aboutit pas"))
             case _S.UNKNOWN_DELIVERABILITY:
-                logger.warning(f"""\
-                    La délivrabilité de l'adresse courriel expéditrice ({self.sender_email}) n'a pas pu être vérifiée.
-                    Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯
-                    """)
+                logger.warning(
+                    _("La délivrabilité de l'adresse courriel expéditrice '%(email)s' n'a pas pu être vérifiée. %(maybe_errors)s")
+                    % {"email": self.sender_email, "maybe_errors": _("Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯")}
+                )
             case _S.OK:
                 pass
 
@@ -172,7 +179,7 @@ class EmailConfig:
     def password(self) -> str:
         """Mot de passe."""
         if not self._password:
-            self._password = getpass.getpass("Mot de passe courriel:")
+            self._password = getpass.getpass(_("Mot de passe courriel :"))
         return self._password
 
 
@@ -203,8 +210,12 @@ class Emailer:
     def __init__(self, email_config: EmailConfig) -> None:
         self.imap_server: imaplib.IMAP4 | None = None
 
+        _CONNECTION_ERROR = _("""\
+            Impossible de joindre le serveur %(server)s, vérifiez votre connexion internet
+            ou vos paramètres de connexion""")
+
         try:
-            logger.debug("Ouverture du serveur SMTP...", newline=False)
+            logger.debug(_("Ouverture du serveur %(server)s...") % {"server": "SMTP"})
             self.smtp_server = smtplib.SMTP(
                 host=email_config.smtp.hostname,
                 port=email_config.smtp.port,
@@ -214,18 +225,15 @@ class Emailer:
                 email_config.username,
                 email_config.password,
             )
-            logger.debug("OK")
 
-        except (socket.gaierror, TimeoutError):
-            raise self.SMTPError("""\
-                Impossible de joindre le serveur SMTP, vérifiez votre connexion internet
-                ou vos paramètres de connexion""")
-        except Exception:
-            raise self.SMTPError("Impossible de se connecter au serveur SMTP")
+        except (socket.gaierror, TimeoutError) as e:
+            raise self.SMTPError(_CONNECTION_ERROR % {"server": "SMTP"}) from e
+        except Exception as e:
+            raise self.SMTPError(_("Impossible de se connecter au serveur %(server)s") % {"server": "SMTP"}) from e
 
         if email_config.copy_to_sent_folder:
             try:
-                logger.debug("Ouverture du serveur IMAP...", newline=False)
+                logger.debug(_("Ouverture du serveur %(server)s...") % {"server": "IMAP"})
                 self.imap_server = imaplib.IMAP4(
                     email_config.imap.hostname,
                     email_config.imap.port,
@@ -235,42 +243,36 @@ class Emailer:
                     email_config.username,
                     email_config.password,
                 )
-                logger.debug("OK")
-            except (socket.gaierror, TimeoutError):
-                raise self.IMAPError("""\
-                    Impossible de joindre le serveur IMAP, vérifiez votre connexion internet
-                    ou vos paramètres de connexion""")
-            except Exception:
-                raise self.IMAPError("Impossible de se connecter au serveur IMAP")
+            except (socket.gaierror, TimeoutError) as e:
+                raise self.IMAPError(_CONNECTION_ERROR % {"server": "IMAP"}) from e
+            except Exception as e:
+                raise self.IMAPError(_("Impossible de se connecter au serveur %(server)s") % {"server": "IMAP"}) from e
 
         self.copy_to_sent_folder = email_config.copy_to_sent_folder
         self.sender_email = email_config.sender_email
         self.sender = formataddr((self._to_header(email_config.sender_name), email_config.sender_email))
         self.sent_folder = email_config.imap.sent_folder
 
-    def __del__(self) -> None:
-        self.close_servers()
-
     def close_servers(self) -> None:
         """Clôt proprement les serveurs SMTP et IMAP s'ils existent."""
-        logger.debug("Fermeture des serveurs")
+        logger.debug(_("Fermeture des serveurs"))
 
         try:
             self.smtp_server.quit()
         except Exception:
-            logger.debug("- Impossible de fermer le serveur SMTP")
+            logger.debug(_("- Impossible de fermer le serveur %(server)s") % {"server": "SMTP"})
         else:
-            logger.debug("- Serveur SMTP fermé")
+            logger.debug(_("- Serveur %(server)s fermé") % {"server": "SMTP"})
 
         if self.imap_server:
             try:
                 self.imap_server.logout()
             except Exception:
-                logger.debug("- Impossible de fermer le serveur IMAP")
+                logger.debug(_("- Impossible de fermer le serveur %(server)s") % {"server": "IMAP"})
             else:
-                logger.debug("- Serveur IMAP fermé")
+                logger.debug(_("- Serveur %(server)s fermé") % {"server": "IMAP"})
         else:
-            logger.debug("- Pas de serveur IMAP")
+            logger.debug(_("- Pas de serveur %(server)s") % {"server": "IMAP"})
 
     @staticmethod
     def _to_header(msg: str) -> str:
@@ -284,13 +286,16 @@ class Emailer:
             email["To"] = formataddr((self._to_header(receiver_name), receiver_email))
             email["Subject"] = self._to_header(message.subject)
             email.attach(MIMEText(message.body, "plain" if message.is_plain_text else "html"))
-        except UnicodeError:
-            raise self.MessageError("Erreur d'encodage dans le courriel")
+        except UnicodeError as e:
+            raise self.MessageError(_("Erreur d'encodage dans le courriel")) from e
 
         try:
             self.smtp_server.sendmail(self.sender_email, receiver_email, email.as_string())
-        except smtplib.SMTPException:
-            raise self.SMTPError(f"Impossible d'envoyer le courriel à {receiver_email}")
+        except smtplib.SMTPException as e:
+            raise self.SMTPError(
+                _("Impossible d'envoyer le courriel à %(name)s (%(email)s)")
+                % {"receiver_name": receiver_name, "email_address": receiver_email}
+            ) from e
 
         if self.imap_server:
             try:
@@ -300,38 +305,36 @@ class Emailer:
                     date_time=imaplib.Time2Internaldate(time.time()),
                     message=email.as_bytes(),
                 )
-            except imaplib.IMAP4.error:
-                raise self.IMAPError("Impossible de copier le courriel dans la boîte d'envoi")
+            except imaplib.IMAP4.error as e:
+                raise self.IMAPError(_("Impossible de copier le courriel dans la boîte d'envoi")) from e
 
 
 def _to_person_tuple(name: str) -> PersonTuple:
     return PersonTuple(
         f"'{name}'",
-        f"'nom {name}'",
-        f"'surnom {name}'",
-        f"'courriel {name}'",
-        [f"'liste d'autorisation {name}'"],
-        [f"'liste de refus {name}'"],
+        f"'{_('nom')} {name}'",
+        f"'{_('surnom')} {name}'",
+        f"'{_('adresse courriel')} {name}'",
+        [f"'{_("liste d'autorisation")} {name}'"],
+        [f"'{_('liste de rejet')} {name}'"],
     )
 
 
 def test_email_sending(email_info: EmailInfo) -> None:
     """Tester la configuration de l'envoi des courriels."""
-    emailer = Emailer(email_info.config)
     if not email_info.message:
         message = Message(
-            subject="Test de configuration Ronde de Cadeaux",
-            body="Ça a l'air de marcher :D",
+            subject=_("Test de configuration Ronde de Cadeaux"),
+            body=_("Ça a l'air de marcher :D"),
         )
     else:
-        message = email_info.message.formatted(_to_person_tuple("offreureuse"), _to_person_tuple("destinataire"))
+        message = email_info.message.formatted(_to_person_tuple(_("offreureuse")), _to_person_tuple(_("destinataire")))
 
+    emailer = Emailer(email_info.config)
     try:
         emailer.create_and_send_email_object(email_info.config.sender_name, email_info.config.sender_email, message)
-    except Emailer.BaseError:
-        pass
-    # finally:
-    #     emailer.close_servers()
+    finally:
+        emailer.close_servers()
 
 
 def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
@@ -361,13 +364,16 @@ def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
                 raise
             sent.append(gifter.email)
     except Exception:
-        if len(sent) > 0:
-            logger.warning(f"{len(sent)} courriels ont été envoyés avant l'erreur :/")
+        if (nb := len(sent)) > 0:
+            logger.warning(
+                ngettext("%(nb)s courriel a été envoyé avant l'erreur :/", "%(nb)s courriels ont été envoyés avant l'erreur :/", nb)
+                % {"nb": nb}
+            )
             for address in sent:
                 logger.warning(f" - {address}")
         raise
-    # finally:
-    #     emailer.close_servers()
+    finally:
+        emailer.close_servers()
 
 
 def create_email_info(config_path: Path, message_path: Path | None, testing: bool) -> EmailInfo:
@@ -386,16 +392,15 @@ def create_email_info(config_path: Path, message_path: Path | None, testing: boo
       - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not config_path.exists():
-        raise FileNotFoundError(f"Le fichier de configuration du serveur de messagerie `{config_path}` n'existe pas")
+        raise FileNotFoundError(_("Le fichier de configuration du serveur de messagerie '%(path)s' n'existe pas") % {"path": config_path})
     if message_path and not message_path.exists():
-        raise FileNotFoundError(f"Le fichier de message `{message_path}` n'existe pas")
+        raise FileNotFoundError(_("Le fichier de message '%(path)s' n'existe pas") % {"path": message_path})
 
     with open(config_path, "r", encoding="utf-8") as f:
         try:
             email_data = unique_safe_load(f)
-        except ValueError:
-            raise ValueError("Fichier de configuration du serveur de messagerie invalide (YAML invalide)")
-            # raise ValueError("Invalid email configuration file (Ill-formed YAML)")
+        except (yaml.YAMLError, UniquenessError) as e:
+            raise ValueError(_("Fichier de configuration du serveur de messagerie invalide (%(error)s)") % {"error": e}) from e
 
     config = _create_email_config_from_raw_data(email_data)
     message = Message.FromMessagePath(message_path, config.body_text_format)
@@ -405,6 +410,8 @@ def create_email_info(config_path: Path, message_path: Path | None, testing: boo
 def _create_email_config_from_raw_data(email_data: Any) -> EmailConfig:  # noqa: ANN401
     try:
         config = from_dict(_EmailModel, email_data)
-    except Exception:
-        raise ValueError("Fichier de configuration du serveur de messagerie invalide (non conforme au schéma)")
+    except Exception as e:
+        raise ValueError(
+            _("Fichier de configuration du serveur de messagerie invalide (%(error)s)") % {"error": _("non conforme au schéma")}
+        ) from e
     return EmailConfig(config)

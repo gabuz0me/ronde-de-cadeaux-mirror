@@ -6,9 +6,11 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any, NamedTuple, Protocol, override
 
+import yaml
 from dacite import from_dict
 
 from ._unique_yaml import UniquenessError, unique_safe_load
+from .i18n import _
 from .logger import logger
 from .tools import EmailValidator, Graph, email_address_validator, list_as_cyclic_pairs
 
@@ -29,7 +31,7 @@ class _PeopleModel:
 
 
 class PersonLike(Protocol):
-    """Has the fields of a `Person`."""
+    """Possède les champs d'une `Person`."""
 
     @property
     def id(self) -> str: ...  # noqa
@@ -113,7 +115,7 @@ CSV_DELIMITER = ";"
 
 def _csv_list_to_data(list_: list[list[str]]) -> dict[str, dict[str, Any]]:
     people_dict = {}
-    for row in list_:
+    for n, row in enumerate(list_):
         match len(row):
             case 0:
                 continue
@@ -127,18 +129,18 @@ def _csv_list_to_data(list_: list[list[str]]) -> dict[str, dict[str, Any]]:
         name = name.strip()
         email = email.strip()
         if name == "":
-            raise ValueError("Une ligne n'a pas d'identifiant")
+            raise ValueError(_("La ligne %(n)s n'a pas d'identifiant") % {"n": n})
         if name not in people_dict:
             people_dict[name] = None if email == "" else {"email": email}
         else:
-            raise UniquenessError("Deux personnes ont le même nom")
+            raise UniquenessError(_("Deux personnes (%(name)s) ont le même nom") % {"name": name})
     return {"people": people_dict}
 
 
 def create_people_and_groups_info(people_path: Path, check_email_address: bool = False) -> PeopleAndGroups:
     """Crée la structure des gens et des groupes en fonction du fichier d'entrée.
 
-    Ne fait que valider les données d'un point de vue de la structure, rien n'ai fait quant au graphe.
+    Ne fait que valider les données d'un point de vue de la structure, rien n'est fait quant au graphe.
 
     Délègue à `_create_people_and_groups_info`.
 
@@ -159,21 +161,20 @@ def create_people_and_groups_info(people_path: Path, check_email_address: bool =
       - `FileNotFoundError` if one of the files doesn't exist.
     """
     if not people_path.exists():
-        raise FileNotFoundError(f"File {people_path} doesn't exist")
+        raise FileNotFoundError(_("Le fichier de configuration des personnes '%(path)s' n'existe pas") % {"path": people_path})
 
     ext = people_path.suffix
     with open(people_path, "r", encoding="utf-8") as f:
         if ext in [".yaml", ".yml"]:
             try:
                 people_data = unique_safe_load(f)
-            except ValueError:
-                raise ValueError("Fichier de configuration des personnes invalide (YAML invalide)")
-                # raise ValueError("Invalid people configuration file (Ill-formed YAML)")
+            except (yaml.YAMLError, UniquenessError) as e:
+                raise ValueError(_("Fichier de configuration des personnes invalide (%(error)s)") % {"error": e}) from e
         elif ext in [".csv", ".txt"]:
             r = csv.reader(f, delimiter=CSV_DELIMITER)
             people_data = _csv_list_to_data(list(r))
         else:
-            raise ValueError("Impossible de déterminer le type de fichier de configuration des personnes")
+            raise ValueError(_("Impossible de déterminer le type du fichier de configuration des personnes"))
 
     return _create_people_and_groups_info(people_data, check_email_address)
 
@@ -182,28 +183,36 @@ def _create_people_and_groups_info(people_data: Any, check_email_address: bool =
     """Version privée, utilisée pour les tests unitaires."""
     try:
         people = from_dict(data_class=_PeopleModel, data=people_data)
-    except Exception:
-        raise ValueError("Fichier de configuration des personnes invalide (non conforme au schéma)")
-        # raise ValueError("Invalid people configuration file (Invalid schema)")
+    except Exception as e:
+        raise ValueError(_("Fichier de configuration des personnes invalide (%(error)s)") % {"error": _("non conforme au schéma")}) from e
 
     if check_email_address:
         for person in people.people.values():
             if person is None or not person.email:
-                raise ValueError(f"L'envoi de courriel est activé mais la personne '{person}' n'a pas d'adresse courriel")
-                # raise ValueError(f"Email sending is enabled, but person '{person}' has no email address")
+                raise ValueError(_("L'envoi de courriel est activé mais '%(person)s' n'a pas d'adresse courriel") % {"person": person})
 
             _status, person.email = email_address_validator.validate(person.email)
             _S = EmailValidator.ValidationStatus
             match _status:
                 case _S.SYNTAX_ERROR:
-                    raise ValueError(f"L'adresse courriel '{person.display_name}' n'est pas valide")
+                    raise ValueError(
+                        _("L'adresse courriel de %(name)s (%(email)s) n'est pas valide")
+                        % {"name": person.display_name, "email": person.email}
+                    )
                 case _S.DNS_ERROR:
-                    raise ValueError(f"La vérification DNS de l'adresse courriel '{person.email}' n'aboutit pas")
+                    raise ValueError(
+                        _("La vérification DNS de l'adresse courriel de %(name)s (%(email)s) n'aboutit pas")
+                        % {"name": person.display_name, "email": person.email}
+                    )
                 case _S.UNKNOWN_DELIVERABILITY:
-                    logger.warning(f"""\
-                        La délivrabilité de l'adresse courriel de {person.display_name} ({person.email}) n'a pas pu être vérifiée.
-                        Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯
-                        """)
+                    logger.warning(
+                        _("La délivrabilité de l'adresse courriel de %(name)s (%(email)s) n'a pas pu être vérifiée. %(maybe_errors)s")
+                        % {
+                            "name": person.display_name,
+                            "email": person.email,
+                            "maybe_errors": _("Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯"),
+                        }
+                    )
                 case _S.OK:
                     pass
     return PeopleAndGroups(
@@ -223,7 +232,7 @@ class GraphGenerationExceptionType(Enum):
     GROUP_IS_ALSO_PERSON = auto()
     UNDEFINED_CONSTRUCTING_CLUSTERS = auto()
     UNDEFINED_CONSTRUCTING_LISTS = auto()
-    PEOPLE_EMPTY = auto()
+    NOT_ENOUGH_PEOPLE = auto()
 
 
 class GraphGenerationException(Exception):
@@ -260,13 +269,13 @@ def _recursive_build_group_to_person_set_dict(
 
     if current_group_key in parent_groups_names:
         raise GraphGenerationException(
-            "Boucle infinie dans les groupes.",
+            _("Boucle infinie dans les groupes"),
             GraphGenerationExceptionType.INFINITE_RECURSION,
         )
 
     if current_group_key in people_set:
         raise GraphGenerationException(
-            f"Le groupe '{current_group_key}' est aussi l'identifiant unique d'une personne.",
+            _("Le groupe '%(group)s' est aussi l'identifiant unique d'une personne") % {"group": current_group_key},
             GraphGenerationExceptionType.GROUP_IS_ALSO_PERSON,
         )
 
@@ -283,7 +292,8 @@ def _recursive_build_group_to_person_set_dict(
             set_people.add(element)
         else:
             raise GraphGenerationException(
-                f"Le groupe ou la personne '{element}', présent·e dans le groupe '{current_group_key}' n'est pas défini·e.",
+                _("Le groupe ou la personne '%(element)s' présent·e dans le groupe '%(current_group_key)s' n'est pas défini·e")
+                % {"element": element, "current_group_key": current_group_key},
                 GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_CLUSTERS,
             )
 
@@ -331,9 +341,9 @@ def get_people_from_people_and_group_list(
             for person in groups[element]:
                 final_set.add(person)
         else:
-            which_list = "liste d'autorisation" if is_allowlist else "liste de rejet"
             raise GraphGenerationException(
-                f"Le groupe ou la personne '{element}'," + f"présent·e dans la {which_list} de {gifter_id} n'est pas défini·e.",
+                _("Le groupe ou la personne '%(element)s' présent·e dans la %(list)s de %(gifter)s n'est pas défini·e")
+                % {"element": element, "list": _("liste d'autorisation") if is_allowlist else _("liste de rejet"), "gifter": gifter_id},
                 GraphGenerationExceptionType.UNDEFINED_CONSTRUCTING_LISTS,
             )
 
@@ -346,10 +356,10 @@ def generate_people_graph(data: PeopleAndGroups) -> Graph:
     Crée un dictionnaire dont les clés sont les participant⋅e⋅s de la ronde
     et les valeurs des listes de personnes pouvant être tirées par læ participant⋅e.
     """
-    if len(data.people) == 0:
+    if len(data.people) < 2:
         raise GraphGenerationException(
-            "Il n'y a aucune personne à tirer.",
-            GraphGenerationExceptionType.PEOPLE_EMPTY,
+            _("Il n'y a pas assez de personnes à tirer"),
+            GraphGenerationExceptionType.NOT_ENOUGH_PEOPLE,
         )
 
     people_name_set = {p.id for p in data.people}  # Helps to know if a given str is a group or a person. Created once, used multiple time.

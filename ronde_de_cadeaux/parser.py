@@ -1,69 +1,89 @@
 """Module de création du parser."""
 
+import argparse
 import sys
 from pathlib import Path
 from sys import argv
 from textwrap import dedent
 from typing import Any
 
-from . import __version__
+from ._version import __version__
 from .email import EmailInfo, create_email_info
-from .logger import logger
-from .parser_translation import convert_argparse_to_french
+from .i18n import _
+from .logger import VerboseQuiet, logger, set_logger_level
 from .people_graph_generation import create_people_and_groups_info
-
-convert_argparse_to_french()  # À appeler avant l'import de argparse
-import argparse  # noqa
+from .tools import ErrorCode
 
 
 def _makeParser() -> argparse.ArgumentParser:
     """Fabrique et retourne le parser des arguments."""
+    _SEE_SCHEMA = _("voir la documentation pour le schéma")
+
     parser = argparse.ArgumentParser(
+        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=30),  # Décale le texte vers la droite
         prog="ronde",
-        description=dedent("""\
+        description=dedent(
+            _("""\
             Ce programme permet de générer un tirage de gens à qui offrir
             des cadeaux en prenant en compte un système de contraintes
             complexes.
             """),
+        ),
     )
 
     parser.add_argument(
         "--version",
         action="store_true",
-        help="Afficher le numéro de version du programme et quitter",
+        help=_("affiche le numéro de version et termine le programme"),
+    )
+
+    verbose_quiet = parser.add_mutually_exclusive_group()
+    verbose_quiet.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help=_("active le mode verbeux"),
+    )
+
+    verbose_quiet.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help=_("réduit les messages affichés"),
     )
 
     parser.add_argument(
         "--test-email",
         action="store_true",
-        help="Tester la configuration de l'envoi des courriels",
+        help=_("teste la configuration du serveur de messagerie"),
     )
 
     parser.add_argument(
         "-a",
         "--auth",
         type=Path,
-        help="Fichier de configuration de l'envoi des courriels, voir la documentation pour le schéma",
+        help=_("fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s")
+        % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help="Fichier patron du message envoyé par courriel, voir la documentation pour le schéma",
+        help=_("fichier patron du message envoyé par courriel, %(see_schema)s") % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
         "-p",
         "--people",
         type=Path,
-        help="Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)",
+        help=_("fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)") % {"see_schema": _SEE_SCHEMA},
     )
 
     parser.add_argument(
         "-s",
         "--show",
-        help="Afficher la ronde calculée",
+        help=_("affiche la ronde calculée"),
         action="store_true",
     )
 
@@ -71,18 +91,18 @@ def _makeParser() -> argparse.ArgumentParser:
         "-o",
         "--output",
         type=Path,
-        help="Fichier dans lequel exporter le tirage",
+        help=_("fichier dans lequel exporter le tirage"),
     )
 
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà",
+        help=_("force l'écriture dans le fichier de sortie, même si celui-ci existe déjà"),
     )
 
     parser.add_argument(
         "--seed",
-        help="Graine aléatoire pour le tirage",
+        help=_("graine aléatoire pour le tirage"),
     )
 
     return parser
@@ -100,19 +120,33 @@ class ParserArgs:
     Raise `ValueError` if anything is wrong.
     """
 
+    class NormalExit(Exception):
+        """Le programme doit s'arrêter, sans que cela ne soit véritablement une erreur qui implique cet arrêt."""
+
+        def __init__(self, code: ErrorCode, *args: object) -> None:
+            self.code = code
+            super().__init__(*args)
+
     def __init__(self, *, custom_args: str | list[str] | None = None) -> None:
         parser = _makeParser()
         if isinstance(custom_args, str):
             custom_args = custom_args.split()
-        args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
+
+        try:
+            args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
+        except SystemExit as e:
+            logger.debug("argparse SystemExit")  # argparse lève un SystemExit pour `--help` (code 0)
+            raise self.NormalExit(ErrorCode.OK if e.code == 0 else ErrorCode.ERROR_ARGPARSE) from None
+
+        set_logger_level(VerboseQuiet(args.verbose, args.quiet))
 
         if len(argv) == 1:
             parser.print_help(sys.stderr)
-            sys.exit(1)
+            raise self.NormalExit(ErrorCode.ERROR_ARGPARSE)
 
         if args.version:
-            logger.info(__version__)
-            sys.exit(0)
+            print(__version__)
+            raise self.NormalExit(ErrorCode.OK)
 
         self.email: EmailInfo | None = None
         self.show: bool = args.show
@@ -121,42 +155,40 @@ class ParserArgs:
 
         if args.test_email:
             if not args.auth:
-                raise ValueError("Fichier de configuration du serveur de messagerie manquant pour le test de connexion")
-                # raise ValueError("Missing auth file for testing email configuration")
+                raise ValueError(_("Fichier de configuration du serveur de messagerie manquant pour le test de connexion"))
             if args.people:
                 create_people_and_groups_info(args.people, check_email_address=True)
 
         # Tirage
         else:
-            # Au moins une action
             if not (args.output or args.show or args.auth):
-                raise ValueError("""\
+                raise ValueError(
+                    _("""\
                     Effectuez au moins une action parmi afficher, écrire dans un fichier ou
                     envoyer par courriel le résultat du tirage
                     """)
-                # raise ValueError("Please show, write to a file or send by email the draw")
-            # Courriel --> Message
+                )
+
             if args.auth and not args.message:
-                raise ValueError("Fichier de message manquant pour l'envoi des courriels")
-                # raise ValueError("Missing message file for email sending")
+                raise ValueError(_("Fichier de message manquant pour l'envoi des courriels"))
             if not args.auth and args.message:
                 logger.warning(
-                    "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
+                    _("Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée")
                 )
+
             if not args.people:
-                raise ValueError("Fichier décrivant les personnes manquant")
-                # raise ValueError("Missing input file for the draw")
+                raise ValueError(_("Fichier décrivant les personnes manquant"))
+
             if self.output and self.output.exists() and not args.force:
-                raise ValueError("Fichier de sortie déjà existant, utilisez `--force` pour l'écraser")
-                # raise ValueError("Output file already exist, use `--force` to override")
+                raise ValueError(_("Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"))
 
             try:
                 self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.auth)
             except (ValueError, FileNotFoundError) as e:
-                raise ValueError(e)
+                raise ValueError(e) from e
 
         if args.auth:
             try:
                 self.email = create_email_info(args.auth, args.message, args.test_email)
             except (ValueError, FileNotFoundError) as e:
-                raise ValueError(e)
+                raise ValueError(e) from e

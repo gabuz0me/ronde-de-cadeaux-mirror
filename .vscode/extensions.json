@@ -2,7 +2,11 @@
     "recommendations": [
         "charliermarsh.ruff",
         "detachhead.basedpyright",
+        "mhutchie.git-graph",
+        "ms-python.debugpy",
+        "ms-python.python",
         "shd101wyy.markdown-preview-enhanced",
-        "tyriar.sort-lines"
+        "tyriar.sort-lines",
+        "zovo.zovo-gettext-editor",
     ]
 }
