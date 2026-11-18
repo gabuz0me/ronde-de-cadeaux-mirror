@@ -32,7 +32,7 @@ def _process_language(lang: str) -> str:
     global _SUPPORTED_LANGUAGES, _DEFAULT_LANGUAGE
     _returned = _DEFAULT_LANGUAGE
     lang_nor = lang.lower()
-    if len(lang_nor) > 2:
+    if len(lang_nor) >= 2:
         lang_nor = lang_nor[0:2]
         if lang_nor in _SUPPORTED_LANGUAGES:
             _returned = lang_nor

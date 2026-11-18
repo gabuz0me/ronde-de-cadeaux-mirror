@@ -14,7 +14,10 @@
                 "./README*",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "UV_PROJECT_ENVIRONMENT": ".venv314",
+                },
             },
             "problemMatcher": [],
         },
@@ -27,7 +30,7 @@
                 "build",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -44,7 +47,7 @@
                 "dist/*",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -63,7 +66,7 @@
                 "dist/*",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -82,7 +85,7 @@
                 "--no-wrap",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -103,7 +106,7 @@
                 "--no-wrap",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -119,7 +122,7 @@
                 "ronde_de_cadeaux/locale/",
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}",
             },
             "problemMatcher": [],
         },
@@ -140,7 +143,7 @@
         {
             "id": "locale",
             "description": "2-letter code",
-            "type": "promptString"
+            "type": "promptString",
         }
     ]
 }

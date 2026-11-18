@@ -7,7 +7,7 @@ from sys import argv
 from textwrap import dedent
 from typing import Any
 
-from . import __version__
+from ._version import __version__
 from .email import EmailInfo, create_email_info
 from .i18n import _
 from .logger import VerboseQuiet, logger, set_logger_level
@@ -27,14 +27,14 @@ def _makeParser() -> argparse.ArgumentParser:
             Ce programme permet de générer un tirage de gens à qui offrir
             des cadeaux en prenant en compte un système de contraintes
             complexes.
-            """)
+            """),
         ),
     )
 
     parser.add_argument(
         "--version",
         action="store_true",
-        help=_("afficher le numéro de version du programme et quitter"),
+        help=_("affiche le numéro de version et termine le programme"),
     )
 
     verbose_quiet = parser.add_mutually_exclusive_group()
@@ -55,7 +55,7 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--test-email",
         action="store_true",
-        help=_("tester la configuration du serveur de messagerie"),
+        help=_("teste la configuration du serveur de messagerie"),
     )
 
     parser.add_argument(
@@ -83,7 +83,7 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-s",
         "--show",
-        help=_("afficher la ronde calculée"),
+        help=_("affiche la ronde calculée"),
         action="store_true",
     )
 
@@ -97,7 +97,7 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--force",
         action="store_true",
-        help=_("forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"),
+        help=_("force l'écriture dans le fichier de sortie, même si celui-ci existe déjà"),
     )
 
     parser.add_argument(
@@ -131,7 +131,12 @@ class ParserArgs:
         parser = _makeParser()
         if isinstance(custom_args, str):
             custom_args = custom_args.split()
-        args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
+
+        try:
+            args = parser.parse_args(custom_args)  # arguments DIY pour les tests unitaires
+        except SystemExit as e:
+            logger.debug("argparse SystemExit")  # argparse lève un SystemExit pour `--help` (code 0)
+            raise self.NormalExit(ErrorCode.OK if e.code == 0 else ErrorCode.ERROR_ARGPARSE) from None
 
         set_logger_level(VerboseQuiet(args.verbose, args.quiet))
 

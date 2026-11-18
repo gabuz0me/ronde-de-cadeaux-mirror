@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-17 17:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 1312-12-13 13:12+0100\n"
+"PO-Revision-Date: 1312-12-13 13:12+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -246,7 +246,7 @@ msgid ""
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:37
-msgid "afficher le numéro de version du programme et quitter"
+msgid "affiche le numéro de version et termine le programme"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:45
@@ -258,7 +258,7 @@ msgid "réduit les messages affichés"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:58
-msgid "tester la configuration du serveur de messagerie"
+msgid "teste la configuration du serveur de messagerie"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:65
@@ -277,7 +277,7 @@ msgid "fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:86
-msgid "afficher la ronde calculée"
+msgid "affiche la ronde calculée"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:94
@@ -285,37 +285,37 @@ msgid "fichier dans lequel exporter le tirage"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:100
-msgid "forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà"
+msgid "force l'écriture dans le fichier de sortie, même si celui-ci existe déjà"
 msgstr ""
 
 #: ronde_de_cadeaux/parser.py:105
 msgid "graine aléatoire pour le tirage"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:153
+#: ronde_de_cadeaux/parser.py:158
 msgid "Fichier de configuration du serveur de messagerie manquant pour le test de connexion"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:161
+#: ronde_de_cadeaux/parser.py:166
 msgid ""
 "                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou\n"
 "                    envoyer par courriel le résultat du tirage\n"
 "                    "
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:168
+#: ronde_de_cadeaux/parser.py:173
 msgid "Fichier de message manquant pour l'envoi des courriels"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:171
+#: ronde_de_cadeaux/parser.py:176
 msgid "Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:175
+#: ronde_de_cadeaux/parser.py:180
 msgid "Fichier décrivant les personnes manquant"
 msgstr ""
 
-#: ronde_de_cadeaux/parser.py:178
+#: ronde_de_cadeaux/parser.py:183
 msgid "Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"
 msgstr ""
 

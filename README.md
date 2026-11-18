@@ -64,38 +64,36 @@ uv tool install ronde-de-cadeaux
 
 Cet outil installe un seul exécutable, `ronde`. Voilà son message d'aide :
 
-<!-- uv run cog -r -P  .\README* -->
 <!--[[[cog
-import os,sys;os.environ["COLUMNS"]="100";v=sys.version_info
-if int(f"{v[0]}{v[1]}") < 314:
-    raise Exception("cog Python>=3.14")
-from ronde_de_cadeaux.parser import _makeParser as mp
-print(f"```\n{mp().format_help().strip()}\n```")
+import os,sys; os.environ["COLUMNS"]="100"; assert sys.version_info>=(3,14), "cog Python>=3.14"
+from ronde_de_cadeaux import main; os.environ["RONDE_LANG"]="fr";
+print("```");main(["--help"]);print("```")
 ]]]-->
 ```
-Utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
+utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-a AUTH] [-m MESSAGE] [-p PEOPLE]
                     [-s] [-o OUTPUT] [--force] [--seed SEED]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
 système de contraintes complexes.
 
-Arguments:
-  -h, --help             Afficher ce message et quitter
-  --version              Afficher le numéro de version du programme et quitter
-  -v, --verbose          Active le mode verbeux
-  -q, --quiet            Réduit les messages affichés
-  --test-email           Tester la configuration de l'envoi des courriels
-  -a, --auth AUTH        Fichier de configuration de l'envoi des courriels, voir la documentation
-                         pour le schéma
-  -m, --message MESSAGE  Fichier patron du message envoyé par courriel, voir la documentation pour
+options :
+  -h, --help             affiche ce message et termine le programme
+  --version              affiche le numéro de version et termine le programme
+  -v, --verbose          active le mode verbeux
+  -q, --quiet            réduit les messages affichés
+  --test-email           teste la configuration du serveur de messagerie
+  -a, --auth AUTH        fichier de configuration du serveur de messagerie pour l'envoi des
+                         courriels, voir la documentation pour le schéma
+  -m, --message MESSAGE  fichier patron du message envoyé par courriel, voir la documentation pour
                          le schéma
-  -p, --people PEOPLE    Fichier des personnes (YAML ou CSV, voir la documentation pour le schéma)
-  -s, --show             Afficher la ronde calculée
-  -o, --output OUTPUT    Fichier dans lequel exporter le tirage
-  --force                Forcer l'écriture dans le fichier de sortie, même si celui-ci existe déjà
-  --seed SEED            Graine aléatoire pour le tirage
+  -p, --people PEOPLE    fichier de configuration des personnes (YAML ou CSV, voir la
+                         documentation pour le schéma)
+  -s, --show             affiche la ronde calculée
+  -o, --output OUTPUT    fichier dans lequel exporter le tirage
+  --force                force l'écriture dans le fichier de sortie, même si celui-ci existe déjà
+  --seed SEED            graine aléatoire pour le tirage
 ```
-<!--[[[end]]] (sum: k9zY32XuBx)-->
+<!--[[[end]]] (sum: 3rpk+mdz+n)-->
 
 > [!important] Utilisation
 > L'outil permet deux actions principales :
@@ -353,8 +351,13 @@ Les remplacements par personnes seront fait comme suit, sur la base des informat
 
 Effectuer un tirage avec les données fournies en exemple avec la graine aléatoire `jaaj42`, les exporter dans un fichier `tirage.txt` qui existait déjà et afficher ce tirage dans la console :
 
+<!--[[[cog
+from ronde_de_cadeaux import main
+cmd = "--seed jaaj42 -p examples/people.yaml -s"
+print(f"```sh\nronde {cmd} -o tirage.txt --force");main(cmd.split());print("```")
+]]]-->
 ```sh
-ronde -p examples/people.yaml -o tirage.txt --force -s --seed jaaj42
+ronde --seed jaaj42 -p examples/people.yaml -s -o tirage.txt --force
 Alice-Andréa-Alexia Foo → Isöbel Bar
              Isöbel Bar → Dave Foo
                Dave Foo → Henry Bar
@@ -369,6 +372,7 @@ Alice-Andréa-Alexia Foo → Isöbel Bar
            Bœbélius Foo → Mark Qux
                Mark Qux → Alice-Andréa-Alexia Foo
 ```
+<!--[[[end]]] (sum: IDZnhb72Ce)-->
 
 Tester la connection au serveur de messagerie avec un message type :
 

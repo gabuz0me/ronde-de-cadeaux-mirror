@@ -14,14 +14,14 @@ from .people_graph_generation import GraphGenerationException, generate_people_g
 from .tools import ErrorCode, compute_hamiltonian_cycle
 
 
-def main() -> ErrorCode:
-    """C'est parti."""
+def main(argv: list[str] | None = None) -> ErrorCode:
+    """Point d'entrée de `ronde-de-cadeaux`."""
     email_validator.CHECK_DELIVERABILITY = True
     set_logger_level()  # Initialise le niveau du logger avec DEBUG si la variable `RONDE_DEBUG` vaut 1
     set_app_language(find_user_language())
 
     try:
-        args = ParserArgs()
+        args = ParserArgs(custom_args=argv)
     except ParserArgs.NormalExit as e:
         return e.code
     except Exception as e:
