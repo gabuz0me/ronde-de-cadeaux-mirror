@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools >= 77.0.3"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "babel"]
+build-backend = "hatchling.build"
 
 [project]
 name = "ronde-de-cadeaux"
@@ -28,10 +28,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "babel",  # i18n
-    "build",  # construction du whl tout ça
-    "cogapp", # création de la partie --help du readme
-    "twine",  # téléversement sur PyPI
+    "hatchling", # build system, avec des hooks
+    "babel",     # i18n
+    "build",     # construction du whl tout ça
+    "cogapp",    # création de la partie --help du readme
+    "twine",     # téléversement sur PyPI
 ]
 jupyter = ["ipykernel"]
 quality = [
@@ -49,10 +50,25 @@ GitLab = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 GitHub = "https://github.com/gabuz0me/ronde-de-cadeaux-mirror/"
 Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelog.md"
 
-[tool.setuptools]
+[tool.hatch.build.targets.wheel]
 packages = ["ronde_de_cadeaux"]
-[tool.setuptools.package-data]
-ronde_de_cadeaux = ["locale/**/*.mo"]
+artifacts = ["*.mo"]
+
+[tool.hatch.build.targets.sdist]
+include = [ # Penser à rajouter ici d'éventuels nouveaux fichiers utiles
+    "/Changelog.md",
+    "/LICENSE",
+    "/PyPI.md",
+    "/README-en.md",
+    "/README.md",
+    "/examples",
+    "/ronde_de_cadeaux/",
+    "/scripts/",
+    "/tests",
+]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "scripts/hatch_build.py"
 
 # Ruff
 

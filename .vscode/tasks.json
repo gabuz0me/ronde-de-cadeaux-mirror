@@ -2,6 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Clean",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/clean.py",
+            ],
+            "problemMatcher": [],
+        },
+        {
             "label": "Cog the readmes!",
             "type": "shell",
             "command": "uv",
@@ -83,6 +92,7 @@
                 "--output-file",
                 "ronde_de_cadeaux/locale/ronde.pot",
                 "--no-wrap",
+                "--omit-header",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
@@ -101,9 +111,8 @@
                 "ronde_de_cadeaux/locale/ronde.pot",
                 "--output-dir",
                 "ronde_de_cadeaux/locale/",
-                // "--locale",
-                // "${input:locale}",
                 "--no-wrap",
+                "--ignore-pot-creation-date",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
@@ -146,6 +155,6 @@
             "id": "locale",
             "description": "2-letter code",
             "type": "promptString",
-        }
-    ]
+        },
+    ],
 }
