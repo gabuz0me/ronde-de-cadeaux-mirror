@@ -5,7 +5,7 @@
             "name": "Ronde de Cadeaux",
             "type": "debugpy",
             "request": "launch",
-            "module": "ronde_de_cadeaux.cli",
+            "module": "ronde_de_cadeaux",
             "args": [
                 "--test-email",
                 "--auth",
