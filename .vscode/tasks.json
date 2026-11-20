@@ -90,6 +90,7 @@
                 "ronde_de_cadeaux/locale/ronde.pot",
                 "--no-wrap",
                 "--omit-header",
+                "--no-location",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
