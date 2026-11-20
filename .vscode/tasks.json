@@ -24,9 +24,6 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                    "UV_PROJECT_ENVIRONMENT": ".venv314",
-                },
             },
             "problemMatcher": [],
         },

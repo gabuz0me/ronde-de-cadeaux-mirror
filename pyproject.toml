@@ -53,6 +53,7 @@ Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelo
 [tool.hatch.build.targets.wheel]
 packages = ["ronde_de_cadeaux"]
 artifacts = ["*.mo"]
+exclude = ["*.po", "*.pot"]
 
 [tool.hatch.build.targets.sdist]
 include = [ # Penser à rajouter ici d'éventuels nouveaux fichiers utiles
@@ -66,6 +67,7 @@ include = [ # Penser à rajouter ici d'éventuels nouveaux fichiers utiles
     "/scripts/",
     "/tests",
 ]
+exclude = ["*.mo"]
 
 [tool.hatch.build.targets.wheel.hooks.custom]
 path = "scripts/hatch_build.py"
