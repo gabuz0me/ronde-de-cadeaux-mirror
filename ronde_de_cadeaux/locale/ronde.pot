@@ -142,6 +142,9 @@ msgstr ""
 msgid "destinataire"
 msgstr ""
 
+msgid "Envoi des courriels :"
+msgstr ""
+
 #, python-format
 msgid "%(nb)s courriel a été envoyé avant l'erreur :/"
 msgid_plural "%(nb)s courriels ont été envoyés avant l'erreur :/"

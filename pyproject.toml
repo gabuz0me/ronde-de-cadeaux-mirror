@@ -23,6 +23,7 @@ dependencies = [
     "email-validator", # syntaxe et dns
     "colorlog",        # de la couleur dans le logger
     "i18nparse",       # argparse traduit
+    "tqdm",            # barres de chargement
 ]
 
 

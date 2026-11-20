@@ -158,6 +158,9 @@ msgstr "gifter"
 msgid "destinataire"
 msgstr "giftee"
 
+msgid "Envoi des courriels :"
+msgstr "Sending emails:"
+
 #, python-format
 msgid "%(nb)s courriel a été envoyé avant l'erreur :/"
 msgid_plural "%(nb)s courriels ont été envoyés avant l'erreur :/"

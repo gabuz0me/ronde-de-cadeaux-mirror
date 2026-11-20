@@ -44,7 +44,7 @@ VerboseQuiet = NamedTuple("VerboseQuiet", [("verbose", bool), ("quiet", bool)])
 def set_logger_level(verbose_quiet: VerboseQuiet | None = None) -> None:
     """En fonction des arguments du parser et de la variable d'environnement `RONDE_DEBUG`, ajuste le niveau du logger."""
     global logger
-    if os.environ.get("RONDE_DEBUG") == "1":
+    if os.environ.get("RONDE_DEBUG", "0") != "0":
         logger.setLevel(logging.DEBUG)
     elif verbose_quiet:
         assert not (verbose_quiet.verbose and verbose_quiet.quiet)

@@ -5,19 +5,24 @@ Validation des données et envoi.
 
 import getpass
 import imaplib
+import logging
+import os
 import smtplib
 import socket
+import sys
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from pathlib import Path
-from typing import Any, ClassVar, NamedTuple, Self
+from typing import Any, ClassVar, NamedTuple, Self, TypeVar
 
 import yaml
 from dacite import from_dict
+from tqdm import tqdm
 
 from ._unique_yaml import UniquenessError, unique_safe_load
 from .i18n import _, ngettext
@@ -337,6 +342,27 @@ def test_email_sending(email_info: EmailInfo) -> None:
         emailer.close_servers()
 
 
+T = TypeVar("T")
+
+
+def _email_progress_bar(iterable: Iterable[T]) -> Iterable[T] | tqdm[T]:  # noqa
+    """Barre de progression custom pour les courriels."""
+    if logger.level > logging.INFO:
+        return iterable
+
+    bar_format = "{desc} {n_fmt:>2}/{total_fmt} |{bar}|"
+    if os.environ.get("NO_COLOR", "0") == "0":  # On honore la convention NO_COLOR
+        bar_format = f"\033[0;32m{bar_format}\033[0m"  # Couleur verte du logger
+
+    return tqdm(
+        iterable=iterable,
+        desc=_("Envoi des courriels :"),
+        dynamic_ncols=True,
+        bar_format=bar_format,
+        file=sys.stderr,  # C'est la valeur par défaut mais voilà
+    )
+
+
 def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
     """Envoi des courriels.
 
@@ -349,7 +375,7 @@ def send_emails(gifter_giftee_tuple: Draw, email_info: EmailInfo) -> None:
     current_draw: DrawPair | None = None
     # shuffled, comme ça l'ordre d'envoi des courriels ne permet pas d'inférer l'ordre de la ronde depuis la boîte d'envoi ;)
     try:
-        for current_draw in shuffled(gifter_giftee_tuple):
+        for current_draw in _email_progress_bar(shuffled(gifter_giftee_tuple)):
             gifter, giftee = current_draw
             assert gifter.email is not None
 
