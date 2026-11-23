@@ -26,7 +26,7 @@ class _PersonModel:
 
 @dataclass
 class _PeopleModel:
-    people: dict[str, _PersonModel | None]
+    people: dict[str, _PersonModel | None]  # None dans un cas très simple où seul l'ID est fourni (ex afficher simplement)
     groups: dict[str, list[str]] | None = None
 
 
@@ -187,9 +187,9 @@ def _create_people_and_groups_info(people_data: Any, check_email_address: bool =
         raise ValueError(_("Fichier de configuration des personnes invalide (%(error)s)") % {"error": _("non conforme au schéma")}) from e
 
     if check_email_address:
-        for person in people.people.values():
-            if person is None or not person.email:
-                raise ValueError(_("L'envoi de courriel est activé mais '%(person)s' n'a pas d'adresse courriel") % {"person": person})
+        for id_, person in people.people.items():
+            if person is None or not person.email:  # None si cas simple où juste ID, la vraie `Person` est crée plus bas
+                raise ValueError(_("L'envoi de courriel est activé mais '%(person)s' n'a pas d'adresse courriel") % {"person": id_})
 
             _status, person.email = email_address_validator.validate(person.email)
             _S = EmailValidator.ValidationStatus

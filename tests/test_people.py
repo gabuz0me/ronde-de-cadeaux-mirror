@@ -272,6 +272,11 @@ class GraphGenerationTesting(RondeTest):
                 generate_people_graph(people)
             self.assertEqual(context.exception.type, GraphGenerationExceptionType.NOT_ENOUGH_PEOPLE)
 
+    def test_only_groups(self):
+        data = {"groups": {"group": []}}
+        with self.assertRaises(ValueError):
+            _create_people_and_groups_info(data)
+
     def test_random_seed(self):
         """Bon c'est pas opti.
 
