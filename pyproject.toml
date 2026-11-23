@@ -8,7 +8,7 @@ version = "0.0.0dev4"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "PyPI.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14" # Tant pis pour les haters, on veut du 3.14 pour la coloration.
 license = "CECILL-2.1"
 classifiers = [
     "Development Status :: 4 - Beta",

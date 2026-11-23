@@ -26,7 +26,7 @@ from tqdm import tqdm
 
 from ._unique_yaml import UniquenessError, unique_safe_load
 from .i18n import _, ngettext
-from .logger import logger
+from .logger import Color, logger
 from .people_graph_generation import Draw, DrawPair, PersonLike, PersonTuple
 from .tools import EmailValidator, email_address_validator, shuffled
 
@@ -350,9 +350,7 @@ def _email_progress_bar(iterable: Iterable[T]) -> Iterable[T] | tqdm[T]:  # noqa
     if logger.level > logging.INFO:
         return iterable
 
-    bar_format = "{desc} {n_fmt:>2}/{total_fmt} |{bar}|"
-    if os.environ.get("NO_COLOR", "0") == "0":  # On honore la convention NO_COLOR
-        bar_format = f"\033[0;32m{bar_format}\033[0m"  # Couleur verte du logger
+    bar_format = Color.GREEN("{desc} {n_fmt:>2}/{total_fmt} |{bar}|")
 
     return tqdm(
         iterable=iterable,

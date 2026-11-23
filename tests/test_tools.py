@@ -1,6 +1,9 @@
+import os
 from unittest import TestCase
+from unittest.mock import patch
 
 from ronde_de_cadeaux import tools
+from ronde_de_cadeaux.logger import Color
 
 
 class ToolTesting(TestCase):
@@ -18,3 +21,18 @@ class ToolTesting(TestCase):
             (False, "1"),
         ]
         self.assertEqual(tools.list_as_cyclic_pairs(self.data), result)
+
+    def test_argparse_long_color(self):
+        """Repère si dans une future version de Python la couleur par défaut des options longues d'`argparse` change.
+
+        C'est pas zinzin, y'a en pratique aucun risque et c'est overkill mais bon, voilà quoi.
+        """
+        # https://github.com/python/cpython/blob/main/Lib/_colorize.py
+        from _colorize import get_theme
+
+        expected_prefix = get_theme(force_color=True).argparse.long_option
+
+        # https://docs.python.org/3/library/unittest.mock.html#unittest.mock.patch.dict
+        with patch.dict(os.environ, {"NO_COLOR": "0"}, clear=True):  # On désactive temporairement
+            colored = Color.CYAN("--option", bold=True)
+        self.assertTrue(colored.startswith(expected_prefix))  # Si le code de début est bon, ie la couleur, ça passe

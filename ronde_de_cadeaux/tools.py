@@ -127,4 +127,6 @@ def compute_hamiltonian_cycle(graph: Graph, current_node: str | None = None, pat
 
 def fill_dedent(text: str) -> str:
     """Appelle `textwrap.dedent` sur le texte et `textwrap.fill` en ajustant à la taille du terminal."""
-    return fill(dedent(text), width=get_terminal_size().columns)
+    return "\n\n".join(
+        [fill(dedent(paragraph), width=get_terminal_size().columns, break_on_hyphens=False) for paragraph in text.split("\n\n")]
+    )

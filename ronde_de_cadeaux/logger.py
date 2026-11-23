@@ -8,6 +8,7 @@ sémantique sur l'information véhiculée.
 import logging
 import os
 import sys
+from enum import IntEnum
 from typing import NamedTuple, override
 
 import colorlog
@@ -54,3 +55,19 @@ def set_logger_level(verbose_quiet: VerboseQuiet | None = None) -> None:
             logger.setLevel(logging.ERROR)
         else:
             logger.setLevel(logging.WARNING)  # Cas par défaut
+
+
+class Color(IntEnum):
+    """Color un texte si `NO_COLOR` n'est pas présente dans l'environnement."""
+
+    CYAN = 36
+    GREEN = 32
+    RED = 31
+    YELLOW = 33
+
+    def __call__(self, text: str, bold: bool = False) -> str:
+        """Colore le texte."""
+        if os.environ.get("NO_COLOR", "0") != "0":
+            return text
+        b = int(bold)
+        return f"\033[{b};{self}m{text}\033[0m"
