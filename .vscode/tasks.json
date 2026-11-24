@@ -17,9 +17,9 @@
             "args": [
                 "run",
                 "cog",
-                "-r", // Remplacer
-                "-P", // Utiliser `print()`
-                "-c", // Somme de contrôle
+                "-r",
+                "-P",
+                "-c",
                 "./README*",
             ],
             "options": {
@@ -133,6 +133,25 @@
             "options": {
                 "cwd": "${workspaceFolder}",
             },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Pybabel: salade-tomate-oignons",
+            "dependsOn": [
+                "Extract i18n (pybabel)",
+                "Update i18n (pybabel)",
+                "Compile i18n (pybabel)",
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+        },
+        {
+            "label": "--> Babel n' Cog <--",
+            "dependsOn": [
+                "Pybabel: salade-tomate-oignons",
+                "Cog the readmes!",
+            ],
+            "dependsOrder": "sequence",
             "problemMatcher": [],
         },
     ],
