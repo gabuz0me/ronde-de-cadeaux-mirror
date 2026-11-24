@@ -57,17 +57,43 @@ def set_logger_level(verbose_quiet: VerboseQuiet | None = None) -> None:
             logger.setLevel(logging.WARNING)  # Cas par défaut
 
 
+# https://gist.github.com/rene-d/9e584a7dd2935d0f461904b9f2950007
 class Color(IntEnum):
-    """Color un texte si `NO_COLOR` n'est pas présente dans l'environnement."""
+    """Couleur du texte si `NO_COLOR` n'est pas présente dans l'environnement."""
 
-    CYAN = 36
-    GREEN = 32
     RED = 31
+    GREEN = 32
     YELLOW = 33
+    BLUE = 34
+    PURPLE = 35
+    CYAN = 36
 
-    def __call__(self, text: str, bold: bool = False) -> str:
-        """Colore le texte."""
-        if os.environ.get("NO_COLOR", "0") != "0":
-            return text
-        b = int(bold)
-        return f"\033[{b};{self}m{text}\033[0m"
+
+class Style(IntEnum):
+    """Style du texte si `NO_COLOR` n'est pas présente dans l'environnement."""
+
+    NORMAL = 0
+    BOLD = 1
+    ITALIC = 3
+    UNDERLINE = 4
+    NEGATIVE = 7
+    CROSSED = 9
+
+
+def colored(text: str, color: Color, style: Style = Style.NORMAL) -> str:
+    """Colore le texte."""
+    if os.environ.get("NO_COLOR", "0") != "0":
+        return text
+    return f"\033[{style};{color}m{text}\033[0m"
+
+
+# https://stackoverflow.com/a/71309268
+def as_link(uri: str, text: str | None = None) -> str:
+    R"""Lien dans le terminal \o/."""
+    if text is None:
+        text = uri
+    if os.environ.get("NO_COLOR", "0") != "0":
+        return text
+    parameters = ""
+    # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
+    return "\033]8;{};{}\033\\{}\033]8;;\033\\".format(parameters, uri, text)

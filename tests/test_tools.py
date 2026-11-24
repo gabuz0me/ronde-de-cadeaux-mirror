@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from ronde_de_cadeaux import tools
-from ronde_de_cadeaux.logger import Color
+from ronde_de_cadeaux.logger import Color, Style, colored
 
 
 class ToolTesting(TestCase):
@@ -34,5 +34,5 @@ class ToolTesting(TestCase):
 
         # https://docs.python.org/3/library/unittest.mock.html#unittest.mock.patch.dict
         with patch.dict(os.environ, {"NO_COLOR": "0"}, clear=True):  # On désactive temporairement
-            colored = Color.CYAN("--option", bold=True)
-        self.assertTrue(colored.startswith(expected_prefix))  # Si le code de début est bon, ie la couleur, ça passe
+            colored_text = colored("--option", Color.CYAN, Style.BOLD)
+        self.assertTrue(colored_text.startswith(expected_prefix))  # Si le code de début est bon, ie la couleur, ça passe

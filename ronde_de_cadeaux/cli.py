@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> ErrorCode:
             logger.error(_("Erreur lors du test de l'envoi des courriels : %(error)s") % {"error": e})
             return ErrorCode.ERROR
         else:
-            logger.info(_("Test de l'envoi des courriels : Tout à l'air de fonctionner :D"))
+            logger.info(_("Test de l'envoi des courriels : Tout a l'air de fonctionner :D"))
         return ErrorCode.OK
 
     if not args.seed:
@@ -56,7 +56,7 @@ def main(argv: list[str] | None = None) -> ErrorCode:
     path = compute_hamiltonian_cycle(people_graph)
 
     if not path:
-        logger.error(_("Pas de circuits trouvés, essayez d'amoindrir les contraintes"))
+        logger.error(_("Pas de cycle trouvé, essayer d'amoindrir les contraintes"))
         return ErrorCode.ERROR
 
     draw = get_people_cycle(args.people_and_groups, path)

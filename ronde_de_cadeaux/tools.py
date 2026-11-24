@@ -47,7 +47,7 @@ class EmailValidator:
         """  # noqa
 
         status = self.ValidationStatus.OK
-        email_normalized = ""
+        email_normalized = email
         try:
             # valeur par défaut pour `check_deliverability` (None), ici vaut True en général, False pour les tests unitaires
             validated = email_validator.validate_email(

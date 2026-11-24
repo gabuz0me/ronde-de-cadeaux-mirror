@@ -9,7 +9,7 @@
             "args": [
                 "--help",
                 "--test-email",
-                "--auth",
+                "--email-config",
                 "./private/email_auth.yaml",
                 "--message",
                 "./private/message.html",
@@ -18,7 +18,7 @@
                 "--show",
                 "--output",
                 "./private/output.txt",
-                "--force",
+                "--overwrite",
                 "--verbose",
                 "--quiet",
             ],

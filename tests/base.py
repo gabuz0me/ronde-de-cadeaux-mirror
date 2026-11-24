@@ -26,7 +26,7 @@ class RondeTest(unittest.TestCase):
 
     @property
     def example_email_config(self) -> str:
-        return str(self.examples / "email.yaml")
+        return str(self.examples / "config.yaml")
 
     @property
     def example_message_html(self) -> str:

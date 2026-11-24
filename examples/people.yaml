@@ -4,23 +4,23 @@
 
 people:
 
-  Alice:
-    display_name: Alice-Andréa-Alexia Foo
+  Alice Foo:
+    display_name: Alicia
     email: alice@foo.me
     denylist:
-    - Bob
+    - Bob Foo
     - Foo siblings
     
-  Bob:
-    display_name: Bœbélius Foo
-    nickname: Bob Foo
+  Bob Foo:
+    display_name: Bœbélius
+    nickname: Bobby
     email: bob@foo.me
     denylist:
-    - Alice
+    - Alice Foo
     - Foo siblings
 
   Carol Foo:
-    display_name: Cärol Foo
+    display_name: Cärolina
     email: carol@foo.me
     denylist:
     - Foo siblings
@@ -39,7 +39,7 @@ people:
     - Bar siblings
 
   Flora Bar:
-    nickname: Flo Bar
+    nickname: Flo
     email: flora@bar.me
     denylist:
     - Eve Bar
@@ -58,7 +58,7 @@ people:
     - Bar siblings
 
   Isobel Bar:
-    display_name: Isöbel Bar
+    nickname: Zozo
     email: isobel@bar.me
     allowlist:
     - cousins

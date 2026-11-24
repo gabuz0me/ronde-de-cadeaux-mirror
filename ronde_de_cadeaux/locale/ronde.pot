@@ -16,7 +16,7 @@ msgstr ""
 msgid "Erreur lors du test de l'envoi des courriels : %(error)s"
 msgstr ""
 
-msgid "Test de l'envoi des courriels : Tout à l'air de fonctionner :D"
+msgid "Test de l'envoi des courriels : Tout a l'air de fonctionner :D"
 msgstr ""
 
 msgid "Génération du graphe des gens..."
@@ -29,7 +29,7 @@ msgstr ""
 msgid "Calcul d'un cycle hamiltonien..."
 msgstr ""
 
-msgid "Pas de circuits trouvés, essayez d'amoindrir les contraintes"
+msgid "Pas de cycle trouvé, essayer d'amoindrir les contraintes"
 msgstr ""
 
 #, python-format
@@ -50,6 +50,38 @@ msgid "Tirage bien envoyé par courriel \\o/"
 msgstr ""
 
 #, python-format
+msgid "Mot de passe %(server)s :"
+msgstr ""
+
+msgid "Impossible d'acquérir le mot de passe"
+msgstr ""
+
+#, python-format
+msgid "Le champ 'body_text_format' doit avoir une valeur dans %(text_format_list)s"
+msgstr ""
+
+msgid "expéditrice"
+msgstr ""
+
+msgid "de réception des tests"
+msgstr ""
+
+#, python-format
+msgid "L'adresse courriel %(address_kind)s '%(email)s' n'est pas valide"
+msgstr ""
+
+#, python-format
+msgid "La vérification DNS de l'adresse courriel %(address_kind)s '%(email)s' n'aboutit pas"
+msgstr ""
+
+#, python-format
+msgid "La délivrabilité de l'adresse courriel %(address_kind)s '%(email)s' n'a pas pu être vérifiée. %(maybe_errors)s"
+msgstr ""
+
+msgid "Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯"
+msgstr ""
+
+#, python-format
 msgid "Le format de texte '%(text_format)s' n'est pas contenu dans %(text_format_list)s"
 msgstr ""
 
@@ -57,29 +89,9 @@ msgid "Format de texte invalide"
 msgstr ""
 
 #, python-format
-msgid "Le champ 'body_text_format' doit avoir une valeur dans %(text_format_list)s"
-msgstr ""
-
-msgid "L'adresse courriel expéditrice n'est pas valide"
-msgstr ""
-
-msgid "La vérification DNS de l'adresse courriel expéditrice n'aboutit pas"
-msgstr ""
-
-#, python-format
-msgid "La délivrabilité de l'adresse courriel expéditrice '%(email)s' n'a pas pu être vérifiée. %(maybe_errors)s"
-msgstr ""
-
-msgid "Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯"
-msgstr ""
-
-msgid "Mot de passe courriel :"
-msgstr ""
-
-#, python-format
 msgid ""
-"            Impossible de joindre le serveur %(server)s, vérifiez votre connexion internet\n"
-"            ou vos paramètres de connexion"
+"            Impossible de joindre le serveur %(server)s, vérifier la connexion internet\n"
+"            ou les paramètres de connexion"
 msgstr ""
 
 #, python-format
@@ -173,6 +185,8 @@ msgid ""
 "            Ce programme permet de générer un tirage de gens à qui offrir\n"
 "            des cadeaux en prenant en compte un système de contraintes\n"
 "            complexes.\n"
+"\n"
+"            Ces tirages peuvent ensuite être affichés, exportés ou envoyés par courriel.\n"
 "            "
 msgstr ""
 
@@ -185,15 +199,17 @@ msgstr ""
 msgid "réduit les messages affichés"
 msgstr ""
 
-msgid "teste la configuration du serveur de messagerie"
+msgid "envoie un courriel de test via l'adresse expéditrice pour vérifier la configuration du serveur de messagerie"
 msgstr ""
 
 #, python-format
 msgid "fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s"
 msgstr ""
 
-#, python-format
-msgid "fichier patron du message envoyé par courriel, %(see_schema)s"
+msgid "FICHIER"
+msgstr ""
+
+msgid "fichier de gabarit du message envoyé par courriel (HTML ou texte, voir la documentation pour le formatage)"
 msgstr ""
 
 #, python-format
@@ -212,11 +228,33 @@ msgstr ""
 msgid "graine aléatoire pour le tirage"
 msgstr ""
 
+msgid "GRAINE"
+msgstr ""
+
+msgid ""
+"            L'option --email-config nécessite qu'un fichier de gabarit de\n"
+"            message soit passé avec --message.\n"
+"\n"
+"            Si l'option --test-email est passée, il faut également passer --email-config. Un fichier\n"
+"            de gabarit de message peut être donné optionnellement avec --message pour s'assurer du rendu.\n"
+"\n"
+"            Quand la connexion au serveur de messagerie n'est pas testée, il faut nécessairement\n"
+"            passer un fichier de configuration des personnes avec --people ainsi qu'effectuer au\n"
+"            moins une des trois actions possibles parmi afficher (--show), exporter dans un fichier\n"
+"            (--output) ou envoyer le tirage par mail (--email-config).\n"
+"\n"
+"            Pour plus d'information, voir la documentation.\n"
+"            "
+msgstr ""
+
+msgid "voir la documentation"
+msgstr ""
+
 msgid "Fichier de configuration du serveur de messagerie manquant pour le test de connexion"
 msgstr ""
 
 msgid ""
-"                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou\n"
+"                    Effectuer au moins une action parmi afficher, écrire dans un fichier ou\n"
 "                    envoyer par courriel le résultat du tirage\n"
 "                    "
 msgstr ""
@@ -230,7 +268,7 @@ msgstr ""
 msgid "Fichier décrivant les personnes manquant"
 msgstr ""
 
-msgid "Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"
+msgid "Fichier de sortie déjà existant, utiliser '--overwrite' pour l'écraser"
 msgstr ""
 
 #, python-format
@@ -268,7 +306,8 @@ msgstr ""
 msgid "La délivrabilité de l'adresse courriel de %(name)s (%(email)s) n'a pas pu être vérifiée. %(maybe_errors)s"
 msgstr ""
 
-msgid "Boucle infinie dans les groupes"
+#, python-format
+msgid "Récursion infinie impliquant le groupe '%(group)s'"
 msgstr ""
 
 #, python-format

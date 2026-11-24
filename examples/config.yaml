@@ -1,0 +1,28 @@
+###########################################################################
+# Connexion au serveur de messagerie, exemple de fichier de configuration #
+###########################################################################
+
+smtp:
+  hostname: "emailserver.org"             # requis
+  username: "username_smtp"               # requis
+  password: "xxx"                         # optionnel, si non fourni vaut par ordre de priorité:
+                                          #   - La variable d'environnement `$RONDE_PASSWORD_SMTP`
+                                          #   - Demandé interactivement à l'utilisateurice
+  port: 587                               # optionnel, 587 par défaut
+
+imap:                                     # optionnel, les paramètres de `smtp` sont utilisés par défaut
+  hostname: "imap.emailserver.org"        # optionnel, `smtp.hostname` par défaut
+  username: "username_imap"               # optionnel, `smtp.username` par défaut
+  password: "yyy"                         # optionnel, résolu comme suit :
+                                          #   - Si non fourni ou vaut `false` vaut par ordre de priorité
+                                          #     - La variable d'environnement `$RONDE_PASSWORD_IMAP`
+                                          #     - `smtp.password` (résolu peu importe sa source)
+                                          #   - si vaut `true` il est demandé interactivement
+  port: 143                               # optionnel, 143 par défaut
+  sent_folder: "Sent"                     # optionnel, "Sent" par défaut
+
+from_email: "username@emailserver.net"    # optionnel, `smtp.username` par défaut
+from_name: "Une main innocente"           # optionnel, `smtp.username` par défaut
+test_to_email: "custom@emailserver.net"   # optionnel, utile pour `--test-email` uniquement, vaut `from_email` par défaut
+copy_to_sent_folder: true                 # optionnel, `true` par défaut
+body_text_format: "auto"                  # optionnel, "auto" par défaut, a valeur dans {auto, txt, html}

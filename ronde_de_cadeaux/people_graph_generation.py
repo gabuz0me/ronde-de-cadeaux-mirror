@@ -191,24 +191,24 @@ def _create_people_and_groups_info(people_data: Any, check_email_address: bool =
             if person is None or not person.email:  # None si cas simple où juste ID, la vraie `Person` est crée plus bas
                 raise ValueError(_("L'envoi de courriel est activé mais '%(person)s' n'a pas d'adresse courriel") % {"person": id_})
 
+            # `person` n'est "que" un `_PersonModel`, donc les champs `nickname` ou `display_name` n'existent pas forcément, on utilise l'id
             _status, person.email = email_address_validator.validate(person.email)
             _S = EmailValidator.ValidationStatus
             match _status:
                 case _S.SYNTAX_ERROR:
                     raise ValueError(
-                        _("L'adresse courriel de %(name)s (%(email)s) n'est pas valide")
-                        % {"name": person.display_name, "email": person.email}
+                        _("L'adresse courriel de %(name)s (%(email)s) n'est pas valide") % {"name": id_, "email": person.email}
                     )
                 case _S.DNS_ERROR:
                     raise ValueError(
                         _("La vérification DNS de l'adresse courriel de %(name)s (%(email)s) n'aboutit pas")
-                        % {"name": person.display_name, "email": person.email}
+                        % {"name": id_, "email": person.email}
                     )
                 case _S.UNKNOWN_DELIVERABILITY:
                     logger.warning(
                         _("La délivrabilité de l'adresse courriel de %(name)s (%(email)s) n'a pas pu être vérifiée. %(maybe_errors)s")
                         % {
-                            "name": person.display_name,
+                            "name": id_,
                             "email": person.email,
                             "maybe_errors": _("Peut-être que des erreurs auront lieu ¯\\_(ツ)_/¯"),
                         }
@@ -269,7 +269,7 @@ def _recursive_build_group_to_person_set_dict(
 
     if current_group_key in parent_groups_names:
         raise GraphGenerationException(
-            _("Boucle infinie dans les groupes"),
+            _("Récursion infinie impliquant le groupe '%(group)s'") % {"group": current_group_key},
             GraphGenerationExceptionType.INFINITE_RECURSION,
         )
 
