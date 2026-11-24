@@ -7,7 +7,7 @@ from sys import argv
 from textwrap import dedent
 from typing import Any
 
-from ._version import __version__
+from ._metadata import __homepage__, __version__
 from .email import EmailInfo, create_email_info
 from .i18n import _
 from .logger import VerboseQuiet, logger, set_logger_level

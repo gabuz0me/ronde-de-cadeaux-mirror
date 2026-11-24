@@ -3,6 +3,7 @@
 import datetime
 import random
 import sys
+import uuid
 
 import email_validator
 
@@ -39,8 +40,10 @@ def main(argv: list[str] | None = None) -> ErrorCode:
             logger.info(_("Test de l'envoi des courriels : Tout à l'air de fonctionner :D"))
         return ErrorCode.OK
 
-    if args.seed:
-        random.seed(args.seed)
+    if not args.seed:
+        args.seed = uuid.uuid4().hex
+    logger.debug(f"Seed: {args.seed}")
+    random.seed(args.seed)
 
     try:
         logger.debug(_("Génération du graphe des gens..."))

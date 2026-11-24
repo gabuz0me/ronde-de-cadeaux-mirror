@@ -17,9 +17,9 @@
             "args": [
                 "run",
                 "cog",
-                "-r",
-                "-P",
-                "-c",
+                "-r", // Remplacer
+                "-P", // Utiliser `print()`
+                "-c", // Somme de contrôle
                 "./README*",
             ],
             "options": {
