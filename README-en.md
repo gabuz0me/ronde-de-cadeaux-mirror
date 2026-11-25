@@ -16,29 +16,29 @@ from ronde_de_cadeaux import main; os.environ["RONDE_LANG"]="en"
 print("```");main(["--help"]);print("```")
 ]]]-->
 ```
-usage: ronde [-h] [--version] [-v | -q] [--test-email] [-e FILE] [-m FILE] [-p FILE] [-s]
+Usage: ronde [-h] [--version] [-v | -q] [--test-email] [-e FILE] [-m FILE] [-p FILE] [-s]
              [-o FILE] [--overwrite] [--seed SEED]
 
 This program generates random draws for secret gifting cycles, allowing complex constraints.
 
 These draws can be shown, exported or sent by email to the participants.
 
-options:
-  -h, --help               show this help message and exit
-  --version                show program version and exit
-  -v, --verbose            verbose mode
-  -q, --quiet              quiet mode
-  --test-email             send a test email using the sending address to check the email server
+Options:
+  -h, --help               Show this help message and exit
+  --version                Show program version and exit
+  -v, --verbose            Verbose mode
+  -q, --quiet              Quiet mode
+  --test-email             Send a test email using the sending address to check the email server
                            configuration
-  -e, --email-config FILE  email server configuration file, see the documentation for the schema
-  -m, --message FILE       template message file for the email (HTML or text, see the
+  -e, --email-config FILE  Email server configuration file, see the documentation for the schema
+  -m, --message FILE       Template message file for the email (HTML or text, see the
                            documentation for the formatting)
-  -p, --people FILE        people configuration file (YAML or CSV, see the documentation for the
+  -p, --people FILE        People configuration file (YAML or CSV, see the documentation for the
                            schema)
-  -s, --show               show the computed cycle
-  -o, --output FILE        output file to export the draw
-  --overwrite              overwrite the output file if it already exists
-  --seed SEED              random seed for the draw
+  -s, --show               Show the computed cycle
+  -o, --output FILE        Output file to export the draw
+  --overwrite              Overwrite the output file if it already exists
+  --seed SEED              Random seed for the draw
 
 The option --email-config requires a template message file to be passed using --message.
 
@@ -51,4 +51,4 @@ When not testing the email server configuration, a people configuration file mus
 
 For more information, see the documentation.
 ```
-<!--[[[end]]] (sum: xaZMOik7U+)  -->
+<!--[[[end]]] (sum: fn5iuF1fF8)  -->

@@ -67,7 +67,7 @@ from ronde_de_cadeaux import main; os.environ["RONDE_LANG"]="fr"
 print("```");main(["--help"]);print("```")
 ]]]-->
 ```
-utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-e FICHIER] [-m FICHIER]
+Utilisation : ronde [-h] [--version] [-v | -q] [--test-email] [-e FICHIER] [-m FICHIER]
                     [-p FICHIER] [-s] [-o FICHIER] [--overwrite] [--seed GRAINE]
 
 Ce programme permet de générer un tirage de gens à qui offrir des cadeaux en prenant en compte un
@@ -75,24 +75,24 @@ système de contraintes complexes.
 
 Ces tirages peuvent ensuite être affichés, exportés ou envoyés par courriel.
 
-options :
-  -h, --help                  affiche ce message et termine le programme
-  --version                   affiche le numéro de version et termine le programme
-  -v, --verbose               active le mode verbeux
-  -q, --quiet                 réduit les messages affichés
-  --test-email                envoie un courriel de test via l'adresse expéditrice pour vérifier
+Options :
+  -h, --help                  Affiche ce message et termine le programme
+  --version                   Affiche le numéro de version et termine le programme
+  -v, --verbose               Active le mode verbeux
+  -q, --quiet                 Réduit les messages affichés
+  --test-email                Envoie un courriel de test via l'adresse expéditrice pour vérifier
                               la configuration du serveur de messagerie
-  -e, --email-config FICHIER  fichier de configuration du serveur de messagerie pour l'envoi des
+  -e, --email-config FICHIER  Fichier de configuration du serveur de messagerie pour l'envoi des
                               courriels, voir la documentation pour le schéma
-  -m, --message FICHIER       fichier de gabarit du message envoyé par courriel (HTML ou texte,
+  -m, --message FICHIER       Fichier de gabarit du message envoyé par courriel (HTML ou texte,
                               voir la documentation pour le formatage)
-  -p, --people FICHIER        fichier de configuration des personnes (YAML ou CSV, voir la
+  -p, --people FICHIER        Fichier de configuration des personnes (YAML ou CSV, voir la
                               documentation pour le schéma)
-  -s, --show                  affiche la ronde calculée
-  -o, --output FICHIER        fichier dans lequel exporter le tirage
-  --overwrite                 force l'écriture dans le fichier de sortie, même si celui-ci existe
+  -s, --show                  Affiche la ronde calculée
+  -o, --output FICHIER        Fichier dans lequel exporter le tirage
+  --overwrite                 Force l'écriture dans le fichier de sortie, même si celui-ci existe
                               déjà
-  --seed GRAINE               graine aléatoire pour le tirage
+  --seed GRAINE               Graine aléatoire pour le tirage
 
 L'option --email-config nécessite qu'un fichier de gabarit de message soit passé avec --message.
 
@@ -106,7 +106,7 @@ par mail (--email-config).
 
 Pour plus d'information, voir la documentation.
 ```
-<!--[[[end]]] (sum: dWJgYK3lf/) -->
+<!--[[[end]]] (sum: v1udOhbsOE) -->
 
 > [!tip] Astuce
 > Dans le vrai message d'aide, il y a beaucoup plus de couleurs ! 🎆
