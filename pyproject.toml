@@ -60,7 +60,6 @@ exclude = ["*.po", "*.pot"]
 include = [ # Penser à rajouter ici d'éventuels nouveaux fichiers utiles
     "/Changelog.md",
     "/LICENSE",
-    "/PyPI.md",
     "/README-en.md",
     "/README.md",
     "/examples",
