@@ -1,4 +1,4 @@
-"""Logging.
+"""Logging ET fonctions-outils qui touchent au texte (couleur).
 
 Permet à un éventuel autre script de se "brancher" sur les sorties de ronde-de-cadeaux
 afin d'en faire quelque chose, sans avoir à écouter stdout et tout en ajoutant de la
@@ -7,6 +7,7 @@ sémantique sur l'information véhiculée.
 
 import logging
 import os
+import re
 import sys
 from enum import IntEnum
 from typing import NamedTuple, override
@@ -96,4 +97,27 @@ def as_link(uri: str, text: str | None = None) -> str:
         return text
     parameters = ""
     # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST
-    return "\033]8;{};{}\033\\{}\033]8;;\033\\".format(parameters, uri, text)
+    return f"\033]8;{parameters};{uri}\033\\{text}\033]8;;\033\\"
+
+
+_ANSI_BEGIN_COLOR = r"\033\[[0-9;]*m"
+_ANSI_BEGIN_URI = r"\033\]8;[0-9]*;[^\033]*\033\\"
+_ANSI_ESCAPE = re.compile(f"{_ANSI_BEGIN_COLOR}|{_ANSI_BEGIN_URI}")
+
+
+def capitalize(text: str) -> str:
+    """Comme `text.capitalize()`, mais seulement sur la première lettre, en ignorant les codes ANSI en tête.
+
+    Passé trop de temps dessus :(
+    """
+    # 1. On avance tant qu'on peut match un lien ou une couleur, c'est là qu'on a la possibilité de mettre un majuscule
+    pos = 0
+    while match := _ANSI_ESCAPE.match(text, pos):
+        pos = match.end()
+
+    # 2. Si on a avancé jusqu'au bout et que soit on dépasse (pas de texte, juste la couleur) ou qu'on n'a pas de lettre
+    if pos >= len(text) or not text[pos].isalpha():
+        return text
+
+    # 3. Ça majusculise
+    return text[:pos] + text[pos].upper() + text[pos + 1 :]

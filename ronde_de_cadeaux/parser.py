@@ -1,26 +1,54 @@
 """Module de création du parser."""
 
-import argparse
 import re
 import sys
+from argparse import Action, ArgumentParser, RawDescriptionHelpFormatter, _MutuallyExclusiveGroup  # pyright: ignore[reportPrivateUsage]
+from collections.abc import Iterable
 from pathlib import Path
 from sys import argv
-from typing import Any
+from typing import Any, override
 
 from ._metadata import __homepage__, __version__
 from .email import EmailInfo, create_email_info
 from .i18n import _
-from .logger import Color, Style, VerboseQuiet, as_link, colored, logger, set_logger_level
+from .logger import Color, Style, VerboseQuiet, as_link, capitalize, colored, logger, set_logger_level
 from .people_graph_generation import create_people_and_groups_info
 from .tools import ErrorCode, fill_dedent
 
 
-def _makeParser() -> argparse.ArgumentParser:
+# https://www.geeksforgeeks.org/python/argparse-way-to-include-default-values-in-help/
+# https://stackoverflow.com/a/31767666
+class CapitalFormatter(RawDescriptionHelpFormatter):
+    """Voilà j'aime bien quand mes CLI ont des majuscules dans les messages d'aide."""
+
+    def __init__(self, prog: str, indent_increment: int = 2, max_help_position: int = 24, width: int | None = None) -> None:
+        super().__init__(prog, indent_increment, max_help_position, width)
+
+    @override
+    def _get_help_string(self, action: Action) -> str | None:
+        """Pas partie de l'API public, susceptible de changer hihi."""
+        return capitalize(action.help) if action.help else None
+
+    # heureusement que le linter sait faire tout seul les signatures des fonctions......
+    @override
+    def _format_usage(
+        self, usage: str | None, actions: Iterable[Action], groups: Iterable[_MutuallyExclusiveGroup], prefix: str | None
+    ) -> str:
+        return capitalize(super()._format_usage(usage, actions, groups, prefix))
+
+    @override
+    def start_section(self, heading: str | None) -> None:
+        if heading:
+            heading = capitalize(heading)
+        super().start_section(heading)
+
+
+def _makeParser() -> ArgumentParser:
     """Fabrique et retourne le parser des arguments."""
     _SEE_SCHEMA = _("voir la documentation pour le schéma")
 
-    parser = argparse.ArgumentParser(
-        formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
+    parser = ArgumentParser(
+        formatter_class=lambda prog: CapitalFormatter(
             prog,
             max_help_position=30,  # Décale le texte vers la droite
         ),
