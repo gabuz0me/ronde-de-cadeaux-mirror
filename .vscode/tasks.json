@@ -20,7 +20,7 @@
                 "-r",
                 "-P",
                 "-c",
-                "./README*",
+                "*.md",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
