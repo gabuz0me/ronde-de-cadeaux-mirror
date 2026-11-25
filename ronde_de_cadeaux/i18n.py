@@ -60,7 +60,7 @@ def _process_language(lang: str) -> str:
         lang_nor = lang_nor[0:2]
         if lang_nor in _SUPPORTED_LANGUAGES:
             _returned = lang_nor
-    logger.debug(f"_process_language({lang}) -> '{lang_nor}' -> '{_returned}'")
+    logger.debug(f"'{lang}' -> '{lang_nor}' -> '{_returned}'")
     return _returned
 
 
@@ -78,7 +78,6 @@ def find_user_language() -> str:
     C'est si compliqué jpp merci stackoverflow et tout.
     """
     global _DEFAULT_LANGUAGE
-    logger.debug("find_user_language()")
     if lang := os.environ.get("RONDE_LANG", None):
         logger.debug(f"RONDE_LANG: {lang}")
         return _process_language(lang)

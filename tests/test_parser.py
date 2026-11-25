@@ -14,7 +14,7 @@ class ParserTest(RondeTest):
 
     def test_auth_no_message(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--auth", self.example_email_config])
+            _ = ParserArgs(custom_args=["--email-config", self.example_email_config])
 
     def test_no_input_file(self):
         with self.assertRaises(ValueError):
@@ -26,7 +26,7 @@ class ParserTest(RondeTest):
 
     def test_non_existing_files(self):
         with self.assertRaises(ValueError):
-            _ = ParserArgs(custom_args=["--test-email", "--auth", self.get_non_existing_file(".yaml")])
+            _ = ParserArgs(custom_args=["--test-email", "--email-config", self.get_non_existing_file(".yaml")])
 
         with self.assertRaises(ValueError):
             _ = ParserArgs(custom_args=["--people", self.get_non_existing_file(".yaml"), "--show"])
@@ -36,7 +36,7 @@ class ParserTest(RondeTest):
             _ = ParserArgs(
                 custom_args=[
                     "--test-email",
-                    "--auth",
+                    "--email-config",
                     self.example_email_config,
                     "--people",
                     self.example_people_csv,
@@ -51,8 +51,8 @@ class ParserTest(RondeTest):
                 self.example_people_yaml,
                 "--output",
                 output,
-                "--force",
-                "--auth",
+                "--overwrite",
+                "--email-config",
                 self.example_email_config,
                 "--message",
                 self.example_message_html,

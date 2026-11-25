@@ -15,6 +15,19 @@
 
 </div>
 
+- `0.0.0dev5`:
+    - Python 3.14
+    - CLI options renamed
+    - Email server config schema changed
+    - Use `hatchling` as a build system
+    - Progress bar when sending emails
+    - Color in logger is more robust
+    - Using env vars to control behaviour
+    - Fixing translation
+
+- `0.0.0dev4`:
+    - Using `i18nparse`
+
 - `0.0.0dev3`:
     - Using a real logger and adding a verbose/quiet mechanism alongside the `RONDE_DEBUG` env var.
     - i18n: Locale detection on Windows/Android/Gnunux and English translation
@@ -38,6 +51,19 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Flag_of_French_language.svg" height="30" alt="FR"/>
 
 </div>
+
+- `0.0.0dev5`:
+    - Python 3.14
+    - Renommage des options de la CLI
+    - Modification du schéma du fichier de conf serveur
+    - Utilisation de `hatchling` pour le build
+    - Barre de progression lors de l'envoi des courriels
+    - Mécanismes de couleur plus robustes
+    - Utilisations de variables d'environnement pour contrôler le programme
+    - Traduction++
+
+- `0.0.0dev4`:
+    - Utilisation de `i18nparse`
 
 - `0.0.0dev3`:
     - Utilisation d'un réel logger et ajout d'un mécanisme de mode verbeux ou silencieux, utilisation de la variable d'environnement `RONDE_DEBUG` pour le logger.

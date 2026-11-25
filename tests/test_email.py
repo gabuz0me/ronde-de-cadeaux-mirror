@@ -19,22 +19,27 @@ and even here.
 MINIMAL = """\
 smtp:
     hostname: "server.abc"
-username: "username@server.abc"
-password: "xxx"
+    username: "username@server.abc"
+    password: "xxx"
 """
 
 MAXIMAL = """\
 smtp:
     hostname: "smtp.server.abc"
     port: 123
+    username: "smtp.username"
+    password: "xxx"
 imap:
     hostname: "imap.server.abc"
     port: 456
     sent_folder: "custom_sent_folder"
-username: "username@server.abc"
-password: "xxx"
-sender_email: "username_email@server.abc"
-sender_name: "custom_name"
+    username: "imap.username"
+    password: "yyy"
+from_email: "username@server.abc"
+from_name: "custom_name"
+test_to_email: "custom@server.abc"
+copy_to_sent_folder: false
+body_text_format: "txt"
 """
 
 INVALID = """\
@@ -55,35 +60,49 @@ class EmailTest(RondeTest):
 
     def test_minimal(self):
         email_info = self.to_email_info(MINIMAL)
-        self.assertEqual(email_info.testing, True)
-        self.assertEqual(email_info.config.copy_to_sent_folder, True)
 
+        # SMTP
         self.assertEqual(email_info.config.smtp.hostname, "server.abc")
         self.assertEqual(email_info.config.smtp.port, 587)
+        self.assertEqual(email_info.config.smtp.username, "username@server.abc")
+        self.assertEqual(email_info.config.smtp.password, "xxx")
+
+        # IMAP
         self.assertEqual(email_info.config.imap.hostname, "server.abc")
         self.assertEqual(email_info.config.imap.port, 143)
+        self.assertEqual(email_info.config.imap.username, "username@server.abc")
+        self.assertEqual(email_info.config.imap.password, "xxx")
         self.assertEqual(email_info.config.imap.sent_folder, "Sent")
 
-        self.assertEqual(email_info.config.username, "username@server.abc")
-        self.assertEqual(email_info.config.password, "xxx")
-        self.assertEqual(email_info.config.sender_email, "username@server.abc")
-        self.assertEqual(email_info.config.sender_name, "username@server.abc")
+        # Base
+        self.assertEqual(email_info.config.from_email, "username@server.abc")
+        self.assertEqual(email_info.config.from_name, "username@server.abc")
+        self.assertEqual(email_info.config.test_to_email, "username@server.abc")
+        self.assertEqual(email_info.config.copy_to_sent_folder, True)
+        self.assertEqual(email_info.config.body_text_format, "auto")
 
     def test_maximal(self):
         email_info = self.to_email_info(MAXIMAL)
-        self.assertEqual(email_info.testing, True)
-        self.assertEqual(email_info.config.copy_to_sent_folder, True)
 
+        # SMTP
         self.assertEqual(email_info.config.smtp.hostname, "smtp.server.abc")
         self.assertEqual(email_info.config.smtp.port, 123)
+        self.assertEqual(email_info.config.smtp.username, "smtp.username")
+        self.assertEqual(email_info.config.smtp.password, "xxx")
+
+        # IMAP
         self.assertEqual(email_info.config.imap.hostname, "imap.server.abc")
         self.assertEqual(email_info.config.imap.port, 456)
+        self.assertEqual(email_info.config.imap.username, "imap.username")
+        self.assertEqual(email_info.config.imap.password, "yyy")
         self.assertEqual(email_info.config.imap.sent_folder, "custom_sent_folder")
 
-        self.assertEqual(email_info.config.username, "username@server.abc")
-        self.assertEqual(email_info.config.password, "xxx")
-        self.assertEqual(email_info.config.sender_email, "username_email@server.abc")
-        self.assertEqual(email_info.config.sender_name, "custom_name")
+        # Base
+        self.assertEqual(email_info.config.from_email, "username@server.abc")
+        self.assertEqual(email_info.config.from_name, "custom_name")
+        self.assertEqual(email_info.config.test_to_email, "custom@server.abc")
+        self.assertEqual(email_info.config.copy_to_sent_folder, False)
+        self.assertEqual(email_info.config.body_text_format, "txt")
 
     def test_invalid(self):
         with self.assertRaises(ValueError):

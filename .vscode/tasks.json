@@ -2,6 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Clean",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/clean.py",
+            ],
+            "problemMatcher": [],
+        },
+        {
             "label": "Cog the readmes!",
             "type": "shell",
             "command": "uv",
@@ -11,13 +20,10 @@
                 "-r",
                 "-P",
                 "-c",
-                "./README*",
+                "*.md",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
-                "env": {
-                    "UV_PROJECT_ENVIRONMENT": ".venv314",
-                },
             },
             "problemMatcher": [],
         },
@@ -83,6 +89,8 @@
                 "--output-file",
                 "ronde_de_cadeaux/locale/ronde.pot",
                 "--no-wrap",
+                "--omit-header",
+                "--no-location",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
@@ -101,9 +109,8 @@
                 "ronde_de_cadeaux/locale/ronde.pot",
                 "--output-dir",
                 "ronde_de_cadeaux/locale/",
-                // "--locale",
-                // "${input:locale}",
                 "--no-wrap",
+                "--ignore-pot-creation-date",
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
@@ -128,6 +135,25 @@
             },
             "problemMatcher": [],
         },
+        {
+            "label": "Pybabel: salade-tomate-oignons",
+            "dependsOn": [
+                "Extract i18n (pybabel)",
+                "Update i18n (pybabel)",
+                "Compile i18n (pybabel)",
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+        },
+        {
+            "label": "--> Babel n' Cog <--",
+            "dependsOn": [
+                "Pybabel: salade-tomate-oignons",
+                "Cog the readmes!",
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+        },
     ],
     "inputs": [
         {
@@ -146,6 +172,6 @@
             "id": "locale",
             "description": "2-letter code",
             "type": "promptString",
-        }
-    ]
+        },
+    ],
 }

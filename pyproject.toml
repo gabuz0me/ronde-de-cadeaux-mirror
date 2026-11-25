@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools >= 77.0.3"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "babel"]
+build-backend = "hatchling.build"
 
 [project]
 name = "ronde-de-cadeaux"
-version = "0.0.0dev4"
+version = "0.0.0dev5"
 authors = [{ name = "Adrien Laporte", email = "adrien.laporte@posteo.net" }]
 description = "Random Draw for your Secret Santa"
 readme = "PyPI.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14" # Tant pis pour les haters, on veut du 3.14 pour la coloration.
 license = "CECILL-2.1"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -23,15 +23,17 @@ dependencies = [
     "email-validator", # syntaxe et dns
     "colorlog",        # de la couleur dans le logger
     "i18nparse",       # argparse traduit
+    "tqdm",            # barres de chargement
 ]
 
 
 [dependency-groups]
 dev = [
-    "babel",  # i18n
-    "build",  # construction du whl tout ça
-    "cogapp", # création de la partie --help du readme
-    "twine",  # téléversement sur PyPI
+    "hatchling", # build system, avec des hooks
+    "babel",     # i18n
+    "build",     # construction du whl tout ça
+    "cogapp",    # création de la partie --help du readme
+    "twine",     # téléversement sur PyPI
 ]
 jupyter = ["ipykernel"]
 quality = [
@@ -49,10 +51,27 @@ GitLab = "https://framagit.org/gabuzome/ronde-de-cadeaux/"
 GitHub = "https://github.com/gabuz0me/ronde-de-cadeaux-mirror/"
 Changelog = "https://framagit.org/gabuzome/ronde-de-cadeaux/-/blob/main/Changelog.md"
 
-[tool.setuptools]
+[tool.hatch.build.targets.wheel]
 packages = ["ronde_de_cadeaux"]
-[tool.setuptools.package-data]
-ronde_de_cadeaux = ["locale/**/*.mo"]
+artifacts = ["*.mo"]
+exclude = ["*.po", "*.pot"]
+
+[tool.hatch.build.targets.sdist]
+include = [ # Penser à rajouter ici d'éventuels nouveaux fichiers utiles
+    "/Changelog.md",
+    "/LICENSE",
+    "/PyPI.md",
+    "/README-en.md",
+    "/README.md",
+    "/examples",
+    "/ronde_de_cadeaux/",
+    "/scripts/",
+    "/tests",
+]
+exclude = ["*.mo"]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "scripts/hatch_build.py"
 
 # Ruff
 

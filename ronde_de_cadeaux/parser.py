@@ -1,33 +1,66 @@
 """Module de création du parser."""
 
-import argparse
+import re
 import sys
+from argparse import Action, ArgumentParser, RawDescriptionHelpFormatter, _MutuallyExclusiveGroup  # pyright: ignore[reportPrivateUsage]
+from collections.abc import Iterable
 from pathlib import Path
 from sys import argv
-from textwrap import dedent
-from typing import Any
+from typing import Any, override
 
-from ._version import __version__
+from ._metadata import __homepage__, __version__
 from .email import EmailInfo, create_email_info
 from .i18n import _
-from .logger import VerboseQuiet, logger, set_logger_level
+from .logger import Color, Style, VerboseQuiet, as_link, capitalize, colored, logger, set_logger_level
 from .people_graph_generation import create_people_and_groups_info
-from .tools import ErrorCode
+from .tools import ErrorCode, fill_dedent
 
 
-def _makeParser() -> argparse.ArgumentParser:
+# https://www.geeksforgeeks.org/python/argparse-way-to-include-default-values-in-help/
+# https://stackoverflow.com/a/31767666
+class CapitalFormatter(RawDescriptionHelpFormatter):
+    """Voilà j'aime bien quand mes CLI ont des majuscules dans les messages d'aide."""
+
+    def __init__(self, prog: str, indent_increment: int = 2, max_help_position: int = 24, width: int | None = None) -> None:
+        super().__init__(prog, indent_increment, max_help_position, width)
+
+    @override
+    def _get_help_string(self, action: Action) -> str | None:
+        """Pas partie de l'API public, susceptible de changer hihi."""
+        return capitalize(action.help) if action.help else None
+
+    # heureusement que le linter sait faire tout seul les signatures des fonctions......
+    @override
+    def _format_usage(
+        self, usage: str | None, actions: Iterable[Action], groups: Iterable[_MutuallyExclusiveGroup], prefix: str | None
+    ) -> str:
+        return capitalize(super()._format_usage(usage, actions, groups, prefix))
+
+    @override
+    def start_section(self, heading: str | None) -> None:
+        if heading:
+            heading = capitalize(heading)
+        super().start_section(heading)
+
+
+def _makeParser() -> ArgumentParser:
     """Fabrique et retourne le parser des arguments."""
     _SEE_SCHEMA = _("voir la documentation pour le schéma")
 
-    parser = argparse.ArgumentParser(
-        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=30),  # Décale le texte vers la droite
+    parser = ArgumentParser(
+        formatter_class=lambda prog: CapitalFormatter(
+            prog,
+            max_help_position=30,  # Décale le texte vers la droite
+        ),
         prog="ronde",
-        description=dedent(
+        description=fill_dedent(
             _("""\
             Ce programme permet de générer un tirage de gens à qui offrir
             des cadeaux en prenant en compte un système de contraintes
             complexes.
-            """),
+
+            Ces tirages peuvent ensuite être affichés, exportés ou envoyés par courriel.
+            """)
         ),
     )
 
@@ -55,22 +88,24 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--test-email",
         action="store_true",
-        help=_("teste la configuration du serveur de messagerie"),
+        help=_("envoie un courriel de test via l'adresse expéditrice pour vérifier la configuration du serveur de messagerie"),
     )
 
     parser.add_argument(
-        "-a",
-        "--auth",
+        "-e",
+        "--email-config",
         type=Path,
         help=_("fichier de configuration du serveur de messagerie pour l'envoi des courriels, %(see_schema)s")
         % {"see_schema": _SEE_SCHEMA},
+        metavar=_("FICHIER"),
     )
 
     parser.add_argument(
         "-m",
         "--message",
         type=Path,
-        help=_("fichier patron du message envoyé par courriel, %(see_schema)s") % {"see_schema": _SEE_SCHEMA},
+        help=_("fichier de gabarit du message envoyé par courriel (HTML ou texte, voir la documentation pour le formatage)"),
+        metavar=_("FICHIER"),
     )
 
     parser.add_argument(
@@ -78,6 +113,7 @@ def _makeParser() -> argparse.ArgumentParser:
         "--people",
         type=Path,
         help=_("fichier de configuration des personnes (YAML ou CSV, %(see_schema)s)") % {"see_schema": _SEE_SCHEMA},
+        metavar=_("FICHIER"),
     )
 
     parser.add_argument(
@@ -92,10 +128,11 @@ def _makeParser() -> argparse.ArgumentParser:
         "--output",
         type=Path,
         help=_("fichier dans lequel exporter le tirage"),
+        metavar=_("FICHIER"),
     )
 
     parser.add_argument(
-        "--force",
+        "--overwrite",
         action="store_true",
         help=_("force l'écriture dans le fichier de sortie, même si celui-ci existe déjà"),
     )
@@ -103,7 +140,39 @@ def _makeParser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--seed",
         help=_("graine aléatoire pour le tirage"),
+        metavar=_("GRAINE"),
     )
+
+    # On utilise `replace` pour que `fill_dedent` utilise la bonne largeur de texte
+    # (ie (sans les éventuels `%(...)s` en plus ou les `{c("txt")}` d'une f-string) )
+    # pour l'affichage. Et c'est moins relou dans la traduction dans les .po aussi.
+    epilog = fill_dedent(
+        _(
+            """\
+            L'option --email-config nécessite qu'un fichier de gabarit de
+            message soit passé avec --message.
+
+            Si l'option --test-email est passée, il faut également passer --email-config. Un fichier
+            de gabarit de message peut être donné optionnellement avec --message pour s'assurer du rendu.
+
+            Quand la connexion au serveur de messagerie n'est pas testée, il faut nécessairement
+            passer un fichier de configuration des personnes avec --people ainsi qu'effectuer au
+            moins une des trois actions possibles parmi afficher (--show), exporter dans un fichier
+            (--output) ou envoyer le tirage par mail (--email-config).
+
+            Pour plus d'information, voir la documentation.
+            """
+        )
+    )
+
+    long_pattern = r"(--[\w-]+)"  # tous les textes de la forme `--longue-option`
+    for pattern in set(re.findall(long_pattern, epilog)):
+        epilog = epilog.replace(pattern, colored(pattern, Color.CYAN, Style.BOLD))
+    epilog = epilog.replace(
+        _("voir la documentation"),
+        as_link(__homepage__, colored(_("voir la documentation"), Color.BLUE, Style.ITALIC)),
+    )
+    parser.epilog = epilog
 
     return parser
 
@@ -154,24 +223,24 @@ class ParserArgs:
         self.seed: Any | None = args.seed
 
         if args.test_email:
-            if not args.auth:
+            if not args.email_config:
                 raise ValueError(_("Fichier de configuration du serveur de messagerie manquant pour le test de connexion"))
             if args.people:
                 create_people_and_groups_info(args.people, check_email_address=True)
 
         # Tirage
         else:
-            if not (args.output or args.show or args.auth):
+            if not (args.output or args.show or args.email_config):
                 raise ValueError(
                     _("""\
-                    Effectuez au moins une action parmi afficher, écrire dans un fichier ou
+                    Effectuer au moins une action parmi afficher, écrire dans un fichier ou
                     envoyer par courriel le résultat du tirage
                     """)
                 )
 
-            if args.auth and not args.message:
+            if args.email_config and not args.message:
                 raise ValueError(_("Fichier de message manquant pour l'envoi des courriels"))
-            if not args.auth and args.message:
+            if not args.email_config and args.message:
                 logger.warning(
                     _("Un fichier de message a été fourni, c'est inutile car aucune action relative aux courriels ne sera effectuée")
                 )
@@ -179,16 +248,16 @@ class ParserArgs:
             if not args.people:
                 raise ValueError(_("Fichier décrivant les personnes manquant"))
 
-            if self.output and self.output.exists() and not args.force:
-                raise ValueError(_("Fichier de sortie déjà existant, utilisez '--force' pour l'écraser"))
+            if self.output and self.output.exists() and not args.overwrite:
+                raise ValueError(_("Fichier de sortie déjà existant, utiliser '--overwrite' pour l'écraser"))
 
             try:
-                self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.auth)
+                self.people_and_groups = create_people_and_groups_info(args.people, check_email_address=args.email_config)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e) from e
 
-        if args.auth:
+        if args.email_config:
             try:
-                self.email = create_email_info(args.auth, args.message, args.test_email)
+                self.email = create_email_info(args.email_config, args.message, args.test_email)
             except (ValueError, FileNotFoundError) as e:
                 raise ValueError(e) from e
